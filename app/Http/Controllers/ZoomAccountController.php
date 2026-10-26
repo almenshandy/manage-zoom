@@ -49,7 +49,7 @@ class ZoomAccountController extends Controller
         $accounts = $query->get();
 
         $pdf = Pdf::loadView('zoom_accounts.pdf', compact('accounts'))
-            ->setPaper('a4', 'landscape');
+            ->setPaper('a4', 'portrait');
 
         $filename = "rekap-akun-zoom-" . date('Ymd_His') . ".pdf";
         return $pdf->stream($filename);
