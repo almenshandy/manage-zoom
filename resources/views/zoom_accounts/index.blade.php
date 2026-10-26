@@ -5,94 +5,329 @@
 @endphp
 
 @section('content')
-<div class="space-y-6">
-    <div class="flex items-center justify-between">
+<div class="space-y-4">
+    <!-- Header & Action Buttons (Flat Minimalist) -->
+    <div class="bg-white p-4 rounded border border-gray-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-            <h3 class="text-base font-bold text-slate-800">Daftar Inventaris Akun Zoom</h3>
-            <p class="text-xs text-slate-500">Kelola akun Zoom, kredensial Server-to-Server OAuth, dan masa aktif langganan.</p>
+            <h3 class="text-xs font-semibold text-gray-900 uppercase tracking-wider">Inventaris Akun Zoom</h3>
+            <p class="text-xs text-gray-500 mt-0.5">Kelola akun Zoom, kredensial Server-to-Server OAuth, dan masa aktif lisensi.</p>
         </div>
-        <a href="{{ route('zoom-accounts.create') }}" class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold px-4 py-2.5 rounded-xl shadow-md shadow-blue-600/20 transition">
-            <i class="fa-solid fa-plus"></i> Tambah Akun Baru
-        </a>
+        <div class="flex items-center gap-2">
+            <button type="button" onclick="openSyncModal()" class="inline-flex items-center gap-1.5 bg-white hover:bg-gray-50 text-gray-700 text-xs font-medium px-3 py-1.5 rounded border border-gray-300 transition">
+                <i class="fa-solid fa-arrows-rotate text-gray-500 text-[11px]"></i> Sinkron dari DB `zoom`
+            </button>
+            <a href="{{ route('zoom-accounts.create') }}" class="inline-flex items-center gap-1.5 bg-gray-900 hover:bg-black text-white text-xs font-medium px-3.5 py-1.5 rounded transition">
+                <i class="fa-solid fa-plus text-[10px]"></i> Tambah Akun Baru
+            </a>
+        </div>
     </div>
 
-    <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
-        <table class="w-full text-left text-xs">
-            <thead class="bg-slate-50 text-slate-600 font-semibold border-b border-slate-200 uppercase tracking-wider text-[11px]">
-                <tr>
-                    <th class="px-5 py-3.5">Nama & Identitas Akun</th>
-                    <th class="px-5 py-3.5">Kapasitas</th>
-                    <th class="px-5 py-3.5">Status API OAuth</th>
-                    <th class="px-5 py-3.5">Masa Berlaku</th>
-                    <th class="px-5 py-3.5 text-center">Status</th>
-                    <th class="px-5 py-3.5 text-right">Aksi</th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-slate-100 text-slate-700">
-                @forelse($accounts as $acc)
-                    <tr class="hover:bg-slate-50 transition">
-                        <td class="px-5 py-4">
-                            <span class="font-bold text-slate-800 text-sm block">{{ $acc->name }}</span>
-                            <span class="text-slate-400 text-xs">{{ $acc->email }}</span>
-                        </td>
-                        <td class="px-5 py-4">
-                            <span class="font-semibold text-slate-800">{{ $acc->capacity }}</span>
-                            <span class="text-slate-400 text-[11px]">Peserta</span>
-                        </td>
-                        <td class="px-5 py-4">
-                            @if($acc->account_id && $acc->client_id)
-                                <span class="inline-flex items-center gap-1.5 text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full text-[11px] font-semibold border border-emerald-200">
-                                    <i class="fa-solid fa-circle-check text-[10px]"></i> S2S Configured
-                                </span>
-                            @else
-                                <span class="inline-flex items-center gap-1.5 text-slate-400 bg-slate-100 px-2.5 py-1 rounded-full text-[11px] font-semibold">
-                                    <i class="fa-solid fa-circle-exclamation text-[10px]"></i> Default Env
-                                </span>
-                            @endif
-                        </td>
-                        <td class="px-5 py-4">
-                            @if($acc->expired_date)
-                                <span class="font-medium text-slate-800">{{ $acc->expired_date->format('d M Y') }}</span>
-                                @if($acc->expired_date->isPast())
-                                    <span class="text-red-500 font-bold text-[10px] block">Kadaluarsa</span>
-                                @endif
-                            @else
-                                <span class="text-slate-400 italic">Tidak diset</span>
-                            @endif
-                        </td>
-                        <td class="px-5 py-4 text-center">
-                            @if($acc->status === 'active')
-                                <span class="px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-bold">Aktif</span>
-                            @else
-                                <span class="px-2.5 py-1 rounded-full bg-slate-100 text-slate-600 text-[10px] font-bold">Nonaktif</span>
-                            @endif
-                        </td>
-                        <td class="px-5 py-4 text-right space-x-1">
-                            <a href="{{ route('zoom-accounts.edit', $acc->id) }}" class="p-2 text-slate-500 hover:text-blue-600 rounded-lg hover:bg-slate-100 transition inline-block">
-                                <i class="fa-solid fa-pen-to-square"></i>
-                            </a>
-                            <form method="POST" action="{{ route('zoom-accounts.destroy', $acc->id) }}" class="inline-block" onsubmit="return confirm('Hapus akun ini?')">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="p-2 text-slate-500 hover:text-red-600 rounded-lg hover:bg-slate-100 transition">
-                                    <i class="fa-solid fa-trash-can"></i>
-                                </button>
-                            </form>
-                        </td>
-                    </tr>
-                @empty
+    <!-- Table Container (Flat) -->
+    <div class="bg-white rounded border border-gray-200 overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+                <thead class="bg-gray-50 text-gray-600 font-semibold border-b border-gray-200 uppercase tracking-wider text-[11px]">
                     <tr>
-                        <td colspan="6" class="px-5 py-10 text-center text-slate-400">Belum ada akun Zoom yang ditambahkan.</td>
+                        <th class="px-4 py-3">Nama & Identitas Akun</th>
+                        <th class="px-4 py-3">Kapasitas</th>
+                        <th class="px-4 py-3">Status API S2S</th>
+                        <th class="px-4 py-3">Masa Berlaku</th>
+                        <th class="px-4 py-3 text-center">Status</th>
+                        <th class="px-4 py-3 text-right">Aksi</th>
                     </tr>
-                @endforelse
-            </tbody>
-        </table>
+                </thead>
+                <tbody class="divide-y divide-gray-200 text-gray-700">
+                    @forelse($accounts as $acc)
+                        <tr class="hover:bg-gray-50/75 transition-colors">
+                            <td class="px-4 py-3">
+                                <span class="font-semibold text-gray-900 block">{{ $acc->name }}</span>
+                                <span class="text-gray-500 text-[11px] font-mono">{{ $acc->email }}</span>
+                            </td>
+                            <td class="px-4 py-3 whitespace-nowrap">
+                                <span class="font-medium text-gray-900">{{ $acc->capacity }}</span>
+                                <span class="text-gray-400 text-[11px]">Peserta</span>
+                            </td>
+                            <td class="px-4 py-3 whitespace-nowrap">
+                                @if($acc->account_id && $acc->client_id)
+                                    <span class="inline-flex items-center gap-1.5 text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200 text-[10px] font-medium">
+                                        <i class="fa-solid fa-check text-[9px]"></i> S2S Siap
+                                    </span>
+                                @else
+                                    <span class="inline-flex items-center gap-1.5 text-gray-500 bg-gray-100 px-2 py-0.5 rounded border border-gray-200 text-[10px]">
+                                        Default Env
+                                    </span>
+                                @endif
+                            </td>
+                            <td class="px-4 py-3 whitespace-nowrap">
+                                @if($acc->expired_date)
+                                    <span class="font-medium text-gray-800">{{ $acc->expired_date->format('d M Y') }}</span>
+                                    @if($acc->expired_date->isPast())
+                                        <span class="text-red-600 font-semibold text-[10px] block">Kadaluarsa</span>
+                                    @endif
+                                @else
+                                    <span class="text-gray-400 italic">Tidak diset</span>
+                                @endif
+                            </td>
+                            <td class="px-4 py-3 text-center whitespace-nowrap">
+                                @if($acc->status === 'active')
+                                    <span class="px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-semibold">Aktif</span>
+                                @elseif($acc->status === 'maintenance')
+                                    <span class="px-2 py-0.5 rounded bg-amber-50 text-amber-700 border border-amber-200 text-[10px] font-semibold">Perbaikan</span>
+                                @else
+                                    <span class="px-2 py-0.5 rounded bg-gray-100 text-gray-600 border border-gray-200 text-[10px] font-semibold">Nonaktif</span>
+                                @endif
+                            </td>
+                            <td class="px-4 py-3 text-right whitespace-nowrap">
+                                <div class="flex items-center justify-end gap-1">
+                                    <a href="{{ route('zoom-accounts.edit', $acc->id) }}" class="p-1.5 text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded border border-transparent hover:border-gray-200 transition" title="Edit">
+                                        <i class="fa-regular fa-pen-to-square"></i>
+                                    </a>
+                                    <form method="POST" action="{{ route('zoom-accounts.destroy', $acc->id) }}" class="inline" onsubmit="return confirm('Hapus akun Zoom ini?')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="p-1.5 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded border border-transparent hover:border-red-200 transition" title="Hapus">
+                                            <i class="fa-regular fa-trash-can"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="6" class="px-4 py-8 text-center text-gray-400">
+                                <i class="fa-solid fa-server text-2xl mb-2 text-gray-300 block"></i>
+                                Belum ada akun Zoom yang ditambahkan. Anda dapat sinkronkan dari database lama.
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
 
         @if($accounts->hasPages())
-            <div class="p-4 border-t border-slate-100">
+            <div class="px-4 py-3 border-t border-gray-200 bg-gray-50">
                 {{ $accounts->links() }}
             </div>
         @endif
     </div>
 </div>
+
+<!-- Modal Pop-Up Sinkronisasi (Flat Minimalist) -->
+<div id="syncModal" class="fixed inset-0 z-50 hidden overflow-y-auto bg-gray-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded border border-gray-300 max-w-4xl w-full shadow-lg overflow-hidden flex flex-col max-h-[90vh]">
+        <!-- Modal Header -->
+        <div class="px-5 py-3.5 border-b border-gray-200 flex items-center justify-between bg-white">
+            <div class="flex items-center gap-2.5">
+                <div class="w-7 h-7 rounded bg-gray-100 border border-gray-200 flex items-center justify-center text-gray-800">
+                    <i class="fa-solid fa-arrows-rotate text-xs"></i>
+                </div>
+                <div>
+                    <h4 class="text-sm font-semibold text-gray-900 leading-none">Preview Sinkronisasi Akun Zoom</h4>
+                    <span class="text-[11px] text-gray-500" id="syncSummaryText">Memuat data dari database lokal `zoom`...</span>
+                </div>
+            </div>
+            <button type="button" onclick="closeSyncModal()" class="text-gray-400 hover:text-gray-600 p-1">
+                <i class="fa-solid fa-xmark text-sm"></i>
+            </button>
+        </div>
+
+        <!-- Form & Content -->
+        <form method="POST" action="{{ route('zoom-accounts.sync-execute') }}" class="flex flex-col flex-1 overflow-hidden" id="modalSyncForm">
+            @csrf
+
+            <!-- Filter & Setting Options inside Modal -->
+            <div class="p-3 bg-gray-50 border-b border-gray-200 flex flex-wrap items-center justify-between gap-3 text-xs">
+                <div class="flex items-center gap-4">
+                    <label class="flex items-center gap-1.5 font-medium text-gray-700 cursor-pointer">
+                        <input type="checkbox" id="modalCheckAll" class="rounded border-gray-300 text-gray-900 focus:ring-0" checked>
+                        <span>Pilih Semua</span>
+                    </label>
+                    <div class="h-3.5 w-px bg-gray-300"></div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-gray-500">Jika akun sudah ada:</span>
+                        <label class="flex items-center gap-1 text-gray-700 cursor-pointer">
+                            <input type="radio" name="mode" value="skip" checked class="text-gray-900 focus:ring-0">
+                            <span>Skip</span>
+                        </label>
+                        <label class="flex items-center gap-1 text-gray-700 cursor-pointer ml-1.5">
+                            <input type="radio" name="mode" value="update" class="text-gray-900 focus:ring-0">
+                            <span>Update</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-2 text-[11px]" id="badgeSummary">
+                    <!-- Badges populated by JS -->
+                </div>
+            </div>
+
+            <!-- Scrollable Table View -->
+            <div class="flex-1 overflow-y-auto">
+                <table class="w-full text-left text-xs">
+                    <thead class="bg-gray-50 text-gray-600 font-semibold border-b border-gray-200 sticky top-0 uppercase tracking-wider text-[10px]">
+                        <tr>
+                            <th class="p-2.5 w-8 text-center bg-gray-50"></th>
+                            <th class="px-3 py-2.5 bg-gray-50">ID</th>
+                            <th class="px-3 py-2.5 bg-gray-50">Email Akun</th>
+                            <th class="px-3 py-2.5 bg-gray-50">Kapasitas</th>
+                            <th class="px-3 py-2.5 bg-gray-50">Kedaluwarsa</th>
+                            <th class="px-3 py-2.5 bg-gray-50">Kredensial S2S</th>
+                            <th class="px-3 py-2.5 text-center bg-gray-50">Status DB</th>
+                            <th class="px-3 py-2.5 text-center bg-gray-50">Status Sistem</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200 text-gray-700" id="syncTableBody">
+                        <tr>
+                            <td colspan="8" class="p-8 text-center text-gray-400">
+                                <i class="fa-solid fa-spinner fa-spin text-xl text-gray-400 block mb-2"></i>
+                                Mengambil data akun dari database zoom...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="px-5 py-3 border-t border-gray-200 bg-gray-50 flex items-center justify-between">
+                <span class="text-xs text-gray-500" id="selectedCountText">0 akun dipilih</span>
+                <div class="flex items-center gap-2">
+                    <button type="button" onclick="closeSyncModal()" class="px-3 py-1.5 bg-white border border-gray-300 text-gray-700 font-medium text-xs rounded hover:bg-gray-50 transition">
+                        Batal
+                    </button>
+                    <button type="submit" id="submitSyncBtn" class="px-4 py-1.5 bg-gray-900 hover:bg-black text-white font-medium text-xs rounded transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-download text-[10px]"></i> Impor Sekarang
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+@push('scripts')
+<script>
+    const syncModal = document.getElementById('syncModal');
+    const syncTableBody = document.getElementById('syncTableBody');
+    const syncSummaryText = document.getElementById('syncSummaryText');
+    const badgeSummary = document.getElementById('badgeSummary');
+    const modalCheckAll = document.getElementById('modalCheckAll');
+    const selectedCountText = document.getElementById('selectedCountText');
+    const submitSyncBtn = document.getElementById('submitSyncBtn');
+
+    let loadedAccounts = [];
+
+    function openSyncModal() {
+        syncModal.classList.remove('hidden');
+        document.body.classList.add('overflow-hidden');
+        fetchPreviewData();
+    }
+
+    function closeSyncModal() {
+        syncModal.classList.add('hidden');
+        document.body.classList.remove('overflow-hidden');
+    }
+
+    function fetchPreviewData() {
+        syncTableBody.innerHTML = `
+            <tr>
+                <td colspan="8" class="p-8 text-center text-gray-400">
+                    <i class="fa-solid fa-spinner fa-spin text-xl text-gray-400 block mb-2"></i>
+                    Mengambil data akun dari database zoom...
+                </td>
+            </tr>
+        `;
+
+        fetch('{{ route("zoom-accounts.sync-preview") }}', {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/json'
+            }
+        })
+        .then(res => res.json())
+        .then(res => {
+            if (!res.success) {
+                syncTableBody.innerHTML = `<tr><td colspan="8" class="p-6 text-center text-red-500 font-medium text-xs">${res.error || 'Gagal memuat data.'}</td></tr>`;
+                return;
+            }
+
+            loadedAccounts = res.data;
+            syncSummaryText.textContent = `Ditemukan ${res.summary.total} akun di database zoom`;
+
+            badgeSummary.innerHTML = `
+                <span class="px-2 py-0.5 rounded border border-emerald-200 bg-emerald-50 text-emerald-800 font-medium">Baru: ${res.summary.new}</span>
+                <span class="px-2 py-0.5 rounded border border-amber-200 bg-amber-50 text-amber-800 font-medium">Sudah Ada: ${res.summary.existing}</span>
+            `;
+
+            renderTableRows(loadedAccounts);
+        })
+        .catch(err => {
+            syncTableBody.innerHTML = `<tr><td colspan="8" class="p-6 text-center text-red-500 font-medium text-xs">Gagal menghubungi server: ${err.message}</td></tr>`;
+        });
+    }
+
+    function renderTableRows(data) {
+        if (!data.length) {
+            syncTableBody.innerHTML = `<tr><td colspan="8" class="p-6 text-center text-gray-400 text-xs">Tidak ada data ditemukan di tabel zoom.zoom_accounts.</td></tr>`;
+            updateSelectedCount();
+            return;
+        }
+
+        let html = '';
+        data.forEach(item => {
+            html += `
+                <tr class="hover:bg-gray-50/75 transition-colors ${item.is_existing ? 'bg-amber-50/20' : ''}">
+                    <td class="p-2.5 text-center">
+                        <input type="checkbox" name="selected_ids[]" value="${item.source_id}"
+                            class="modal-item-checkbox rounded border-gray-300 text-gray-900 focus:ring-0" checked>
+                    </td>
+                    <td class="px-3 py-2 font-mono text-gray-400 text-[11px]">#${item.source_id}</td>
+                    <td class="px-3 py-2 font-mono font-medium text-gray-900">${item.email}</td>
+                    <td class="px-3 py-2 whitespace-nowrap">${item.capacity} Pax</td>
+                    <td class="px-3 py-2 whitespace-nowrap font-mono text-gray-600">${item.expired_date || '-'}</td>
+                    <td class="px-3 py-2">
+                        ${item.has_credentials 
+                            ? `<span class="inline-flex items-center gap-1 text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200 text-[10px] font-mono">Ada</span>`
+                            : `<span class="text-gray-400 italic text-[10px]">Kosong</span>`}
+                    </td>
+                    <td class="px-3 py-2 text-center">
+                        <span class="px-1.5 py-0.5 rounded text-[10px] border ${item.status === 'active' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-gray-100 text-gray-600 border-gray-200'}">${item.status}</span>
+                    </td>
+                    <td class="px-3 py-2 text-center whitespace-nowrap">
+                        ${item.is_existing 
+                            ? `<span class="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-amber-50 text-amber-700 border border-amber-200">Sudah Ada</span>`
+                            : `<span class="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">Baru</span>`}
+                    </td>
+                </tr>
+            `;
+        });
+
+        syncTableBody.innerHTML = html;
+        bindCheckboxEvents();
+        updateSelectedCount();
+    }
+
+    function bindCheckboxEvents() {
+        const checkboxes = document.querySelectorAll('.modal-item-checkbox');
+        checkboxes.forEach(cb => {
+            cb.addEventListener('change', () => {
+                modalCheckAll.checked = Array.from(checkboxes).every(c => c.checked);
+                updateSelectedCount();
+            });
+        });
+    }
+
+    modalCheckAll.addEventListener('change', function () {
+        const checkboxes = document.querySelectorAll('.modal-item-checkbox');
+        checkboxes.forEach(cb => cb.checked = modalCheckAll.checked);
+        updateSelectedCount();
+    });
+
+    function updateSelectedCount() {
+        const checked = document.querySelectorAll('.modal-item-checkbox:checked').length;
+        selectedCountText.textContent = `${checked} akun dipilih`;
+        submitSyncBtn.disabled = (checked === 0);
+        submitSyncBtn.classList.toggle('opacity-50', checked === 0);
+        submitSyncBtn.classList.toggle('cursor-not-allowed', checked === 0);
+    }
+</script>
+@endpush
 @endsection

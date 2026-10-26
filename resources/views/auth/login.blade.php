@@ -6,71 +6,61 @@
     <title>Login - Manage Zoom</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>body { font-family: 'Plus Jakarta Sans', sans-serif; }</style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>body { font-family: 'Inter', sans-serif; }</style>
 </head>
-<body class="bg-slate-900 min-h-screen flex items-center justify-center p-4">
-    <div class="max-w-md w-full">
-        <!-- Logo & Title -->
-        <div class="text-center mb-8">
-            <div class="w-16 h-16 bg-blue-600 rounded-2xl mx-auto flex items-center justify-center text-white shadow-xl shadow-blue-500/20 mb-4">
-                <i class="fa-solid fa-video text-2xl"></i>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4 antialiased text-gray-800">
+    <div class="max-w-sm w-full">
+        <!-- Logo & Header -->
+        <div class="text-center mb-6">
+            <div class="w-10 h-10 bg-gray-900 rounded mx-auto flex items-center justify-center text-white mb-3">
+                <i class="fa-solid fa-video text-sm"></i>
             </div>
-            <h1 class="text-2xl font-bold text-white tracking-tight">Portal Manajemen Zoom</h1>
-            <p class="text-slate-400 text-sm mt-1">Masuk untuk mengelola jadwal peminjaman akun Zoom</p>
+            <h1 class="text-lg font-bold text-gray-900 tracking-tight">Manage Zoom</h1>
+            <p class="text-gray-500 text-xs mt-0.5">Sistem Peminjaman & Manajemen Akun</p>
         </div>
 
-        <!-- Form Card -->
-        <div class="bg-white rounded-2xl p-8 shadow-2xl">
+        <!-- Form Card (Flat Minimalist) -->
+        <div class="bg-white rounded border border-gray-200 p-6 shadow-sm">
             @if ($errors->any())
-                <div class="mb-5 p-3.5 bg-red-50 border border-red-200 text-red-700 text-xs rounded-xl flex items-center gap-2">
-                    <i class="fa-solid fa-circle-exclamation text-red-500 text-base"></i>
+                <div class="mb-4 p-2.5 bg-red-50 border border-red-200 text-red-700 text-xs rounded flex items-center gap-2">
+                    <i class="fa-solid fa-circle-exclamation text-red-500"></i>
                     <div>{{ $errors->first() }}</div>
                 </div>
             @endif
 
-            <form method="POST" action="{{ route('login.post') }}" class="space-y-4">
+            <form method="POST" action="{{ route('login.post') }}" class="space-y-3.5">
                 @csrf
                 <div>
-                    <label class="block text-xs font-semibold text-slate-700 mb-1.5">Username atau Email</label>
-                    <div class="relative">
-                        <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400 pointer-events-none">
-                            <i class="fa-solid fa-user text-sm"></i>
-                        </span>
-                        <input type="text" name="login" value="{{ old('login') }}" required autofocus
-                            class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition"
-                            placeholder="Contoh: admin atau nama@institusi.ac.id">
-                    </div>
+                    <label class="block text-xs font-medium text-gray-700 mb-1">Username atau Email</label>
+                    <input type="text" name="login" value="{{ old('login') }}" required autofocus
+                        class="w-full px-3 py-1.5 bg-white border border-gray-300 rounded text-xs focus:outline-none focus:border-gray-500 transition"
+                        placeholder="admin atau staf@institusi.ac.id">
                 </div>
 
                 <div>
-                    <label class="block text-xs font-semibold text-slate-700 mb-1.5">Password</label>
-                    <div class="relative">
-                        <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400 pointer-events-none">
-                            <i class="fa-solid fa-lock text-sm"></i>
-                        </span>
-                        <input type="password" name="password" required
-                            class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition"
-                            placeholder="••••••••">
-                    </div>
+                    <label class="block text-xs font-medium text-gray-700 mb-1">Password</label>
+                    <input type="password" name="password" required
+                        class="w-full px-3 py-1.5 bg-white border border-gray-300 rounded text-xs focus:outline-none focus:border-gray-500 transition"
+                        placeholder="••••••••">
                 </div>
 
-                <div class="flex items-center justify-between text-xs text-slate-600 pt-1">
-                    <label class="flex items-center gap-2 cursor-pointer">
-                        <input type="checkbox" name="remember" class="rounded border-slate-300 text-blue-600 focus:ring-blue-500">
-                        <span>Ingat Saya</span>
+                <div class="flex items-center justify-between text-xs pt-1">
+                    <label class="flex items-center gap-2 text-gray-600 cursor-pointer">
+                        <input type="checkbox" name="remember" class="rounded border-gray-300 text-gray-900 focus:ring-0">
+                        <span>Ingat saya</span>
                     </label>
                 </div>
 
-                <button type="submit"
-                    class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-semibold shadow-lg shadow-blue-600/30 transition duration-150">
+                <button type="submit" class="w-full mt-2 py-2 bg-gray-900 hover:bg-black text-white text-xs font-medium rounded transition">
                     Masuk ke Sistem
                 </button>
             </form>
 
-            <div class="mt-6 pt-5 border-t border-slate-100 text-center text-xs text-slate-500">
-                <p>Default Login Admin: <span class="font-semibold text-slate-700">admin</span> / <span class="font-semibold text-slate-700">password</span></p>
-                <p class="mt-1">Default User: <span class="font-semibold text-slate-700">stafhumas</span> / <span class="font-semibold text-slate-700">password</span></p>
+            <div class="mt-5 pt-4 border-t border-gray-100 text-center">
+                <span class="text-[11px] text-gray-400">Default login: <span class="text-gray-600 font-mono">admin / password</span></span>
             </div>
         </div>
     </div>

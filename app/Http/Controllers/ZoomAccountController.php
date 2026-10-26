@@ -4,13 +4,150 @@ namespace App\Http\Controllers;
 
 use App\Models\ZoomAccount;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ZoomAccountController extends Controller
 {
     public function index()
     {
-        $accounts = ZoomAccount::withCount('bookings')->latest()->paginate(10);
+        $accounts = ZoomAccount::withCount('bookings')
+            ->orderByRaw('expired_date IS NULL ASC')
+            ->orderBy('expired_date', 'desc')
+            ->latest('id')
+            ->paginate(10);
+
         return view('zoom_accounts.index', compact('accounts'));
+    }
+
+    /**
+     * Preview sinkronisasi akun dari database local 'zoom' (JSON Response untuk modal pop-up)
+     */
+    public function syncPreview(Request $request)
+    {
+        try {
+            $sourceAccounts = DB::select("SELECT * FROM zoom.zoom_accounts ORDER BY (tanggal_expired IS NULL) ASC, tanggal_expired DESC, id DESC");
+        } catch (\Throwable $e) {
+            if ($request->wantsJson()) {
+                return response()->json(['error' => 'Gagal terhubung ke database `zoom`: ' . $e->getMessage()], 500);
+            }
+            return redirect()->route('zoom-accounts.index')->with('error', 'Gagal terhubung ke database `zoom`: ' . $e->getMessage());
+        }
+
+        $existingEmails = ZoomAccount::pluck('email')->toArray();
+
+        $previewData = [];
+        foreach ($sourceAccounts as $item) {
+            // Mapping status
+            $mappedStatus = match ((string) $item->status) {
+                '1'     => 'active',
+                '2'     => 'inactive',
+                '0'     => 'maintenance',
+                default => 'inactive',
+            };
+
+            $email = trim($item->email ?? '');
+            $name = $email ? 'Akun Zoom (' . explode('@', $email)[0] . ')' : 'Akun Zoom #' . $item->id;
+            $exists = in_array(strtolower($email), array_map('strtolower', $existingEmails));
+
+            $previewData[] = [
+                'source_id'          => $item->id,
+                'email'              => $email,
+                'name'               => $name,
+                'capacity'           => (int) ($item->kapasitas ?: 100),
+                'expired_date'       => $item->tanggal_expired,
+                'status'             => $mappedStatus,
+                'raw_status'         => $item->status,
+                'password'           => $item->password,
+                'password_hotmail'   => $item->password_hotmail,
+                'has_credentials'    => !empty($item->idakunapi) && !empty($item->clientidapi),
+                'is_existing'        => $exists,
+            ];
+        }
+
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'data'    => $previewData,
+                'summary' => [
+                    'total'    => count($previewData),
+                    'new'      => collect($previewData)->where('is_existing', false)->count(),
+                    'existing' => collect($previewData)->where('is_existing', true)->count(),
+                ]
+            ]);
+        }
+
+        return view('zoom_accounts.sync_preview', compact('previewData'));
+    }
+
+    /**
+     * Eksekusi sinkronisasi data yang dipilih
+     */
+    public function syncExecute(Request $request)
+    {
+        $selectedIds = $request->input('selected_ids', []);
+        $mode = $request->input('mode', 'skip'); // 'skip' or 'update'
+
+        if (empty($selectedIds)) {
+            return redirect()->route('zoom-accounts.sync-preview')->with('error', 'Pilih minimal satu akun untuk disinkronkan.');
+        }
+
+        try {
+            $placeholders = implode(',', array_fill(0, count($selectedIds), '?'));
+            $sourceAccounts = DB::select("SELECT * FROM zoom.zoom_accounts WHERE id IN ($placeholders)", $selectedIds);
+        } catch (\Throwable $e) {
+            return redirect()->route('zoom-accounts.index')->with('error', 'Gagal membaca database `zoom`: ' . $e->getMessage());
+        }
+
+        $importedCount = 0;
+        $updatedCount = 0;
+
+        foreach ($sourceAccounts as $item) {
+            $email = trim($item->email ?? '');
+            if (!$email) {
+                continue;
+            }
+
+            $mappedStatus = match ((string) $item->status) {
+                '1'     => 'active',
+                '2'     => 'inactive',
+                '0'     => 'maintenance',
+                default => 'inactive',
+            };
+
+            $name = 'Akun Zoom (' . explode('@', $email)[0] . ')';
+
+            $data = [
+                'name'               => $name,
+                'password'           => $item->password,
+                'capacity'           => (int) ($item->kapasitas ?: 100),
+                'expired_date'       => $item->tanggal_expired,
+                'password_hotmail'   => $item->password_hotmail,
+                'account_id'         => $item->idakunapi,
+                'client_id'          => $item->clientidapi,
+                'client_secret'      => $item->secretapi,
+                'secret_token'       => $item->secret2api,
+                'verification_token' => $item->veriftokenapi,
+                'status'             => $mappedStatus,
+            ];
+
+            $existing = ZoomAccount::where('email', $email)->first();
+
+            if ($existing) {
+                if ($mode === 'update') {
+                    $existing->update($data);
+                    $updatedCount++;
+                }
+            } else {
+                $data['email'] = $email;
+                ZoomAccount::create($data);
+                $importedCount++;
+            }
+        }
+
+        return redirect()->route('zoom-accounts.index')->with(
+            'success',
+            "Sinkronisasi selesai! Berhasil menambahkan {$importedCount} akun baru dan memperbarui {$updatedCount} akun yang ada."
+        );
     }
 
     public function create()

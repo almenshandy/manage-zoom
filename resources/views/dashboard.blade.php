@@ -6,93 +6,90 @@
 
 @section('content')
 <div class="space-y-6">
-    <!-- Stat Cards -->
+    <!-- Stat Cards (Flat Style) -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <!-- Card 1: Akun Aktif -->
-        <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex items-center justify-between">
+        <div class="bg-white p-4 rounded border border-gray-200 flex items-center justify-between">
             <div>
-                <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Akun Zoom Aktif</p>
-                <h3 class="text-2xl font-bold text-slate-800 mt-1">{{ $stats['active_accounts'] }} <span class="text-xs text-slate-400 font-normal">/ {{ $stats['total_accounts'] }} akun</span></h3>
+                <p class="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">Akun Zoom Aktif</p>
+                <h3 class="text-xl font-bold text-gray-900 mt-1">{{ $stats['active_accounts'] }} <span class="text-xs text-gray-400 font-normal">/ {{ $stats['total_accounts'] }} akun</span></h3>
             </div>
-            <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl">
-                <i class="fa-solid fa-server"></i>
+            <div class="w-10 h-10 rounded bg-gray-50 border border-gray-200 text-gray-700 flex items-center justify-center">
+                <i class="fa-solid fa-server text-sm"></i>
             </div>
         </div>
 
         <!-- Card 2: Menunggu ACC -->
-        <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex items-center justify-between">
+        <div class="bg-white p-4 rounded border border-gray-200 flex items-center justify-between">
             <div>
-                <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Menunggu Persetujuan</p>
-                <h3 class="text-2xl font-bold text-amber-600 mt-1">{{ $stats['pending_bookings'] }}</h3>
+                <p class="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">Menunggu Persetujuan</p>
+                <h3 class="text-xl font-bold text-amber-700 mt-1">{{ $stats['pending_bookings'] }}</h3>
             </div>
-            <div class="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-xl">
-                <i class="fa-solid fa-clock"></i>
+            <div class="w-10 h-10 rounded bg-amber-50 border border-amber-200 text-amber-700 flex items-center justify-center">
+                <i class="fa-regular fa-clock text-sm"></i>
             </div>
         </div>
 
         <!-- Card 3: Disetujui (ACC) -->
-        <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex items-center justify-between">
+        <div class="bg-white p-4 rounded border border-gray-200 flex items-center justify-between">
             <div>
-                <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Disetujui (ACC)</p>
-                <h3 class="text-2xl font-bold text-blue-600 mt-1">{{ $stats['approved_bookings'] }}</h3>
+                <p class="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">Disetujui (ACC)</p>
+                <h3 class="text-xl font-bold text-blue-700 mt-1">{{ $stats['approved_bookings'] }}</h3>
             </div>
-            <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl">
-                <i class="fa-solid fa-clipboard-check"></i>
+            <div class="w-10 h-10 rounded bg-blue-50 border border-blue-200 text-blue-700 flex items-center justify-center">
+                <i class="fa-solid fa-clipboard-check text-sm"></i>
             </div>
         </div>
 
-        <!-- Card 4: Meeting Berjalan Hari Ini -->
-        <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex items-center justify-between">
+        <!-- Card 4: Meeting Hari Ini -->
+        <div class="bg-white p-4 rounded border border-gray-200 flex items-center justify-between">
             <div>
-                <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Meeting Hari Ini</p>
-                <h3 class="text-2xl font-bold text-emerald-600 mt-1">{{ $stats['today_meetings'] }}</h3>
+                <p class="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">Meeting Hari Ini</p>
+                <h3 class="text-xl font-bold text-emerald-700 mt-1">{{ $stats['today_meetings'] }}</h3>
             </div>
-            <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl">
-                <i class="fa-solid fa-video"></i>
+            <div class="w-10 h-10 rounded bg-emerald-50 border border-emerald-200 text-emerald-700 flex items-center justify-center">
+                <i class="fa-solid fa-video text-sm"></i>
             </div>
         </div>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <!-- Upcoming Approved Meetings -->
-        <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm">
-            <div class="flex items-center justify-between mb-4">
-                <h3 class="text-base font-bold text-slate-800 flex items-center gap-2">
-                    <i class="fa-solid fa-calendar-check text-blue-600"></i> Agenda Meeting Terdekat
+        <div class="bg-white p-5 rounded border border-gray-200">
+            <div class="flex items-center justify-between pb-3 mb-4 border-b border-gray-100">
+                <h3 class="text-xs font-semibold text-gray-900 uppercase tracking-wider flex items-center gap-2">
+                    <i class="fa-solid fa-calendar-check text-gray-400"></i> Meeting Mendatang (Telah Disetujui)
                 </h3>
-                <a href="{{ route('bookings.index') }}" class="text-xs font-semibold text-blue-600 hover:underline">Lihat Semua</a>
+                <a href="{{ route('bookings.index') }}" class="text-xs text-gray-500 hover:text-gray-900 font-medium">Lihat Semua &rarr;</a>
             </div>
 
             @if($upcomingBookings->isEmpty())
-                <div class="text-center py-8 text-slate-400 text-sm">
-                    <i class="fa-regular fa-calendar-xmark text-3xl mb-2"></i>
-                    <p>Belum ada jadwal meeting terkonfirmasi terdekat.</p>
+                <div class="py-8 text-center text-gray-400 text-xs">
+                    <i class="fa-regular fa-calendar-xmark text-2xl mb-2 text-gray-300 block"></i>
+                    Belum ada jadwal meeting disetujui dalam waktu dekat.
                 </div>
             @else
-                <div class="divide-y divide-slate-100">
-                    @foreach($upcomingBookings as $item)
-                        <div class="py-3 flex items-start justify-between gap-4">
-                            <div>
-                                <h4 class="font-semibold text-sm text-slate-800">{{ $item->topic }}</h4>
-                                <p class="text-xs text-slate-500 mt-0.5">
-                                    <i class="fa-solid fa-user text-[10px] mr-1"></i> {{ $item->user->name ?? '-' }} &bull;
-                                    <span class="text-blue-600 font-medium">{{ $item->account->name ?? 'Belum ada akun' }}</span>
-                                </p>
-                                <p class="text-xs text-slate-500 mt-1">
-                                    <i class="fa-regular fa-clock text-[10px] mr-1"></i> {{ $item->start_date->format('d M Y') }} ({{ substr($item->start_time, 0, 5) }} - {{ substr($item->end_time, 0, 5) }} WIB)
-                                </p>
+                <div class="divide-y divide-gray-100">
+                    @foreach($upcomingBookings as $booking)
+                        <div class="py-3 first:pt-0 last:pb-0 flex items-start justify-between gap-4">
+                            <div class="min-w-0 flex-1">
+                                <a href="{{ route('bookings.show', $booking) }}" class="font-semibold text-xs text-gray-900 hover:text-blue-600 block truncate">
+                                    {{ $booking->topic }}
+                                </a>
+                                <div class="text-[11px] text-gray-500 mt-0.5 flex flex-wrap items-center gap-2">
+                                    <span><i class="fa-regular fa-clock mr-1 text-gray-400"></i>{{ $booking->time_range_formatted }}</span>
+                                    <span>&bull;</span>
+                                    <span><i class="fa-regular fa-user mr-1 text-gray-400"></i>{{ $booking->user->name ?? '-' }}</span>
+                                    <span>&bull;</span>
+                                    <span class="text-gray-700 font-medium">{{ $booking->account->name ?? 'Belum ditentukan' }}</span>
+                                </div>
                             </div>
                             <div class="shrink-0 text-right">
-                                <span class="inline-block text-[11px] font-semibold px-2.5 py-1 rounded-full border {{ $item->status_badge }}">
-                                    {{ $item->status_label }}
+                                <span class="inline-block text-[10px] font-semibold px-2 py-0.5 rounded border 
+                                    @if($booking->status === 3) bg-emerald-50 text-emerald-700 border-emerald-200
+                                    @else bg-blue-50 text-blue-700 border-blue-200 @endif">
+                                    {{ $booking->status_label }}
                                 </span>
-                                @if($item->join_url)
-                                    <div class="mt-2">
-                                        <a href="{{ $item->join_url }}" target="_blank" class="inline-flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800 font-semibold">
-                                            Join Zoom <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
-                                        </a>
-                                    </div>
-                                @endif
                             </div>
                         </div>
                     @endforeach
@@ -100,36 +97,37 @@
             @endif
         </div>
 
-        <!-- Pending Approvals -->
-        <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm">
-            <div class="flex items-center justify-between mb-4">
-                <h3 class="text-base font-bold text-slate-800 flex items-center gap-2">
-                    <i class="fa-solid fa-hourglass-half text-amber-500"></i> Pengajuan Perlu Di-ACC
+        <!-- Latest Bookings Waiting for Review -->
+        <div class="bg-white p-5 rounded border border-gray-200">
+            <div class="flex items-center justify-between pb-3 mb-4 border-b border-gray-100">
+                <h3 class="text-xs font-semibold text-gray-900 uppercase tracking-wider flex items-center gap-2">
+                    <i class="fa-regular fa-hourglass-half text-gray-400"></i> Pengajuan Perlu Ditinjau
                 </h3>
-                <a href="{{ route('bookings.index', ['status' => 0]) }}" class="text-xs font-semibold text-blue-600 hover:underline">Lihat Semua</a>
+                <a href="{{ route('bookings.index', ['status' => 0]) }}" class="text-xs text-gray-500 hover:text-gray-900 font-medium">Tinjau Semua &rarr;</a>
             </div>
 
             @if($recentPending->isEmpty())
-                <div class="text-center py-8 text-slate-400 text-sm">
-                    <i class="fa-regular fa-circle-check text-3xl mb-2 text-emerald-400"></i>
-                    <p>Semua permohonan sudah diproses!</p>
+                <div class="py-8 text-center text-gray-400 text-xs">
+                    <i class="fa-regular fa-circle-check text-2xl mb-2 text-gray-300 block"></i>
+                    Semua pengajuan booking telah diproses.
                 </div>
             @else
-                <div class="divide-y divide-slate-100">
-                    @foreach($recentPending as $item)
-                        <div class="py-3 flex items-start justify-between gap-4">
-                            <div>
-                                <h4 class="font-semibold text-sm text-slate-800">{{ $item->topic }}</h4>
-                                <p class="text-xs text-slate-500 mt-0.5">
-                                    Diajukan oleh: <span class="font-medium text-slate-700">{{ $item->user->name ?? '-' }}</span> ({{ $item->user->departemen ?? 'Umum' }})
-                                </p>
-                                <p class="text-xs text-slate-500 mt-1">
-                                    Tanggal: {{ $item->start_date->format('d M Y') }} &bull; Durasi: {{ $item->duration_minutes }} menit
-                                </p>
+                <div class="divide-y divide-gray-100">
+                    @foreach($recentPending as $booking)
+                        <div class="py-3 first:pt-0 last:pb-0 flex items-start justify-between gap-4">
+                            <div class="min-w-0 flex-1">
+                                <a href="{{ route('bookings.show', $booking) }}" class="font-semibold text-xs text-gray-900 hover:text-blue-600 block truncate">
+                                    {{ $booking->topic }}
+                                </a>
+                                <div class="text-[11px] text-gray-500 mt-0.5 flex flex-wrap items-center gap-2">
+                                    <span>{{ $booking->date_range_formatted }} ({{ substr($booking->start_time, 0, 5) }} - {{ substr($booking->end_time, 0, 5) }})</span>
+                                    <span>&bull;</span>
+                                    <span>{{ $booking->user->name ?? '-' }}</span>
+                                </div>
                             </div>
                             <div class="shrink-0">
-                                <a href="{{ route('bookings.show', $item->id) }}" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 hover:bg-blue-50 hover:text-blue-600 text-slate-700 text-xs font-semibold rounded-lg transition">
-                                    Review <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                                <a href="{{ route('bookings.show', $booking) }}" class="text-[11px] text-gray-700 hover:text-black font-semibold border border-gray-300 px-2.5 py-1 rounded bg-white hover:bg-gray-50 transition">
+                                    Periksa
                                 </a>
                             </div>
                         </div>
