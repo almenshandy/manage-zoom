@@ -31,6 +31,7 @@
             <table class="w-full text-left text-xs">
                 <thead class="bg-gray-50 text-gray-600 font-semibold border-b border-gray-200 uppercase tracking-wider text-[11px]">
                     <tr>
+                        <th class="px-4 py-3">No</th>
                         <th class="px-4 py-3">Nama & Identitas Akun</th>
                         <th class="px-4 py-3">Kapasitas</th>
                         <th class="px-4 py-3">Status API S2S</th>
@@ -44,6 +45,10 @@
                             $isValid = $acc->expired_date && !$acc->expired_date->isPast();
                         @endphp
                         <tr class="{{ $isValid ? 'bg-emerald-50/40 hover:bg-emerald-50/70 border-l-4 border-l-emerald-500' : 'bg-red-50/40 hover:bg-red-50/70 border-l-4 border-l-red-500' }} transition-colors">
+                            <td
+                                class="px-4 py-3">
+                                {{ $accounts->firstItem() + $loop->index }}
+                            </td>
                             <td class="px-4 py-3">
                                 <span class="font-semibold text-gray-900 block">{{ $acc->name }}</span>
                                 <span class="text-gray-500 text-[11px] font-mono">{{ $acc->email }}</span>
