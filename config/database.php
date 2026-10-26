@@ -84,6 +84,22 @@ return [
             ]) : [],
         ],
 
+        'lsp' => [
+            'driver' => 'mysql',
+            'host' => env('DB_LSP_HOST', '145.14.154.207'),
+            'port' => env('DB_LSP_PORT', '3306'),
+            'database' => env('DB_LSP_DATABASE', 'u454747069_qhrmilsp'),
+            'username' => env('DB_LSP_USERNAME', 'u454747069_qhrmilsp'),
+            'password' => env('DB_LSP_PASSWORD', '374@Lsp374'),
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix' => '',
+            'strict' => false,
+            'options' => [
+                \PDO::ATTR_TIMEOUT => 5,
+            ],
+        ],
+
         'pgsql' => [
             'driver' => 'pgsql',
             'url' => env('DB_URL'),

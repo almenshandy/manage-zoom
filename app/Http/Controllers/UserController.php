@@ -108,4 +108,133 @@ class UserController extends Controller
         $user->delete();
         return redirect()->route('users.index')->with('success', 'Pengguna berhasil dihapus.');
     }
+
+    /**
+     * Preview sinkronisasi karyawan dari database eksternal LSP
+     */
+    public function syncPreview(Request $request)
+    {
+        try {
+            $karyawanList = \Illuminate\Support\Facades\DB::connection('lsp')
+                ->table('karyawan')
+                ->select('id', 'nama_lengkap', 'username', 'jabatan', 'departemen', 'email', 'no_hp', 'active', 'password_text')
+                ->orderBy('id', 'asc')
+                ->get();
+        } catch (\Throwable $e) {
+            if ($request->wantsJson()) {
+                return response()->json(['error' => 'Gagal terhubung ke database LSP: ' . $e->getMessage()], 500);
+            }
+            return redirect()->route('users.index')->with('error', 'Gagal terhubung ke database LSP: ' . $e->getMessage());
+        }
+
+        $existingUsernames = User::pluck('username')->map(fn($u) => strtolower($u))->toArray();
+        $existingEmails = User::pluck('email')->map(fn($e) => strtolower($e))->toArray();
+
+        $previewData = [];
+        foreach ($karyawanList as $k) {
+            $username = trim($k->username ?? '');
+            $email = trim($k->email ?? '');
+
+            // Jika email kosong, buat fallback berdasarkan username
+            if (empty($email) && $username) {
+                $email = strtolower($username) . '@qhrm.institusi.ac.id';
+            }
+
+            $isExisting = in_array(strtolower($username), $existingUsernames) || in_array(strtolower($email), $existingEmails);
+
+            $previewData[] = [
+                'id'            => $k->id,
+                'name'          => trim($k->nama_lengkap ?? '-'),
+                'username'      => $username,
+                'email'         => $email,
+                'jabatan'       => trim($k->jabatan ?? '-'),
+                'departemen'    => trim($k->departemen ?? '-'),
+                'no_hp'         => trim($k->no_hp ?? '-'),
+                'active'        => (string)$k->active === '1',
+                'is_existing'   => $isExisting,
+            ];
+        }
+
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'data'    => $previewData,
+                'summary' => [
+                    'total'    => count($previewData),
+                    'new'      => collect($previewData)->where('is_existing', false)->count(),
+                    'existing' => collect($previewData)->where('is_existing', true)->count(),
+                ]
+            ]);
+        }
+
+        return redirect()->route('users.index');
+    }
+
+    /**
+     * Eksekusi penarikan karyawan dari database eksternal LSP
+     */
+    public function syncExecute(Request $request)
+    {
+        $selectedIds = $request->input('selected_ids', []);
+        $mode = $request->input('mode', 'skip'); // 'skip' or 'update'
+
+        if (empty($selectedIds)) {
+            return redirect()->route('users.index')->with('error', 'Pilih minimal satu data pengguna untuk ditarik.');
+        }
+
+        try {
+            $karyawanList = \Illuminate\Support\Facades\DB::connection('lsp')
+                ->table('karyawan')
+                ->whereIn('id', $selectedIds)
+                ->get();
+        } catch (\Throwable $e) {
+            return redirect()->route('users.index')->with('error', 'Gagal membaca database LSP: ' . $e->getMessage());
+        }
+
+        $insertedCount = 0;
+        $updatedCount = 0;
+
+        foreach ($karyawanList as $k) {
+            $username = trim($k->username ?? '');
+            if (!$username) continue;
+
+            $email = trim($k->email ?? '');
+            if (empty($email)) {
+                $email = strtolower($username) . '@qhrm.institusi.ac.id';
+            }
+
+            $rawPassword = $k->password_text ?: 'password123';
+
+            $userData = [
+                'name'       => trim($k->nama_lengkap ?? $username),
+                'jabatan'    => trim($k->jabatan ?? ''),
+                'departemen' => trim($k->departemen ?? ''),
+                'no_hp'      => trim($k->no_hp ?? ''),
+                'role'       => 2, // Pegawai biasa
+            ];
+
+            $existing = User::where('username', $username)->orWhere('email', $email)->first();
+
+            if ($existing) {
+                if ($mode === 'update') {
+                    if (!empty($k->password_text)) {
+                        $userData['password'] = Hash::make($k->password_text);
+                    }
+                    $existing->update($userData);
+                    $updatedCount++;
+                }
+            } else {
+                $userData['username'] = $username;
+                $userData['email']    = $email;
+                $userData['password'] = Hash::make($rawPassword);
+                User::create($userData);
+                $insertedCount++;
+            }
+        }
+
+        return redirect()->route('users.index')->with(
+            'success',
+            "Sinkronisasi Karyawan selesai! Berhasil menambahkan {$insertedCount} pengguna baru dan memperbarui {$updatedCount} data lama."
+        );
+    }
 }

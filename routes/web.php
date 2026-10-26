@@ -53,7 +53,9 @@ Route::middleware('auth')->group(function () {
         Route::post('zoom-accounts/{zoom_account}/test-connection', [ZoomAccountController::class, 'testConnection'])->name('zoom-accounts.test-connection');
         Route::resource('zoom-accounts', ZoomAccountController::class);
 
-        // User Management
+        // User Management & Remote Sync
+        Route::get('users/sync-preview', [UserController::class, 'syncPreview'])->name('users.sync-preview');
+        Route::post('users/sync-execute', [UserController::class, 'syncExecute'])->name('users.sync-execute');
         Route::resource('users', UserController::class)->except(['show']);
         Route::post('users/{user}/role', [UserController::class, 'updateRole'])->name('users.update-role');
 
