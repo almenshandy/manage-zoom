@@ -43,7 +43,7 @@ class CalendarController extends Controller
                 'title'       => "[{$accountName}] {$item->topic}",
                 'start'       => $startDateTime,
                 'end'         => $endDateTime,
-                'url'         => route('bookings.show', $item->id),
+                'url'         => route('bookings.show', $item),
                 'backgroundColor' => $color,
                 'borderColor'     => $color,
                 'extendedProps'   => [

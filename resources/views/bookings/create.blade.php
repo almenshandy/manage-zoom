@@ -71,15 +71,22 @@
             </div>
 
             <div>
-                <label class="block font-medium text-gray-700 mb-1">Preferensi Akun Zoom (Opsional)</label>
+                <label class="block font-medium text-gray-700 mb-1">
+                    {{ auth()->user() && auth()->user()->isAdmin() ? 'Tugaskan Akun Zoom (Otomatis ACC jika dipilih)' : 'Preferensi Akun Zoom (Opsional)' }}
+                </label>
                 <select name="zoom_account_id" class="w-full px-3 py-1.5 bg-white border border-gray-300 rounded focus:outline-none focus:border-gray-500 font-mono text-xs">
-                    <option value="">-- Biarkan Admin Memilihkan Akun Terbaik --</option>
+                    <option value="">{{ auth()->user() && auth()->user()->isAdmin() ? '-- Pilih Akun untuk Langsung ACC --' : '-- Biarkan Admin Memilihkan Akun Terbaik --' }}</option>
                     @foreach($accounts as $acc)
                         <option value="{{ $acc->id }}" {{ old('zoom_account_id') == $acc->id ? 'selected' : '' }}>
                             {{ $acc->email }} ({{ $acc->capacity }} Pax) &bull; Masa Berlaku s/d {{ $acc->expired_date ? $acc->expired_date->format('d/m/Y') : '-' }}
                         </option>
                     @endforeach
                 </select>
+                @if(auth()->user() && auth()->user()->isAdmin())
+                    <p class="text-[11px] text-blue-600 mt-1">
+                        <i class="fa-solid fa-circle-info"></i> Karena Anda Administrator, jika memilih akun Zoom di sini, permohonan akan <strong>langsung disetujui (ACC)</strong> tanpa perlu menunggu approval lagi.
+                    </p>
+                @endif
             </div>
 
             <div>

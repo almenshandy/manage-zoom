@@ -61,7 +61,7 @@
                     @forelse($bookings as $item)
                         <tr class="hover:bg-gray-50/75 transition-colors">
                             <td class="px-4 py-3">
-                                <a href="{{ route('bookings.show', $item->id) }}" class="font-semibold text-gray-900 hover:text-blue-600 text-xs block">
+                                <a href="{{ route('bookings.show', $item) }}" class="font-semibold text-gray-900 hover:text-blue-600 text-xs block">
                                     {{ $item->topic }}
                                 </a>
                                 @if($item->description)

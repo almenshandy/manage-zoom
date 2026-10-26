@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Str;
 
 class ZoomBooking extends Model
 {
@@ -16,6 +17,7 @@ class ZoomBooking extends Model
         'user_id',
         'zoom_account_id',
         'topic',
+        'slug',
         'description',
         'start_date',
         'end_date',
@@ -32,6 +34,33 @@ class ZoomBooking extends Model
         'start_url',
         'passcode',
     ];
+
+    /**
+     * Gunakan slug sebagai route key pengganti id numerik
+     */
+    public function getRouteKeyName(): string
+    {
+        return 'slug';
+    }
+
+    protected static function booted(): void
+    {
+        static::creating(function ($booking) {
+            if (empty($booking->slug)) {
+                $baseSlug = Str::slug($booking->topic);
+                $slug = $baseSlug ?: 'booking-zoom';
+                $booking->slug = $slug . '-' . Str::lower(Str::random(6));
+            }
+        });
+
+        static::updating(function ($booking) {
+            if ($booking->isDirty('topic') && empty($booking->slug)) {
+                $baseSlug = Str::slug($booking->topic);
+                $slug = $baseSlug ?: 'booking-zoom';
+                $booking->slug = $slug . '-' . Str::lower(Str::random(6));
+            }
+        });
+    }
 
     protected function casts(): array
     {

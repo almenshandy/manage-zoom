@@ -53,25 +53,58 @@
 
             <!-- Zoom Link Active Box (Flat) -->
             @if($booking->status === 3 && $booking->join_url)
-                <div class="p-4 bg-gray-50 border border-gray-200 rounded">
-                    <div class="flex items-center gap-2 text-gray-900 font-semibold text-xs mb-3">
-                        <i class="fa-solid fa-circle-check text-emerald-600"></i> Link Pertemuan Zoom Telah Dibuat
+                <div class="p-4 bg-gray-50 border border-gray-200 rounded space-y-3.5">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2 text-gray-900 font-semibold text-xs">
+                            <i class="fa-solid fa-circle-check text-emerald-600"></i> Link Pertemuan Zoom Telah Siap
+                        </div>
+                        <a href="{{ $booking->join_url }}" target="_blank" class="text-xs font-medium bg-gray-900 hover:bg-black text-white px-3 py-1 rounded transition inline-flex items-center gap-1.5">
+                            Buka Ruang Zoom <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                        </a>
                     </div>
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs pt-1">
                         <div>
-                            <span class="text-gray-400 block text-[11px]">Meeting ID:</span>
-                            <span class="font-mono font-semibold text-gray-900 select-all">{{ $booking->zoom_meeting_id }}</span>
+                            <span class="text-gray-400 block text-[11px] uppercase tracking-wider mb-0.5">Meeting ID:</span>
+                            <span class="font-mono font-semibold text-gray-900 text-sm select-all">{{ $booking->zoom_meeting_id }}</span>
                         </div>
                         <div>
-                            <span class="text-gray-400 block text-[11px]">Passcode:</span>
-                            <span class="font-mono font-semibold text-gray-900 select-all">{{ $booking->passcode ?? '-' }}</span>
+                            <span class="text-gray-400 block text-[11px] uppercase tracking-wider mb-0.5">Passcode:</span>
+                            <span class="font-mono font-semibold text-gray-900 text-sm select-all">{{ $booking->passcode ?? '-' }}</span>
                         </div>
-                        <div>
-                            <span class="text-gray-400 block text-[11px]">Link Join:</span>
-                            <a href="{{ $booking->join_url }}" target="_blank" class="text-blue-600 hover:text-blue-800 font-semibold flex items-center gap-1 mt-0.5">
-                                Buka Ruang Zoom <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
-                            </a>
+                    </div>
+
+                    <!-- Full URL Bar with Copy Button -->
+                    <div>
+                        <span class="text-gray-400 block text-[11px] uppercase tracking-wider mb-1">Tautan Lengkap Pertemuan (Join URL):</span>
+                        <div class="flex items-center gap-1.5">
+                            <input type="text" id="joinUrlInput" value="{{ $booking->join_url }}" readonly
+                                class="w-full px-3 py-1.5 bg-white border border-gray-300 rounded font-mono text-xs text-gray-700 select-all focus:outline-none focus:border-gray-500">
+                            <button type="button" onclick="copyJoinUrl()" id="copyBtn"
+                                class="px-3 py-1.5 bg-white hover:bg-gray-100 text-gray-700 border border-gray-300 rounded text-xs font-medium transition shrink-0 inline-flex items-center gap-1.5">
+                                <i class="fa-regular fa-copy text-xs" id="copyIcon"></i>
+                                <span id="copyText">Salin Tautan</span>
+                            </button>
                         </div>
+                    </div>
+
+                    <!-- Template Undangan Peserta (Siap Kirim WhatsApp / Email) -->
+                    <div class="pt-2 border-t border-gray-200">
+                        <div class="flex items-center justify-between mb-1.5">
+                            <span class="text-[11px] font-semibold text-gray-600 uppercase tracking-wider">Format Teks Undangan (Siap Sebar):</span>
+                            <button type="button" onclick="copyInvitationTemplate()" class="text-[11px] text-blue-600 hover:text-blue-800 font-medium inline-flex items-center gap-1">
+                                <i class="fa-regular fa-clipboard"></i> Salin Semua Teks
+                            </button>
+                        </div>
+                        <textarea id="invitationTemplate" rows="4" readonly
+                            class="w-full p-2.5 bg-white border border-gray-300 rounded text-[11px] font-mono text-gray-700 select-all leading-relaxed focus:outline-none">Agenda: {{ $booking->topic }}
+Waktu: {{ $booking->date_range_formatted }}, Pukul {{ substr($booking->start_time, 0, 5) }} - {{ substr($booking->end_time, 0, 5) }} WIB
+
+Join Zoom Meeting:
+{{ $booking->join_url }}
+
+Meeting ID: {{ $booking->zoom_meeting_id }}
+Passcode: {{ $booking->passcode ?? '-' }}</textarea>
                     </div>
                 </div>
             @endif
@@ -262,4 +295,33 @@
         </div>
     @endif
 @endif
+
+@push('scripts')
+<script>
+    function copyJoinUrl() {
+        const input = document.getElementById('joinUrlInput');
+        if (!input) return;
+        input.select();
+        navigator.clipboard.writeText(input.value).then(() => {
+            const copyText = document.getElementById('copyText');
+            const copyIcon = document.getElementById('copyIcon');
+            copyText.textContent = 'Tersalin!';
+            copyIcon.className = 'fa-solid fa-check text-emerald-600 text-xs';
+            setTimeout(() => {
+                copyText.textContent = 'Salin Tautan';
+                copyIcon.className = 'fa-regular fa-copy text-xs';
+            }, 2500);
+        });
+    }
+
+    function copyInvitationTemplate() {
+        const textarea = document.getElementById('invitationTemplate');
+        if (!textarea) return;
+        textarea.select();
+        navigator.clipboard.writeText(textarea.value).then(() => {
+            alert('Format undangan rapat berhasil disalin ke clipboard! Siap ditempel di WhatsApp atau Email.');
+        });
+    }
+</script>
+@endpush
 @endsection

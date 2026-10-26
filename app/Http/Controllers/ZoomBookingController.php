@@ -61,8 +61,17 @@ class ZoomBookingController extends Controller
     public function store(StoreBookingRequest $request)
     {
         $validated = $request->validated();
-        $validated['user_id'] = auth()->id() ?? 1;
-        $validated['status']  = ZoomBooking::STATUS_PENDING;
+        $user = auth()->user();
+        $validated['user_id'] = $user ? $user->id : 1;
+
+        // Jika pengaju adalah Admin dan sudah memilih akun Zoom, otomatis disetujui (ACC / STATUS_APPROVED)
+        $isAdmin = $user && $user->isAdmin();
+        if ($isAdmin && !empty($validated['zoom_account_id'])) {
+            $validated['status'] = ZoomBooking::STATUS_APPROVED;
+            $validated['admin_note'] = 'Disetujui otomatis oleh Administrator saat pengajuan.';
+        } else {
+            $validated['status'] = ZoomBooking::STATUS_PENDING;
+        }
 
         // Hitung jumlah hari
         $start = Carbon::parse($validated['start_date']);
@@ -85,6 +94,10 @@ class ZoomBookingController extends Controller
         }
 
         $booking = ZoomBooking::create($validated);
+
+        if ($isAdmin && !empty($validated['zoom_account_id'])) {
+            return redirect()->route('bookings.show', $booking->id)->with('success', 'Booking berhasil dibuat dan otomatis disetujui (ACC). Anda dapat langsung membuat Link Zoom!');
+        }
 
         return redirect()->route('bookings.index')->with('success', 'Permohonan booking Zoom berhasil diajukan.');
     }
