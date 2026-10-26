@@ -6,6 +6,7 @@ use App\Models\ZoomAccount;
 use App\Services\ZoomService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class ZoomAccountController extends Controller
 {
@@ -15,6 +16,7 @@ class ZoomAccountController extends Controller
     {
         $this->zoomService = $zoomService;
     }
+
     public function index()
     {
         $accounts = ZoomAccount::withCount('bookings')
@@ -24,6 +26,33 @@ class ZoomAccountController extends Controller
             ->paginate(10);
 
         return view('zoom_accounts.index', compact('accounts'));
+    }
+
+    /**
+     * Ekspor Laporan Rekap Akun Zoom ke Format PDF
+     */
+    public function exportPdf(Request $request)
+    {
+        $query = ZoomAccount::withCount('bookings')
+            ->orderByRaw('expired_date IS NULL ASC')
+            ->orderBy('expired_date', 'desc')
+            ->latest('id');
+
+        if ($request->filled('status')) {
+            if ($request->status === 'valid') {
+                $query->whereDate('expired_date', '>=', now()->toDateString());
+            } elseif ($request->status === 'expired') {
+                $query->whereDate('expired_date', '<', now()->toDateString());
+            }
+        }
+
+        $accounts = $query->get();
+
+        $pdf = Pdf::loadView('zoom_accounts.pdf', compact('accounts'))
+            ->setPaper('a4', 'landscape');
+
+        $filename = "rekap-akun-zoom-" . date('Ymd_His') . ".pdf";
+        return $pdf->stream($filename);
     }
 
     /**

@@ -13,6 +13,9 @@
             <p class="text-xs text-gray-500 mt-0.5">Kelola akun Zoom, kredensial Server-to-Server OAuth, dan masa aktif lisensi.</p>
         </div>
         <div class="flex items-center gap-2">
+            <a href="{{ route('zoom-accounts.export-pdf') }}" target="_blank" class="inline-flex items-center gap-1.5 bg-white hover:bg-gray-50 text-gray-700 text-xs font-medium px-3 py-1.5 rounded border border-gray-300 transition" title="Export Rekap Akun ke PDF">
+                <i class="fa-solid fa-file-pdf text-red-600 text-[11px]"></i> Export PDF
+            </a>
             <button type="button" onclick="openSyncModal()" class="inline-flex items-center gap-1.5 bg-white hover:bg-gray-50 text-gray-700 text-xs font-medium px-3 py-1.5 rounded border border-gray-300 transition">
                 <i class="fa-solid fa-arrows-rotate text-gray-500 text-[11px]"></i> Sinkron dari DB `zoom`
             </button>

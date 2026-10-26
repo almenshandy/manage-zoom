@@ -48,6 +48,7 @@ Route::middleware('auth')->group(function () {
     // Admin Only Area
     Route::middleware(EnsureAdmin::class)->group(function () {
         // Zoom Accounts Management & Sync
+        Route::get('zoom-accounts/export-pdf', [ZoomAccountController::class, 'exportPdf'])->name('zoom-accounts.export-pdf');
         Route::get('zoom-accounts/sync-preview', [ZoomAccountController::class, 'syncPreview'])->name('zoom-accounts.sync-preview');
         Route::post('zoom-accounts/sync-execute', [ZoomAccountController::class, 'syncExecute'])->name('zoom-accounts.sync-execute');
         Route::post('zoom-accounts/{zoom_account}/test-connection', [ZoomAccountController::class, 'testConnection'])->name('zoom-accounts.test-connection');
