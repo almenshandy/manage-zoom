@@ -54,6 +54,10 @@ Route::middleware('auth')->group(function () {
         Route::post('zoom-accounts/{zoom_account}/test-connection', [ZoomAccountController::class, 'testConnection'])->name('zoom-accounts.test-connection');
         Route::resource('zoom-accounts', ZoomAccountController::class);
 
+        // Zoom API Global Settings
+        Route::get('settings/zoom', [\App\Http\Controllers\SettingController::class, 'index'])->name('settings.index');
+        Route::post('settings/zoom', [\App\Http\Controllers\SettingController::class, 'update'])->name('settings.update');
+
         // User Management & Remote Sync
         Route::get('users/sync-preview', [UserController::class, 'syncPreview'])->name('users.sync-preview');
         Route::post('users/sync-execute', [UserController::class, 'syncExecute'])->name('users.sync-execute');

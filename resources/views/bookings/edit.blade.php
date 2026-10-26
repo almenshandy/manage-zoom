@@ -82,11 +82,11 @@
 
             <div>
                 <label class="block font-medium text-gray-700 mb-1">Preferensi Akun Zoom</label>
-                <select name="zoom_account_id" class="w-full px-3 py-1.5 bg-white border border-gray-300 rounded focus:outline-none focus:border-gray-500">
+                <select name="zoom_account_id" class="w-full px-3 py-1.5 bg-white border border-gray-300 rounded focus:outline-none focus:border-gray-500 font-mono text-xs">
                     <option value="">-- Biarkan Admin Memilihkan Akun Terbaik --</option>
                     @foreach($accounts as $acc)
                         <option value="{{ $acc->id }}" {{ old('zoom_account_id', $booking->zoom_account_id) == $acc->id ? 'selected' : '' }}>
-                            {{ $acc->name }} (Kapasitas: {{ $acc->capacity }} Peserta)
+                            {{ $acc->email }} ({{ $acc->capacity }} Pax) &bull; Masa Berlaku s/d {{ $acc->expired_date ? $acc->expired_date->format('d/m/Y') : '-' }}
                         </option>
                     @endforeach
                 </select>

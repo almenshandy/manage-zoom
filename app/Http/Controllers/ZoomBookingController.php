@@ -42,14 +42,19 @@ class ZoomBookingController extends Controller
         }
 
         $bookings = $query->paginate(15)->withQueryString();
-        $accounts = ZoomAccount::where('status', 'active')->get();
+        $accounts = ZoomAccount::whereDate('expired_date', '>=', now()->toDateString())
+            ->orderBy('expired_date', 'asc')
+            ->get();
 
         return view('bookings.index', compact('bookings', 'accounts'));
     }
 
     public function create()
     {
-        $accounts = ZoomAccount::where('status', 'active')->get();
+        $accounts = ZoomAccount::whereDate('expired_date', '>=', now()->toDateString())
+            ->orderBy('expired_date', 'asc')
+            ->get();
+
         return view('bookings.create', compact('accounts'));
     }
 
@@ -97,7 +102,9 @@ class ZoomBookingController extends Controller
             abort(403);
         }
 
-        $accounts = ZoomAccount::where('status', 'active')->get();
+        $accounts = ZoomAccount::whereDate('expired_date', '>=', now()->toDateString())
+            ->orderBy('expired_date', 'asc')
+            ->get();
         return view('bookings.edit', compact('booking', 'accounts'));
     }
 
@@ -212,12 +219,27 @@ class ZoomBookingController extends Controller
 
             $startTimeFormatted = Carbon::parse($request->start_time)->format('Y-m-d\TH:i:s');
 
+            $customSettings = [];
+            if ($request->has('waiting_room')) {
+                $customSettings['waiting_room'] = (bool) $request->waiting_room;
+            }
+            if ($request->has('join_before_host')) {
+                $customSettings['join_before_host'] = (bool) $request->join_before_host;
+            }
+            if ($request->has('auto_recording')) {
+                $customSettings['auto_recording'] = $request->auto_recording;
+            }
+            if ($request->has('mute_upon_entry')) {
+                $customSettings['mute_upon_entry'] = (bool) $request->mute_upon_entry;
+            }
+
             $zoomResponse = $this->zoomService->createMeeting([
                 'topic'      => $request->topic,
                 'start_time' => $startTimeFormatted,
                 'duration'   => (int) $request->duration,
                 'agenda'     => $booking->description,
                 'password'   => $request->passcode,
+                'settings'   => $customSettings,
             ], $token);
 
             $booking->update([
@@ -240,7 +262,10 @@ class ZoomBookingController extends Controller
             abort(403);
         }
 
-        // Jika ada meeting di Zoom API, hapus jika memungkinkan
+        $zoomDeleted = false;
+        $zoomError = null;
+
+        // Jika meeting sudah digenerate di Zoom API, hapus juga langsung dari Cloud Zoom
         if ($booking->zoom_meeting_id && $booking->account) {
             try {
                 $token = $this->zoomService->getAccessToken(
@@ -248,13 +273,24 @@ class ZoomBookingController extends Controller
                     $booking->account->client_id,
                     $booking->account->client_secret
                 );
-                $this->zoomService->deleteMeeting($booking->zoom_meeting_id, $token);
+                
+                $zoomDeleted = $this->zoomService->deleteMeeting($booking->zoom_meeting_id, $token);
             } catch (\Throwable $e) {
-                // Abaikan error Zoom saat delete
+                $zoomError = $e->getMessage();
+                \Illuminate\Support\Facades\Log::warning("Gagal menghapus meeting di Zoom API ID {$booking->zoom_meeting_id}: " . $zoomError);
             }
         }
 
         $booking->delete();
+
+        if ($zoomDeleted) {
+            return redirect()->route('bookings.index')->with('success', 'Data booking dan jadwal meeting di cloud Zoom berhasil dihapus.');
+        }
+
+        if ($zoomError) {
+            return redirect()->route('bookings.index')->with('info', 'Booking di portal berhasil dihapus, namun terjadi kendala saat menghapus di Zoom API: ' . $zoomError);
+        }
+
         return redirect()->route('bookings.index')->with('success', 'Booking berhasil dihapus.');
     }
 

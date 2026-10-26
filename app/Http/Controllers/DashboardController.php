@@ -15,7 +15,7 @@ class DashboardController extends Controller
 
         $stats = [
             'total_accounts'     => ZoomAccount::count(),
-            'active_accounts'    => ZoomAccount::where('status', 'active')->count(),
+            'active_accounts'    => ZoomAccount::whereDate('expired_date', '>=', $today)->count(),
             'pending_bookings'   => ZoomBooking::where('status', ZoomBooking::STATUS_PENDING)->count(),
             'approved_bookings'  => ZoomBooking::where('status', ZoomBooking::STATUS_APPROVED)->count(),
             'executed_bookings'  => ZoomBooking::where('status', ZoomBooking::STATUS_EXECUTED)->count(),

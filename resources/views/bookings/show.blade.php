@@ -148,11 +148,11 @@
                 @csrf
                 <div>
                     <label class="block font-medium text-gray-700 mb-1">Tugaskan Akun Zoom *</label>
-                    <select name="zoom_account_id" required class="w-full px-3 py-1.5 bg-white border border-gray-300 rounded focus:outline-none focus:border-gray-500">
+                    <select name="zoom_account_id" required class="w-full px-3 py-1.5 bg-white border border-gray-300 rounded focus:outline-none focus:border-gray-500 font-mono text-xs">
                         <option value="">-- Pilih Akun Zoom --</option>
-                        @foreach(\App\Models\ZoomAccount::where('status', 'active')->get() as $acc)
+                        @foreach(\App\Models\ZoomAccount::whereDate('expired_date', '>=', now()->toDateString())->orderBy('expired_date', 'asc')->get() as $acc)
                             <option value="{{ $acc->id }}" {{ $booking->zoom_account_id == $acc->id ? 'selected' : '' }}>
-                                {{ $acc->name }} ({{ $acc->capacity }} Pax)
+                                {{ $acc->email }} ({{ $acc->capacity }} Pax) &bull; Masa Berlaku s/d {{ $acc->expired_date ? $acc->expired_date->format('d/m/Y') : '-' }}
                             </option>
                         @endforeach
                     </select>
@@ -219,7 +219,38 @@
 
                     <div>
                         <label class="block font-medium text-gray-700 mb-1">Passcode (Opsional)</label>
-                        <input type="text" name="passcode" value="123456" class="w-full px-3 py-1.5 bg-white border border-gray-300 rounded">
+                        <input type="text" name="passcode" value="123456" class="w-full px-3 py-1.5 bg-white border border-gray-300 rounded font-mono">
+                    </div>
+
+                    <!-- Custom Meeting Overrides (From SystemSettings) -->
+                    <div class="p-3 bg-gray-50 border border-gray-200 rounded space-y-2">
+                        <span class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block">Pengaturan Tambahan Room</span>
+
+                        <div class="grid grid-cols-2 gap-2">
+                            <label class="flex items-center gap-1.5 text-gray-700 cursor-pointer">
+                                <input type="checkbox" name="waiting_room" value="1" {{ \App\Models\SystemSetting::get('zoom_waiting_room', 1) ? 'checked' : '' }} class="rounded border-gray-300 text-gray-900 focus:ring-0">
+                                <span>Waiting Room</span>
+                            </label>
+
+                            <label class="flex items-center gap-1.5 text-gray-700 cursor-pointer">
+                                <input type="checkbox" name="mute_upon_entry" value="1" {{ \App\Models\SystemSetting::get('zoom_mute_upon_entry', 1) ? 'checked' : '' }} class="rounded border-gray-300 text-gray-900 focus:ring-0">
+                                <span>Mute Saat Masuk</span>
+                            </label>
+
+                            <label class="flex items-center gap-1.5 text-gray-700 cursor-pointer">
+                                <input type="checkbox" name="join_before_host" value="1" {{ \App\Models\SystemSetting::get('zoom_join_before_host', 0) ? 'checked' : '' }} class="rounded border-gray-300 text-gray-900 focus:ring-0">
+                                <span>Join Sebelum Host</span>
+                            </label>
+                        </div>
+
+                        <div class="pt-1.5">
+                            <label class="block font-medium text-gray-600 mb-0.5 text-[11px]">Auto Recording</label>
+                            <select name="auto_recording" class="w-full px-2 py-1 bg-white border border-gray-300 rounded text-[11px]">
+                                <option value="none" {{ \App\Models\SystemSetting::get('zoom_auto_recording', 'none') === 'none' ? 'selected' : '' }}>None (Tanpa Rekam)</option>
+                                <option value="cloud" {{ \App\Models\SystemSetting::get('zoom_auto_recording', 'none') === 'cloud' ? 'selected' : '' }}>Cloud Recording</option>
+                                <option value="local" {{ \App\Models\SystemSetting::get('zoom_auto_recording', 'none') === 'local' ? 'selected' : '' }}>Local Recording</option>
+                            </select>
+                        </div>
                     </div>
 
                     <div class="pt-3 border-t border-gray-200 flex items-center justify-end gap-2">
