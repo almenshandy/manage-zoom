@@ -78,6 +78,15 @@ class ZoomBookingController extends Controller
         $end = Carbon::parse($validated['end_date']);
         $validated['day_count'] = $start->diffInDays($end) + 1;
 
+        // Hitung otomatis durasi menit dari start_time dan end_time agar selalu akurat
+        if (!empty($validated['start_time']) && !empty($validated['end_time'])) {
+            $timeStart = Carbon::parse($validated['start_date'] . ' ' . $validated['start_time']);
+            $timeEnd = Carbon::parse($validated['start_date'] . ' ' . $validated['end_time']);
+            if ($timeEnd->greaterThan($timeStart)) {
+                $validated['duration_minutes'] = $timeStart->diffInMinutes($timeEnd);
+            }
+        }
+
         // Cek potensi bentrok jadwal jika akun sudah dipilih
         if (!empty($validated['zoom_account_id'])) {
             $conflict = $this->hasScheduleConflict(
@@ -148,6 +157,16 @@ class ZoomBookingController extends Controller
             $start = Carbon::parse($validated['start_date']);
             $end = Carbon::parse($validated['end_date']);
             $validated['day_count'] = $start->diffInDays($end) + 1;
+        }
+
+        // Hitung otomatis durasi menit dari start_time dan end_time
+        if (!empty($validated['start_time']) && !empty($validated['end_time'])) {
+            $refDate = $validated['start_date'] ?? $booking->start_date->format('Y-m-d');
+            $timeStart = Carbon::parse($refDate . ' ' . $validated['start_time']);
+            $timeEnd = Carbon::parse($refDate . ' ' . $validated['end_time']);
+            if ($timeEnd->greaterThan($timeStart)) {
+                $validated['duration_minutes'] = $timeStart->diffInMinutes($timeEnd);
+            }
         }
 
         $booking->update($validated);

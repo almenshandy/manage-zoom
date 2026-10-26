@@ -65,18 +65,18 @@
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
                     <label class="block font-medium text-gray-700 mb-1">Jam Mulai <span class="text-red-500">*</span></label>
-                    <input type="time" name="start_time" value="{{ old('start_time', $booking->start_time ? substr($booking->start_time, 0, 5) : '09:00') }}" required
+                    <input type="time" name="start_time" id="start_time" value="{{ old('start_time', $booking->start_time ? substr($booking->start_time, 0, 5) : '09:00') }}" required
                         class="w-full px-3 py-1.5 bg-white border border-gray-300 rounded focus:outline-none focus:border-gray-500">
                 </div>
                 <div>
                     <label class="block font-medium text-gray-700 mb-1">Jam Selesai <span class="text-red-500">*</span></label>
-                    <input type="time" name="end_time" value="{{ old('end_time', $booking->end_time ? substr($booking->end_time, 0, 5) : '11:00') }}" required
+                    <input type="time" name="end_time" id="end_time" value="{{ old('end_time', $booking->end_time ? substr($booking->end_time, 0, 5) : '11:00') }}" required
                         class="w-full px-3 py-1.5 bg-white border border-gray-300 rounded focus:outline-none focus:border-gray-500">
                 </div>
                 <div>
-                    <label class="block font-medium text-gray-700 mb-1">Durasi (Menit) <span class="text-red-500">*</span></label>
-                    <input type="number" name="duration_minutes" value="{{ old('duration_minutes', $booking->duration_minutes ?? 120) }}" min="15" required
-                        class="w-full px-3 py-1.5 bg-white border border-gray-300 rounded focus:outline-none focus:border-gray-500">
+                    <label class="block font-medium text-gray-700 mb-1">Durasi (Menit)</label>
+                    <input type="number" name="duration_minutes" id="duration_minutes" value="{{ old('duration_minutes', $booking->duration_minutes ?? 120) }}" min="1" readonly
+                        class="w-full px-3 py-1.5 bg-gray-50 border border-gray-300 rounded focus:outline-none font-semibold text-gray-800 cursor-not-allowed">
                 </div>
             </div>
 
@@ -119,4 +119,35 @@
         </form>
     </div>
 </div>
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const startTimeInput = document.getElementById('start_time');
+        const endTimeInput = document.getElementById('end_time');
+        const durationInput = document.getElementById('duration_minutes');
+
+        function calculateDuration() {
+            if (!startTimeInput.value || !endTimeInput.value) return;
+
+            const [startH, startM] = startTimeInput.value.split(':').map(Number);
+            const [endH, endM] = endTimeInput.value.split(':').map(Number);
+
+            let startTotal = startH * 60 + startM;
+            let endTotal = endH * 60 + endM;
+
+            if (endTotal > startTotal) {
+                durationInput.value = endTotal - startTotal;
+            } else if (endTotal < startTotal) {
+                // If overnight or across midnight
+                durationInput.value = (1440 - startTotal) + endTotal;
+            }
+        }
+
+        startTimeInput.addEventListener('change', calculateDuration);
+        endTimeInput.addEventListener('change', calculateDuration);
+        calculateDuration();
+    });
+</script>
+@endpush
 @endsection

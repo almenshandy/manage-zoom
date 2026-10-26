@@ -43,6 +43,16 @@ class ZoomBooking extends Model
         return 'slug';
     }
 
+    /**
+     * Fallback binding: dukung pencarian via slug ATAU ID numerik (agar URL lama / id tetap bisa dibuka)
+     */
+    public function resolveRouteBinding($value, $field = null)
+    {
+        return $this->where('slug', $value)
+            ->orWhere('id', $value)
+            ->first() ?? abort(404);
+    }
+
     protected static function booted(): void
     {
         static::creating(function ($booking) {
@@ -105,6 +115,30 @@ class ZoomBooking extends Model
             self::STATUS_CANCELLED => 'bg-zinc-100 text-zinc-800 border-zinc-300',
             default => 'bg-slate-100 text-slate-800 border-slate-300',
         };
+    }
+
+    /**
+     * Format rentang tanggal dan hari (contoh: Senin, 26 Oktober 2026)
+     */
+    public function getDateRangeFormattedAttribute(): string
+    {
+        if (!$this->start_date) {
+            return '-';
+        }
+
+        $start = \Carbon\Carbon::parse($this->start_date)->locale('id');
+        
+        if (!$this->end_date || $this->start_date->equalTo($this->end_date)) {
+            return $start->translatedFormat('l, d F Y');
+        }
+
+        $end = \Carbon\Carbon::parse($this->end_date)->locale('id');
+
+        if ($start->format('Y-m') === $end->format('Y-m')) {
+            return $start->translatedFormat('d') . ' - ' . $end->translatedFormat('d F Y');
+        }
+
+        return $start->translatedFormat('d F Y') . ' - ' . $end->translatedFormat('d F Y');
     }
 
     public function user(): BelongsTo

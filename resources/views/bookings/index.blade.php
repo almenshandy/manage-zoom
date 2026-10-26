@@ -97,21 +97,21 @@
                             </td>
                             <td class="px-4 py-3 text-right whitespace-nowrap">
                                 <div class="flex items-center justify-end gap-1">
-                                    <a href="{{ route('bookings.print', $item->id) }}" target="_blank" class="p-1.5 text-gray-500 hover:text-red-600 hover:bg-gray-100 rounded border border-transparent hover:border-gray-200" title="Cetak Bukti Booking PDF">
+                                    <a href="{{ route('bookings.print', $item) }}" target="_blank" class="p-1.5 text-gray-500 hover:text-red-600 hover:bg-gray-100 rounded border border-transparent hover:border-gray-200" title="Cetak Bukti Booking PDF">
                                         <i class="fa-solid fa-print"></i>
                                     </a>
-                                    <a href="{{ route('bookings.show', $item->id) }}" class="p-1.5 text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded border border-transparent hover:border-gray-200" title="Detail">
+                                    <a href="{{ route('bookings.show', $item) }}" class="p-1.5 text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded border border-transparent hover:border-gray-200" title="Detail">
                                         <i class="fa-regular fa-eye"></i>
                                     </a>
 
                                     @if(auth()->user()->isAdmin() || ($item->status === 0 && $item->user_id === auth()->id()))
-                                        <a href="{{ route('bookings.edit', $item->id) }}" class="p-1.5 text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded border border-transparent hover:border-gray-200" title="Edit">
+                                        <a href="{{ route('bookings.edit', $item) }}" class="p-1.5 text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded border border-transparent hover:border-gray-200" title="Edit">
                                             <i class="fa-regular fa-pen-to-square"></i>
                                         </a>
                                     @endif
 
                                     @if(auth()->user()->isAdmin() || $item->user_id === auth()->id())
-                                        <form method="POST" action="{{ route('bookings.destroy', $item->id) }}" onsubmit="return confirm('Hapus pengajuan booking ini?')" class="inline">
+                                        <form method="POST" action="{{ route('bookings.destroy', $item) }}" onsubmit="return confirm('Hapus pengajuan booking ini?')" class="inline">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="p-1.5 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded border border-transparent hover:border-red-200" title="Hapus">

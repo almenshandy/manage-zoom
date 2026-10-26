@@ -8,10 +8,10 @@
 <div class="max-w-3xl mx-auto space-y-4">
     <x-page-header title="Konfigurasi Default Zoom Meeting API" description="Atur kebijakan default pembuatan ruang meeting (dapat ditimpa per sesi saat generate link)." />
 
-    <x-card>
-        <form method="POST" action="{{ route('settings.update') }}">
-            @csrf
+    <form method="POST" action="{{ route('settings.update') }}">
+        @csrf
 
+        <x-card>
             <div class="divide-y divide-gray-200">
                 @foreach($settings as $setting)
                     <div class="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-gray-50/50 transition">
@@ -59,7 +59,7 @@
                     </x-btn>
                 </div>
             </x-slot:footer>
-        </form>
-    </x-card>
+        </x-card>
+    </form>
 </div>
 @endsection
