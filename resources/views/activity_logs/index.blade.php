@@ -5,59 +5,59 @@
 @endphp
 
 @section('content')
-<div class="space-y-6">
-    <div class="flex items-center justify-between">
-        <div>
-            <h3 class="text-base font-bold text-slate-800">Catatan Aktivitas Sistem</h3>
-            <p class="text-xs text-slate-500">Mencatat otomatis riwayat pemesanan, approval, modifikasi status, dan eksekusi meeting.</p>
-        </div>
-    </div>
+<div class="space-y-4">
+    <x-page-header title="Catatan Aktivitas Sistem" description="Riwayat otomatis permohonan booking, persetujuan admin, dan eksekusi link meeting." />
 
-    <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
-        <table class="w-full text-left text-xs">
-            <thead class="bg-slate-50 text-slate-600 font-semibold border-b border-slate-200 uppercase tracking-wider text-[11px]">
-                <tr>
-                    <th class="px-5 py-3.5">Waktu</th>
-                    <th class="px-5 py-3.5">User Pelaku</th>
-                    <th class="px-5 py-3.5">Aksi</th>
-                    <th class="px-5 py-3.5">Keterangan Aktivitas</th>
-                    <th class="px-5 py-3.5 text-right">IP Address</th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-slate-100 text-slate-700">
-                @forelse($logs as $log)
-                    <tr class="hover:bg-slate-50 transition">
-                        <td class="px-5 py-3.5 font-mono text-[11px] text-slate-500 whitespace-nowrap">
-                            {{ $log->created_at->format('d/m/Y H:i:s') }}
-                        </td>
-                        <td class="px-5 py-3.5 font-semibold text-slate-800">
-                            {{ $log->user->name ?? 'System' }}
-                        </td>
-                        <td class="px-5 py-3.5">
-                            <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-slate-100 text-slate-700">
-                                {{ $log->action }}
-                            </span>
-                        </td>
-                        <td class="px-5 py-3.5 text-slate-800">
-                            {{ $log->description }}
-                        </td>
-                        <td class="px-5 py-3.5 text-right font-mono text-slate-400 text-[11px]">
-                            {{ $log->ip_address ?? '-' }}
-                        </td>
-                    </tr>
-                @empty
+    <x-card>
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+                <thead class="bg-gray-50 text-gray-600 font-semibold border-b border-gray-200 uppercase tracking-wider text-[11px]">
                     <tr>
-                        <td colspan="5" class="px-5 py-10 text-center text-slate-400">Belum ada aktivitas tercatat.</td>
+                        <th class="px-4 py-3">Waktu</th>
+                        <th class="px-4 py-3">Pengguna</th>
+                        <th class="px-4 py-3">Aksi</th>
+                        <th class="px-4 py-3">Keterangan Aktivitas</th>
+                        <th class="px-4 py-3 text-right">IP Address</th>
                     </tr>
-                @endforelse
-            </tbody>
-        </table>
+                </thead>
+                <tbody class="divide-y divide-gray-200 text-gray-700">
+                    @forelse($logs as $log)
+                        <tr class="hover:bg-gray-50/75 transition-colors">
+                            <td class="px-4 py-2.5 font-mono text-gray-500 text-[11px] whitespace-nowrap">
+                                {{ $log->created_at->format('d/m/Y H:i:s') }}
+                            </td>
+                            <td class="px-4 py-2.5 font-medium text-gray-900 whitespace-nowrap">
+                                {{ $log->user->name ?? 'System' }}
+                            </td>
+                            <td class="px-4 py-2.5 whitespace-nowrap">
+                                <span class="px-1.5 py-0.5 rounded text-[10px] font-mono border bg-gray-50 text-gray-700 border-gray-200">
+                                    {{ $log->action }}
+                                </span>
+                            </td>
+                            <td class="px-4 py-2.5 text-gray-800">
+                                {{ $log->description }}
+                            </td>
+                            <td class="px-4 py-2.5 text-right font-mono text-gray-400 text-[11px] whitespace-nowrap">
+                                {{ $log->ip_address ?? '-' }}
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="5" class="px-4 py-8 text-center text-gray-400">
+                                <i class="fa-solid fa-clock-rotate-left text-2xl mb-2 text-gray-300 block"></i>
+                                Belum ada riwayat aktivitas tercatat.
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
 
         @if($logs->hasPages())
-            <div class="p-4 border-t border-slate-100">
+            <x-slot:footer>
                 {{ $logs->links() }}
-            </div>
+            </x-slot:footer>
         @endif
-    </div>
+    </x-card>
 </div>
 @endsection

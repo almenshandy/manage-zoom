@@ -5,98 +5,91 @@
 @endphp
 
 @section('content')
-<div class="max-w-2xl mx-auto">
-    <div class="bg-white rounded-2xl border border-slate-200/80 p-8 shadow-sm">
-        <div class="mb-6 pb-4 border-b border-slate-100">
-            <h3 class="text-lg font-bold text-slate-800">Tambah Akun Zoom Baru</h3>
-            <p class="text-xs text-slate-500 mt-1">Daftarkan akun Zoom Pro/Business dan kredensial Server-to-Server OAuth.</p>
-        </div>
+<div class="max-w-2xl mx-auto space-y-4">
+    <x-page-header title="Form Pendaftaran Akun Zoom" description="Masukkan identitas lisensi dan kredensial OAuth Server-to-Server." :backUrl="route('zoom-accounts.index')" backText="Kembali ke Master Akun" />
 
-        @if($errors->any())
-            <div class="mb-5 p-4 bg-red-50 border border-red-200 rounded-xl text-xs text-red-700">
-                <ul class="list-disc list-inside space-y-1">
-                    @foreach($errors->all() as $err)
-                        <li>{{ $err }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
+    <x-card>
+        <div class="p-6">
+            @if($errors->any())
+                <div class="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 text-xs rounded">
+                    <ul class="list-disc list-inside space-y-0.5">
+                        @foreach($errors->all() as $err)
+                            <li>{{ $err }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
 
-        <form method="POST" action="{{ route('zoom-accounts.store') }}" class="space-y-4 text-xs">
-            @csrf
+            <form method="POST" action="{{ route('zoom-accounts.store') }}" class="space-y-4 text-xs">
+                @csrf
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                    <label class="block font-semibold text-slate-700 mb-1">Nama / Label Akun *</label>
+                    <label class="block font-medium text-gray-700 mb-1">Nama Ruang / Label Akun *</label>
                     <input type="text" name="name" value="{{ old('name') }}" required
-                        class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500"
-                        placeholder="Contoh: Zoom Ruang A (300 Peserta)">
+                        class="w-full px-3 py-1.5 bg-white border border-gray-300 rounded focus:outline-none focus:border-gray-500"
+                        placeholder="Contoh: Zoom Pro Ruang A (300 Peserta)">
                 </div>
-                <div>
-                    <label class="block font-semibold text-slate-700 mb-1">Email Akun Zoom *</label>
-                    <input type="email" name="email" value="{{ old('email') }}" required
-                        class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500"
-                        placeholder="zoom1@institusi.ac.id">
-                </div>
-            </div>
-
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div>
-                    <label class="block font-semibold text-slate-700 mb-1">Kapasitas Peserta *</label>
-                    <input type="number" name="capacity" value="{{ old('capacity', 300) }}" required
-                        class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500">
-                </div>
-                <div>
-                    <label class="block font-semibold text-slate-700 mb-1">Masa Berlaku Expired</label>
-                    <input type="date" name="expired_date" value="{{ old('expired_date') }}"
-                        class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500">
-                </div>
-                <div>
-                    <label class="block font-semibold text-slate-700 mb-1">Status Akun *</label>
-                    <select name="status" required class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500">
-                        <option value="active" {{ old('status') === 'active' ? 'selected' : '' }}>Aktif</option>
-                        <option value="inactive" {{ old('status') === 'inactive' ? 'selected' : '' }}>Nonaktif</option>
-                        <option value="maintenance" {{ old('status') === 'maintenance' ? 'selected' : '' }}>Maintenance</option>
-                    </select>
-                </div>
-            </div>
-
-            <!-- Server-to-Server OAuth Credentials Group -->
-            <div class="p-4 bg-slate-50 rounded-xl border border-slate-200/80 space-y-3 mt-4">
-                <div class="font-bold text-slate-800 flex items-center gap-2">
-                    <i class="fa-solid fa-key text-blue-600"></i> Kredensial Server-to-Server OAuth Zoom
-                </div>
-                <p class="text-[11px] text-slate-500">Kredensial ini digunakan saat Create Meeting API. Jika dikosongkan, sistem akan memakai kredensial default dari file .env.</p>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
-                        <label class="block font-semibold text-slate-700 mb-1">Account ID</label>
-                        <input type="text" name="account_id" value="{{ old('account_id') }}"
-                            class="w-full p-2 bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500" placeholder="xxxxxxxx">
+                        <label class="block font-medium text-gray-700 mb-1">Email Akun Zoom *</label>
+                        <input type="email" name="email" value="{{ old('email') }}" required
+                            class="w-full px-3 py-1.5 bg-white border border-gray-300 rounded focus:outline-none focus:border-gray-500 font-mono"
+                            placeholder="nama@institusi.ac.id">
                     </div>
                     <div>
-                        <label class="block font-semibold text-slate-700 mb-1">Client ID</label>
-                        <input type="text" name="client_id" value="{{ old('client_id') }}"
-                            class="w-full p-2 bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500" placeholder="xxxxxxxx">
+                        <label class="block font-medium text-gray-700 mb-1">Kapasitas Maksimal (Peserta) *</label>
+                        <input type="number" name="capacity" value="{{ old('capacity', 300) }}" required min="1"
+                            class="w-full px-3 py-1.5 bg-white border border-gray-300 rounded focus:outline-none focus:border-gray-500">
                     </div>
                 </div>
 
-                <div>
-                    <label class="block font-semibold text-slate-700 mb-1">Client Secret</label>
-                    <input type="password" name="client_secret"
-                        class="w-full p-2 bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500" placeholder="••••••••••••">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-medium text-gray-700 mb-1">Masa Berlaku Lisensi</label>
+                        <input type="date" name="expired_date" value="{{ old('expired_date') }}"
+                            class="w-full px-3 py-1.5 bg-white border border-gray-300 rounded focus:outline-none focus:border-gray-500">
+                    </div>
+                    <div>
+                        <label class="block font-medium text-gray-700 mb-1">Status Akun *</label>
+                        <select name="status" required class="w-full px-3 py-1.5 bg-white border border-gray-300 rounded focus:outline-none focus:border-gray-500">
+                            <option value="active" {{ old('status') === 'active' ? 'selected' : '' }}>Aktif</option>
+                            <option value="inactive" {{ old('status') === 'inactive' ? 'selected' : '' }}>Nonaktif</option>
+                            <option value="maintenance" {{ old('status') === 'maintenance' ? 'selected' : '' }}>Perbaikan (Maintenance)</option>
+                        </select>
+                    </div>
                 </div>
-            </div>
 
-            <div class="pt-4 flex items-center justify-end gap-3 border-t border-slate-100">
-                <a href="{{ route('zoom-accounts.index') }}" class="px-5 py-2.5 bg-slate-100 text-slate-700 font-semibold rounded-xl hover:bg-slate-200 transition">
-                    Batal
-                </a>
-                <button type="submit" class="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl shadow-lg shadow-blue-600/30 transition">
-                    Simpan Akun
-                </button>
-            </div>
-        </form>
-    </div>
+                <!-- API Credentials Accordion / Fieldset -->
+                <div class="p-4 bg-gray-50 border border-gray-200 rounded space-y-3">
+                    <p class="font-semibold text-gray-900 text-[11px] uppercase tracking-wider">Kredensial Zoom Server-to-Server OAuth (Opsional)</p>
+                    <p class="text-[11px] text-gray-500">Kosongkan jika akun ini menggunakan kredensial global dari file .env.</p>
+
+                    <div>
+                        <label class="block font-medium text-gray-700 mb-1">Zoom Account ID</label>
+                        <input type="text" name="account_id" value="{{ old('account_id') }}"
+                            class="w-full px-3 py-1.5 bg-white border border-gray-300 rounded font-mono text-xs">
+                    </div>
+
+                    <div>
+                        <label class="block font-medium text-gray-700 mb-1">Zoom Client ID</label>
+                        <input type="text" name="client_id" value="{{ old('client_id') }}"
+                            class="w-full px-3 py-1.5 bg-white border border-gray-300 rounded font-mono text-xs">
+                    </div>
+
+                    <div>
+                        <label class="block font-medium text-gray-700 mb-1">Zoom Client Secret</label>
+                        <input type="password" name="client_secret"
+                            class="w-full px-3 py-1.5 bg-white border border-gray-300 rounded font-mono text-xs">
+                    </div>
+                </div>
+
+                <div class="pt-4 border-t border-gray-200 flex items-center justify-end gap-2">
+                    <x-btn variant="white" :href="route('zoom-accounts.index')">Batal</x-btn>
+                    <x-btn variant="primary" type="submit">Simpan Akun</x-btn>
+                </div>
+            </form>
+        </div>
+    </x-card>
 </div>
 @endsection

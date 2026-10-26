@@ -5,72 +5,79 @@
 @endphp
 
 @section('content')
-<div class="space-y-6">
-    <div class="flex items-center justify-between">
-        <div>
-            <h3 class="text-base font-bold text-slate-800">Daftar Memo & Surat Tugas Zoom</h3>
-            <p class="text-xs text-slate-500">Arsip dan dokumen formal persetujuan peminjaman akun Zoom.</p>
-        </div>
-        <a href="{{ route('memos.create') }}" class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold px-4 py-2.5 rounded-xl shadow-md shadow-blue-600/20 transition">
-            <i class="fa-solid fa-plus"></i> Buat Memo Baru
-        </a>
-    </div>
+<div class="space-y-4">
+    <!-- Header (Flat) -->
+    <x-page-header title="Daftar Memo & Surat Tugas Zoom" description="Arsip dokumen formal persetujuan peminjaman akun Zoom.">
+        <x-slot:actions>
+            <x-btn variant="primary" :href="route('memos.create')">
+                <i class="fa-solid fa-plus text-[10px]"></i> Buat Memo Baru
+            </x-btn>
+        </x-slot:actions>
+    </x-page-header>
 
-    <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
-        <table class="w-full text-left text-xs">
-            <thead class="bg-slate-50 text-slate-600 font-semibold border-b border-slate-200 uppercase tracking-wider text-[11px]">
-                <tr>
-                    <th class="px-5 py-3.5">Nomor Memo / Surat</th>
-                    <th class="px-5 py-3.5">Kegiatan Terkait</th>
-                    <th class="px-5 py-3.5">Tanggal Surat</th>
-                    <th class="px-5 py-3.5">Pembuat Memo</th>
-                    <th class="px-5 py-3.5 text-right">Aksi</th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-slate-100 text-slate-700">
-                @forelse($memos as $m)
-                    <tr class="hover:bg-slate-50 transition">
-                        <td class="px-5 py-4 font-mono font-bold text-slate-800 text-xs">
-                            {{ $m->memo_number }}
-                        </td>
-                        <td class="px-5 py-4">
-                            @if($m->booking)
-                                <a href="{{ route('bookings.show', $m->booking->id) }}" class="font-semibold text-slate-800 hover:text-blue-600 block">
-                                    {{ $m->booking->topic }}
-                                </a>
-                                <span class="text-slate-400 text-[11px]">ID: #ZM-{{ str_pad($m->booking->id, 5, '0', STR_PAD_LEFT) }}</span>
-                            @else
-                                <span class="text-slate-400 italic">Umum / Tanpa Booking</span>
-                            @endif
-                        </td>
-                        <td class="px-5 py-4 text-slate-600">
-                            {{ $m->memo_date ? $m->memo_date->format('d M Y') : '-' }}
-                        </td>
-                        <td class="px-5 py-4 text-slate-600">
-                            {{ $m->user->name ?? '-' }}
-                        </td>
-                        <td class="px-5 py-4 text-right space-x-1">
-                            <a href="{{ route('memos.show', $m->id) }}" class="p-2 text-slate-500 hover:text-blue-600 rounded-lg hover:bg-slate-100 transition inline-block" title="Lihat">
-                                <i class="fa-solid fa-eye"></i>
-                            </a>
-                            <a href="{{ route('memos.pdf', $m->id) }}" target="_blank" class="px-3 py-1.5 bg-red-50 text-red-600 hover:bg-red-100 border border-red-200 font-semibold rounded-lg text-[11px] inline-flex items-center gap-1.5 transition">
-                                <i class="fa-solid fa-file-pdf"></i> PDF
-                            </a>
-                        </td>
-                    </tr>
-                @empty
+    <!-- Table Card (Flat) -->
+    <x-card>
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+                <thead class="bg-gray-50 text-gray-600 font-semibold border-b border-gray-200 uppercase tracking-wider text-[11px]">
                     <tr>
-                        <td colspan="5" class="px-5 py-10 text-center text-slate-400">Belum ada memo yang diterbitkan.</td>
+                        <th class="px-4 py-3">Nomor Memo / Surat</th>
+                        <th class="px-4 py-3">Kegiatan Terkait</th>
+                        <th class="px-4 py-3">Tanggal Surat</th>
+                        <th class="px-4 py-3">Pembuat Memo</th>
+                        <th class="px-4 py-3 text-right">Aksi</th>
                     </tr>
-                @endforelse
-            </tbody>
-        </table>
+                </thead>
+                <tbody class="divide-y divide-gray-200 text-gray-700">
+                    @forelse($memos as $m)
+                        <tr class="hover:bg-gray-50/75 transition-colors">
+                            <td class="px-4 py-3 font-mono font-semibold text-gray-900 text-xs">
+                                {{ $m->memo_number }}
+                            </td>
+                            <td class="px-4 py-3">
+                                @if($m->booking)
+                                    <a href="{{ route('bookings.show', $m->booking->id) }}" class="font-semibold text-gray-900 hover:text-blue-600 block">
+                                        {{ $m->booking->topic }}
+                                    </a>
+                                    <span class="text-gray-400 text-[11px] font-mono">#ZM-{{ str_pad($m->booking->id, 5, '0', STR_PAD_LEFT) }}</span>
+                                @else
+                                    <span class="text-gray-400 italic">Umum / Tanpa Booking</span>
+                                @endif
+                            </td>
+                            <td class="px-4 py-3 text-gray-700 whitespace-nowrap">
+                                {{ $m->memo_date ? $m->memo_date->format('d M Y') : '-' }}
+                            </td>
+                            <td class="px-4 py-3 text-gray-700 whitespace-nowrap">
+                                {{ $m->user->name ?? '-' }}
+                            </td>
+                            <td class="px-4 py-3 text-right whitespace-nowrap">
+                                <div class="flex items-center justify-end gap-1">
+                                    <a href="{{ route('memos.show', $m->id) }}" class="p-1.5 text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded border border-transparent hover:border-gray-200 transition" title="Lihat">
+                                        <i class="fa-regular fa-eye"></i>
+                                    </a>
+                                    <a href="{{ route('memos.pdf', $m->id) }}" target="_blank" class="px-2.5 py-1 bg-white hover:bg-gray-50 text-red-700 border border-gray-300 font-semibold rounded text-[11px] inline-flex items-center gap-1 transition">
+                                        <i class="fa-solid fa-file-pdf text-red-600"></i> PDF
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="5" class="px-4 py-8 text-center text-gray-400">
+                                <i class="fa-solid fa-file-lines text-2xl mb-2 text-gray-300 block"></i>
+                                Belum ada memo yang diterbitkan.
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
 
         @if($memos->hasPages())
-            <div class="p-4 border-t border-slate-100">
+            <x-slot:footer>
                 {{ $memos->links() }}
-            </div>
+            </x-slot:footer>
         @endif
-    </div>
+    </x-card>
 </div>
 @endsection
