@@ -32,13 +32,15 @@
                         <th class="px-4 py-3">Kapasitas</th>
                         <th class="px-4 py-3">Status API S2S</th>
                         <th class="px-4 py-3">Masa Berlaku</th>
-                        <th class="px-4 py-3 text-center">Status</th>
                         <th class="px-4 py-3 text-right">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-200 text-gray-700">
                     @forelse($accounts as $acc)
-                        <tr class="hover:bg-gray-50/75 transition-colors">
+                        @php
+                            $isValid = $acc->expired_date && !$acc->expired_date->isPast();
+                        @endphp
+                        <tr class="{{ $isValid ? 'bg-emerald-50/40 hover:bg-emerald-50/70 border-l-4 border-l-emerald-500' : 'bg-red-50/40 hover:bg-red-50/70 border-l-4 border-l-red-500' }} transition-colors">
                             <td class="px-4 py-3">
                                 <span class="font-semibold text-gray-900 block">{{ $acc->name }}</span>
                                 <span class="text-gray-500 text-[11px] font-mono">{{ $acc->email }}</span>
@@ -49,43 +51,44 @@
                             </td>
                             <td class="px-4 py-3 whitespace-nowrap">
                                 @if($acc->account_id && $acc->client_id)
-                                    <span class="inline-flex items-center gap-1.5 text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200 text-[10px] font-medium">
+                                    <span class="inline-flex items-center gap-1.5 text-emerald-700 bg-white px-2 py-0.5 rounded border border-emerald-300 text-[10px] font-medium">
                                         <i class="fa-solid fa-check text-[9px]"></i> S2S Siap
                                     </span>
                                 @else
-                                    <span class="inline-flex items-center gap-1.5 text-gray-500 bg-gray-100 px-2 py-0.5 rounded border border-gray-200 text-[10px]">
+                                    <span class="inline-flex items-center gap-1.5 text-gray-500 bg-white px-2 py-0.5 rounded border border-gray-300 text-[10px]">
                                         Default Env
                                     </span>
                                 @endif
                             </td>
                             <td class="px-4 py-3 whitespace-nowrap">
                                 @if($acc->expired_date)
-                                    <span class="font-medium text-gray-800">{{ $acc->expired_date->format('d M Y') }}</span>
-                                    @if($acc->expired_date->isPast())
-                                        <span class="text-red-600 font-semibold text-[10px] block">Kadaluarsa</span>
-                                    @endif
+                                    <div class="flex items-center gap-2">
+                                        <span class="font-semibold {{ $isValid ? 'text-emerald-800' : 'text-red-700' }}">
+                                            {{ $acc->expired_date->format('d M Y') }}
+                                        </span>
+                                        @if($isValid)
+                                            <span class="inline-block px-1.5 py-0.2 rounded text-[10px] font-semibold bg-emerald-100 text-emerald-800 border border-emerald-300">
+                                                Aktif
+                                            </span>
+                                        @else
+                                            <span class="inline-block px-1.5 py-0.2 rounded text-[10px] font-semibold bg-red-100 text-red-800 border border-red-300">
+                                                Kedaluwarsa
+                                            </span>
+                                        @endif
+                                    </div>
                                 @else
                                     <span class="text-gray-400 italic">Tidak diset</span>
                                 @endif
                             </td>
-                            <td class="px-4 py-3 text-center whitespace-nowrap">
-                                @if($acc->status === 'active')
-                                    <span class="px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-semibold">Aktif</span>
-                                @elseif($acc->status === 'maintenance')
-                                    <span class="px-2 py-0.5 rounded bg-amber-50 text-amber-700 border border-amber-200 text-[10px] font-semibold">Perbaikan</span>
-                                @else
-                                    <span class="px-2 py-0.5 rounded bg-gray-100 text-gray-600 border border-gray-200 text-[10px] font-semibold">Nonaktif</span>
-                                @endif
-                            </td>
                             <td class="px-4 py-3 text-right whitespace-nowrap">
                                 <div class="flex items-center justify-end gap-1">
-                                    <a href="{{ route('zoom-accounts.edit', $acc->id) }}" class="p-1.5 text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded border border-transparent hover:border-gray-200 transition" title="Edit">
+                                    <a href="{{ route('zoom-accounts.edit', $acc->id) }}" class="p-1.5 text-gray-500 hover:text-gray-900 hover:bg-white rounded border border-transparent hover:border-gray-200 transition" title="Edit">
                                         <i class="fa-regular fa-pen-to-square"></i>
                                     </a>
                                     <form method="POST" action="{{ route('zoom-accounts.destroy', $acc->id) }}" class="inline" onsubmit="return confirm('Hapus akun Zoom ini?')">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="p-1.5 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded border border-transparent hover:border-red-200 transition" title="Hapus">
+                                        <button type="submit" class="p-1.5 text-gray-500 hover:text-red-600 hover:bg-white rounded border border-transparent hover:border-red-200 transition" title="Hapus">
                                             <i class="fa-regular fa-trash-can"></i>
                                         </button>
                                     </form>
@@ -94,7 +97,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="px-4 py-8 text-center text-gray-400">
+                            <td colspan="5" class="px-4 py-8 text-center text-gray-400">
                                 <i class="fa-solid fa-server text-2xl mb-2 text-gray-300 block"></i>
                                 Belum ada akun Zoom yang ditambahkan. Anda dapat sinkronkan dari database lama.
                             </td>
@@ -170,9 +173,8 @@
                             <th class="px-3 py-2.5 bg-gray-50">ID</th>
                             <th class="px-3 py-2.5 bg-gray-50">Email Akun</th>
                             <th class="px-3 py-2.5 bg-gray-50">Kapasitas</th>
-                            <th class="px-3 py-2.5 bg-gray-50">Kedaluwarsa</th>
+                            <th class="px-3 py-2.5 bg-gray-50">Masa Berlaku</th>
                             <th class="px-3 py-2.5 bg-gray-50">Kredensial S2S</th>
-                            <th class="px-3 py-2.5 text-center bg-gray-50">Status DB</th>
                             <th class="px-3 py-2.5 text-center bg-gray-50">Status Sistem</th>
                         </tr>
                     </thead>
@@ -273,8 +275,13 @@
 
         let html = '';
         data.forEach(item => {
+            const isItemValid = item.expired_date && (new Date(item.expired_date) >= new Date().setHours(0,0,0,0));
+            const rowClass = isItemValid 
+                ? 'bg-emerald-50/40 hover:bg-emerald-50/70 border-l-4 border-l-emerald-500' 
+                : 'bg-red-50/40 hover:bg-red-50/70 border-l-4 border-l-red-500';
+
             html += `
-                <tr class="hover:bg-gray-50/75 transition-colors ${item.is_existing ? 'bg-amber-50/20' : ''}">
+                <tr class="${rowClass} transition-colors">
                     <td class="p-2.5 text-center">
                         <input type="checkbox" name="selected_ids[]" value="${item.source_id}"
                             class="modal-item-checkbox rounded border-gray-300 text-gray-900 focus:ring-0" checked>
@@ -282,19 +289,21 @@
                     <td class="px-3 py-2 font-mono text-gray-400 text-[11px]">#${item.source_id}</td>
                     <td class="px-3 py-2 font-mono font-medium text-gray-900">${item.email}</td>
                     <td class="px-3 py-2 whitespace-nowrap">${item.capacity} Pax</td>
-                    <td class="px-3 py-2 whitespace-nowrap font-mono text-gray-600">${item.expired_date || '-'}</td>
+                    <td class="px-3 py-2 whitespace-nowrap font-mono font-semibold ${isItemValid ? 'text-emerald-800' : 'text-red-700'}">
+                        ${item.expired_date || '-'}
+                        ${isItemValid 
+                            ? '<span class="ml-1.5 inline-block px-1 py-0.2 rounded text-[9px] bg-emerald-100 text-emerald-800 border border-emerald-300">Aktif</span>' 
+                            : '<span class="ml-1.5 inline-block px-1 py-0.2 rounded text-[9px] bg-red-100 text-red-800 border border-red-300">Kedaluwarsa</span>'}
+                    </td>
                     <td class="px-3 py-2">
                         ${item.has_credentials 
-                            ? `<span class="inline-flex items-center gap-1 text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200 text-[10px] font-mono">Ada</span>`
+                            ? `<span class="inline-flex items-center gap-1 text-emerald-700 bg-white px-1.5 py-0.5 rounded border border-emerald-300 text-[10px] font-mono">Ada</span>`
                             : `<span class="text-gray-400 italic text-[10px]">Kosong</span>`}
-                    </td>
-                    <td class="px-3 py-2 text-center">
-                        <span class="px-1.5 py-0.5 rounded text-[10px] border ${item.status === 'active' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-gray-100 text-gray-600 border-gray-200'}">${item.status}</span>
                     </td>
                     <td class="px-3 py-2 text-center whitespace-nowrap">
                         ${item.is_existing 
-                            ? `<span class="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-amber-50 text-amber-700 border border-amber-200">Sudah Ada</span>`
-                            : `<span class="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">Baru</span>`}
+                            ? `<span class="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-white text-amber-700 border border-amber-300">Sudah Ada</span>`
+                            : `<span class="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-white text-emerald-700 border border-emerald-300">Baru</span>`}
                     </td>
                 </tr>
             `;
