@@ -66,15 +66,13 @@ class ZoomBookingController extends Controller
 
         // Cek potensi bentrok jadwal jika akun sudah dipilih
         if (!empty($validated['zoom_account_id'])) {
-            $conflict = ZoomBooking::where('zoom_account_id', $validated['zoom_account_id'])
-                ->whereIn('status', [ZoomBooking::STATUS_APPROVED, ZoomBooking::STATUS_EXECUTED])
-                ->whereDate('start_date', '<=', $validated['end_date'])
-                ->whereDate('end_date', '>=', $validated['start_date'])
-                ->where(function ($q) use ($validated) {
-                    $q->whereBetween('start_time', [$validated['start_time'], $validated['end_time']])
-                      ->orWhereBetween('end_time', [$validated['start_time'], $validated['end_time']]);
-                })
-                ->exists();
+            $conflict = $this->hasScheduleConflict(
+                $validated['zoom_account_id'],
+                $validated['start_date'],
+                $validated['end_date'],
+                $validated['start_time'],
+                $validated['end_time']
+            );
 
             if ($conflict) {
                 return back()->withInput()->with('error', 'Peringatan: Akun Zoom yang dipilih sedang digunakan pada tanggal dan jam tersebut!');
@@ -110,6 +108,28 @@ class ZoomBookingController extends Controller
         }
 
         $validated = $request->validated();
+
+        if (!empty($validated['zoom_account_id'])) {
+            $conflict = $this->hasScheduleConflict(
+                $validated['zoom_account_id'],
+                $validated['start_date'],
+                $validated['end_date'],
+                $validated['start_time'],
+                $validated['end_time'],
+                $booking->id
+            );
+
+            if ($conflict) {
+                return back()->withInput()->with('error', 'Peringatan: Akun Zoom yang dipilih sedang digunakan pada tanggal dan jam tersebut!');
+            }
+        }
+
+        if (isset($validated['start_date']) && isset($validated['end_date'])) {
+            $start = Carbon::parse($validated['start_date']);
+            $end = Carbon::parse($validated['end_date']);
+            $validated['day_count'] = $start->diffInDays($end) + 1;
+        }
+
         $booking->update($validated);
 
         return redirect()->route('bookings.index')->with('success', 'Data booking berhasil diperbarui.');
@@ -124,6 +144,20 @@ class ZoomBookingController extends Controller
             'zoom_account_id' => ['required', 'exists:zoom_accounts,id'],
             'admin_note'      => ['nullable', 'string', 'max:500'],
         ]);
+
+        // Cek potensi bentrok jadwal saat disetujui
+        $conflict = $this->hasScheduleConflict(
+            $request->zoom_account_id,
+            $booking->start_date,
+            $booking->end_date,
+            $booking->start_time,
+            $booking->end_time,
+            $booking->id
+        );
+
+        if ($conflict) {
+            return back()->with('error', 'Gagal ACC: Akun Zoom yang dipilih sudah memiliki jadwal kegiatan lain yang disetujui pada jam tersebut.');
+        }
 
         $booking->update([
             'zoom_account_id' => $request->zoom_account_id,
@@ -222,5 +256,37 @@ class ZoomBookingController extends Controller
 
         $booking->delete();
         return redirect()->route('bookings.index')->with('success', 'Booking berhasil dihapus.');
+    }
+
+    /**
+     * Helper untuk mendeteksi apakah terjadi overlap/bentrok waktu pada akun yang sama
+     */
+    private function hasScheduleConflict($accountId, $startDate, $endDate, $startTime, $endTime, $ignoreBookingId = null): bool
+    {
+        $query = ZoomBooking::where('zoom_account_id', $accountId)
+            ->whereIn('status', [ZoomBooking::STATUS_APPROVED, ZoomBooking::STATUS_EXECUTED])
+            ->whereDate('start_date', '<=', $endDate)
+            ->whereDate('end_date', '>=', $startDate)
+            ->where(function ($q) use ($startTime, $endTime) {
+                $q->where(function ($sub) use ($startTime, $endTime) {
+                    // Mulai atau Selesai berada di antara jadwal yang sudah ada
+                    $sub->whereBetween('start_time', [$startTime, $endTime])
+                        ->orWhereBetween('end_time', [$startTime, $endTime]);
+                })->orWhere(function ($sub) use ($startTime, $endTime) {
+                    // Atau jadwal baru mencakup penuh jadwal yang sudah ada
+                    $sub->where('start_time', '>=', $startTime)
+                        ->where('end_time', '<=', $endTime);
+                })->orWhere(function ($sub) use ($startTime, $endTime) {
+                    // Atau jadwal baru berada di dalam rentang jadwal yang sudah ada
+                    $sub->where('start_time', '<=', $startTime)
+                        ->where('end_time', '>=', $endTime);
+                });
+            });
+
+        if ($ignoreBookingId) {
+            $query->where('id', '!=', $ignoreBookingId);
+        }
+
+        return $query->exists();
     }
 }
