@@ -82,6 +82,11 @@
                             </td>
                             <td class="px-4 py-3 text-right whitespace-nowrap">
                                 <div class="flex items-center justify-end gap-1">
+                                    <button type="button" onclick="testConnection({{ $acc->id }}, '{{ addslashes($acc->name) }}', this)"
+                                        class="p-1.5 text-gray-500 hover:text-emerald-700 hover:bg-white rounded border border-transparent hover:border-gray-200 transition"
+                                        title="Uji Koneksi API Zoom">
+                                        <i class="fa-solid fa-plug text-[11px]"></i>
+                                    </button>
                                     <a href="{{ route('zoom-accounts.edit', $acc->id) }}" class="p-1.5 text-gray-500 hover:text-gray-900 hover:bg-white rounded border border-transparent hover:border-gray-200 transition" title="Edit">
                                         <i class="fa-regular fa-pen-to-square"></i>
                                     </a>
@@ -336,6 +341,66 @@
         submitSyncBtn.disabled = (checked === 0);
         submitSyncBtn.classList.toggle('opacity-50', checked === 0);
         submitSyncBtn.classList.toggle('cursor-not-allowed', checked === 0);
+    }
+
+    // Fungsi Test Koneksi API
+    function testConnection(accountId, accountName, buttonEl) {
+        const originalContent = buttonEl.innerHTML;
+        buttonEl.disabled = true;
+        buttonEl.innerHTML = '<i class="fa-solid fa-spinner fa-spin text-[11px] text-gray-700"></i>';
+
+        fetch(`/zoom-accounts/${accountId}/test-connection`, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(res => res.json())
+        .then(res => {
+            buttonEl.disabled = false;
+            buttonEl.innerHTML = originalContent;
+
+            if (res.success) {
+                let detail = res.message;
+                if (res.data && res.data.type) {
+                    detail += ` (${res.data.type} - ${res.data.email})`;
+                }
+                showCustomToast('success', 'Koneksi Berhasil', `${accountName}: ${detail}`);
+            } else {
+                showCustomToast('error', 'Koneksi Gagal', `${accountName}: ${res.message}`);
+            }
+        })
+        .catch(err => {
+            buttonEl.disabled = false;
+            buttonEl.innerHTML = originalContent;
+            showCustomToast('error', 'Error', `Gagal menghubungkan: ${err.message}`);
+        });
+    }
+
+    function showCustomToast(type, title, message) {
+        const container = document.getElementById('toast-container');
+        if (!container) return;
+
+        const isSuccess = (type === 'success');
+        const toast = document.createElement('div');
+        toast.className = `toast-item pointer-events-auto flex items-start gap-3 p-3.5 bg-white border ${isSuccess ? 'border-emerald-300' : 'border-red-300'} rounded shadow-sm text-xs transition-all duration-200 transform translate-y-0 opacity-100`;
+
+        toast.innerHTML = `
+            <i class="fa-solid ${isSuccess ? 'fa-check text-emerald-600' : 'fa-exclamation text-red-600'} mt-0.5 text-sm"></i>
+            <div class="flex-1">
+                <p class="font-semibold ${isSuccess ? 'text-gray-900' : 'text-red-900'}">${title}</p>
+                <p class="text-gray-600 mt-0.5">${message}</p>
+            </div>
+            <button onclick="dismissToast(this.closest('.toast-item'))" class="text-gray-400 hover:text-gray-600">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        `;
+
+        container.appendChild(toast);
+        setTimeout(() => dismissToast(toast), 5000);
     }
 </script>
 @endpush

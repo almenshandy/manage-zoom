@@ -44,6 +44,7 @@ Route::middleware('auth')->group(function () {
     Route::middleware(EnsureAdmin::class)->group(function () {
         Route::get('zoom-accounts/sync-preview', [ZoomAccountController::class, 'syncPreview'])->name('zoom-accounts.sync-preview');
         Route::post('zoom-accounts/sync-execute', [ZoomAccountController::class, 'syncExecute'])->name('zoom-accounts.sync-execute');
+        Route::post('zoom-accounts/{zoom_account}/test-connection', [ZoomAccountController::class, 'testConnection'])->name('zoom-accounts.test-connection');
         Route::resource('zoom-accounts', ZoomAccountController::class);
         Route::get('activity-logs', [ActivityLogController::class, 'index'])->name('activity-logs.index');
     });

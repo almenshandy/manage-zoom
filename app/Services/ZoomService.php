@@ -98,4 +98,78 @@ class ZoomService
         $response = Http::withToken($token)->delete("{$this->baseUrl}meetings/{$meetingId}");
         return $response->successful();
     }
+
+    /**
+     * Cek Koneksi / Validasi Kredensial Zoom API
+     */
+    public function testConnection(?string $accountId = null, ?string $clientId = null, ?string $clientSecret = null): array
+    {
+        $accountId    = $accountId ?: config('zoom.account_id');
+        $clientId     = $clientId ?: config('zoom.client_id');
+        $clientSecret = $clientSecret ?: config('zoom.client_secret');
+
+        if (!$accountId || !$clientId || !$clientSecret) {
+            return [
+                'success' => false,
+                'message' => 'Kredensial API tidak lengkap (Account ID, Client ID, atau Client Secret kosong).',
+            ];
+        }
+
+        try {
+            // Coba request token langsung tanpa cache untuk memastikan kredensial valid
+            $authResponse = Http::timeout(8)
+                ->asForm()
+                ->withBasicAuth($clientId, $clientSecret)
+                ->post('https://zoom.us/oauth/token', [
+                    'grant_type' => 'account_credentials',
+                    'account_id' => $accountId,
+                ]);
+
+            if (!$authResponse->successful()) {
+                $err = $authResponse->json();
+                $reason = $err['reason'] ?? $err['error'] ?? $authResponse->body();
+                return [
+                    'success' => false,
+                    'message' => 'Otentikasi OAuth Gagal: ' . $reason,
+                ];
+            }
+
+            $token = $authResponse->json()['access_token'] ?? null;
+            if (!$token) {
+                return [
+                    'success' => false,
+                    'message' => 'Token OAuth kosong dari server Zoom.',
+                ];
+            }
+
+            // Panggil endpoint /users/me untuk memverifikasi profil akun
+            $profileResponse = Http::timeout(8)
+                ->withToken($token)
+                ->get("{$this->baseUrl}users/me");
+
+            if ($profileResponse->successful()) {
+                $profile = $profileResponse->json();
+                return [
+                    'success' => true,
+                    'message' => 'Koneksi Berhasil!',
+                    'data'    => [
+                        'email'     => $profile['email'] ?? '-',
+                        'type'      => match($profile['type'] ?? 1) { 2 => 'Licensed / Pro', 3 => 'On-Prem', default => 'Basic' },
+                        'pmi'       => $profile['pmi'] ?? '-',
+                        'dept'      => $profile['dept'] ?? '-',
+                    ],
+                ];
+            }
+
+            return [
+                'success' => true,
+                'message' => 'OAuth Berhasil, namun info profil terbatas.',
+            ];
+        } catch (\Throwable $e) {
+            return [
+                'success' => false,
+                'message' => 'Koneksi error: ' . $e->getMessage(),
+            ];
+        }
+    }
 }

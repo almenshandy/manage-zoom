@@ -3,11 +3,18 @@
 namespace App\Http\Controllers;
 
 use App\Models\ZoomAccount;
+use App\Services\ZoomService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class ZoomAccountController extends Controller
 {
+    protected ZoomService $zoomService;
+
+    public function __construct(ZoomService $zoomService)
+    {
+        $this->zoomService = $zoomService;
+    }
     public function index()
     {
         $accounts = ZoomAccount::withCount('bookings')
@@ -219,5 +226,27 @@ class ZoomAccountController extends Controller
     {
         $zoomAccount->delete();
         return redirect()->route('zoom-accounts.index')->with('success', 'Akun Zoom berhasil dihapus.');
+    }
+
+    /**
+     * Uji coba koneksi API Zoom untuk akun tertentu
+     */
+    public function testConnection(ZoomAccount $zoomAccount)
+    {
+        $result = $this->zoomService->testConnection(
+            $zoomAccount->account_id,
+            $zoomAccount->client_id,
+            $zoomAccount->client_secret
+        );
+
+        if (request()->wantsJson() || request()->ajax()) {
+            return response()->json($result);
+        }
+
+        if ($result['success']) {
+            return back()->with('success', "Koneksi API Berhasil untuk {$zoomAccount->name}!");
+        }
+
+        return back()->with('error', "Koneksi API Gagal: {$result['message']}");
     }
 }
