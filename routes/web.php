@@ -8,6 +8,9 @@ use App\Http\Controllers\ZoomAccountController;
 use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\MemoController;
 use App\Http\Controllers\ActivityLogController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\BookingReportController;
+use App\Http\Controllers\DatabaseBackupController;
 use App\Http\Middleware\EnsureAdmin;
 
 /*
@@ -31,6 +34,8 @@ Route::middleware('auth')->group(function () {
     Route::post('bookings/{booking}/approve', [ZoomBookingController::class, 'approve'])->name('bookings.approve');
     Route::post('bookings/{booking}/reject', [ZoomBookingController::class, 'reject'])->name('bookings.reject');
     Route::post('bookings/{booking}/generate-meeting', [ZoomBookingController::class, 'generateMeeting'])->name('bookings.generate-meeting');
+    Route::get('bookings/{booking}/print', [BookingReportController::class, 'printBooking'])->name('bookings.print');
+    Route::get('bookings-report/print-all', [BookingReportController::class, 'printAll'])->name('bookings.print-all');
 
     // Calendar
     Route::get('calendar', [CalendarController::class, 'index'])->name('calendar.index');
@@ -42,10 +47,22 @@ Route::middleware('auth')->group(function () {
 
     // Admin Only Area
     Route::middleware(EnsureAdmin::class)->group(function () {
+        // Zoom Accounts Management & Sync
         Route::get('zoom-accounts/sync-preview', [ZoomAccountController::class, 'syncPreview'])->name('zoom-accounts.sync-preview');
         Route::post('zoom-accounts/sync-execute', [ZoomAccountController::class, 'syncExecute'])->name('zoom-accounts.sync-execute');
         Route::post('zoom-accounts/{zoom_account}/test-connection', [ZoomAccountController::class, 'testConnection'])->name('zoom-accounts.test-connection');
         Route::resource('zoom-accounts', ZoomAccountController::class);
+
+        // User Management
+        Route::resource('users', UserController::class)->except(['show']);
+        Route::post('users/{user}/role', [UserController::class, 'updateRole'])->name('users.update-role');
+
+        // Database Backup & Export
+        Route::get('backup', [DatabaseBackupController::class, 'index'])->name('backup.index');
+        Route::get('backup/table/{table}', [DatabaseBackupController::class, 'downloadTable'])->name('backup.download-table');
+        Route::get('backup/download-all', [DatabaseBackupController::class, 'downloadAll'])->name('backup.download-all');
+
+        // Activity Logs
         Route::get('activity-logs', [ActivityLogController::class, 'index'])->name('activity-logs.index');
     });
 });

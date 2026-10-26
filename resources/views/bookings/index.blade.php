@@ -33,9 +33,14 @@
             @endif
         </form>
 
-        <a href="{{ route('bookings.create') }}" class="inline-flex items-center gap-1.5 bg-gray-900 hover:bg-black text-white text-xs font-medium px-3.5 py-1.5 rounded transition shrink-0">
-            <i class="fa-solid fa-plus text-[10px]"></i> Ajukan Booking Baru
-        </a>
+        <div class="flex items-center gap-2 shrink-0">
+            <a href="{{ route('bookings.print-all', request()->query()) }}" target="_blank" class="inline-flex items-center gap-1.5 bg-white hover:bg-gray-50 text-gray-700 text-xs font-medium px-3 py-1.5 rounded border border-gray-300 transition" title="Cetak Rekap PDF">
+                <i class="fa-solid fa-print text-gray-500 text-[11px]"></i> Cetak Rekap PDF
+            </a>
+            <a href="{{ route('bookings.create') }}" class="inline-flex items-center gap-1.5 bg-gray-900 hover:bg-black text-white text-xs font-medium px-3.5 py-1.5 rounded transition">
+                <i class="fa-solid fa-plus text-[10px]"></i> Ajukan Booking Baru
+            </a>
+        </div>
     </div>
 
     <!-- Booking Table Card (Clean & Bordered) -->
@@ -92,6 +97,9 @@
                             </td>
                             <td class="px-4 py-3 text-right whitespace-nowrap">
                                 <div class="flex items-center justify-end gap-1">
+                                    <a href="{{ route('bookings.print', $item->id) }}" target="_blank" class="p-1.5 text-gray-500 hover:text-red-600 hover:bg-gray-100 rounded border border-transparent hover:border-gray-200" title="Cetak Bukti Booking PDF">
+                                        <i class="fa-solid fa-print"></i>
+                                    </a>
                                     <a href="{{ route('bookings.show', $item->id) }}" class="p-1.5 text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded border border-transparent hover:border-gray-200" title="Detail">
                                         <i class="fa-regular fa-eye"></i>
                                     </a>

@@ -86,6 +86,16 @@
                             <span>Master Akun Zoom</span>
                         </a>
 
+                        <a href="{{ route('users.index') }}" class="flex items-center gap-3 px-3 py-2 rounded border {{ request()->routeIs('users.*') ? 'bg-gray-100 text-gray-900 border-gray-300 font-semibold' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50 border-transparent' }} transition-colors">
+                            <i class="fa-solid fa-users-gear w-4 text-center {{ request()->routeIs('users.*') ? 'text-gray-900' : 'text-gray-400' }}"></i>
+                            <span>Manajemen Pengguna</span>
+                        </a>
+
+                        <a href="{{ route('backup.index') }}" class="flex items-center gap-3 px-3 py-2 rounded border {{ request()->routeIs('backup.*') ? 'bg-gray-100 text-gray-900 border-gray-300 font-semibold' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50 border-transparent' }} transition-colors">
+                            <i class="fa-solid fa-database w-4 text-center {{ request()->routeIs('backup.*') ? 'text-gray-900' : 'text-gray-400' }}"></i>
+                            <span>Backup & Ekspor DB</span>
+                        </a>
+
                         <a href="{{ route('activity-logs.index') }}" class="flex items-center gap-3 px-3 py-2 rounded border {{ request()->routeIs('activity-logs.*') ? 'bg-gray-100 text-gray-900 border-gray-300 font-semibold' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50 border-transparent' }} transition-colors">
                             <i class="fa-solid fa-clock-rotate-left w-4 text-center {{ request()->routeIs('activity-logs.*') ? 'text-gray-900' : 'text-gray-400' }}"></i>
                             <span>Audit & Log Aktivitas</span>
