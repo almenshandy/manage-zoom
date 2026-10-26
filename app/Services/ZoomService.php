@@ -1,0 +1,101 @@
+<?php
+
+namespace App\Services;
+
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
+use Exception;
+
+class ZoomService
+{
+    protected string $baseUrl;
+    protected string $timezone;
+
+    public function __construct()
+    {
+        $this->baseUrl  = config('zoom.base_url', 'https://api.zoom.us/v2/');
+        $this->timezone = config('zoom.timezone', 'Asia/Jakarta');
+    }
+
+    /**
+     * Mendapatkan OAuth Access Token via Server-to-Server Credentials
+     */
+    public function getAccessToken(?string $accountId = null, ?string $clientId = null, ?string $clientSecret = null): ?string
+    {
+        $accountId    = $accountId ?: config('zoom.account_id');
+        $clientId     = $clientId ?: config('zoom.client_id');
+        $clientSecret = $clientSecret ?: config('zoom.client_secret');
+
+        if (!$accountId || !$clientId || !$clientSecret) {
+            throw new Exception('Kredensial Zoom API (Account ID, Client ID, Client Secret) belum dikonfigurasi.');
+        }
+
+        $cacheKey = 'zoom_token_' . md5($clientId);
+
+        return Cache::remember($cacheKey, now()->addMinutes(55), function () use ($accountId, $clientId, $clientSecret) {
+            $response = Http::asForm()
+                ->withBasicAuth($clientId, $clientSecret)
+                ->post('https://zoom.us/oauth/token', [
+                    'grant_type' => 'account_credentials',
+                    'account_id' => $accountId,
+                ]);
+
+            if ($response->successful()) {
+                return $response->json()['access_token'] ?? null;
+            }
+
+            Log::error('Zoom Auth Failed', ['response' => $response->body()]);
+            throw new Exception('Gagal mendapatkan token autentikasi Zoom: ' . $response->body());
+        });
+    }
+
+    /**
+     * Buat Meeting Baru di Akun Zoom Terkait
+     */
+    public function createMeeting(array $payload, ?string $token = null): array
+    {
+        $token = $token ?? $this->getAccessToken();
+
+        $body = [
+            'topic'      => $payload['topic'],
+            'type'       => 2, // Scheduled Meeting
+            'start_time' => $payload['start_time'], // Format ISO-8601: 2026-10-25T10:00:00
+            'duration'   => (int) ($payload['duration'] ?? 60), // Dalam menit
+            'timezone'   => $this->timezone,
+            'agenda'     => $payload['agenda'] ?? '',
+            'settings'   => [
+                'host_video'        => true,
+                'participant_video' => true,
+                'join_before_host'  => false,
+                'mute_upon_entry'   => true,
+                'waiting_room'      => true,
+                'auto_recording'    => $payload['auto_recording'] ?? 'none',
+            ],
+        ];
+
+        if (!empty($payload['password'])) {
+            $body['password'] = $payload['password'];
+        }
+
+        $response = Http::withToken($token)
+            ->post("{$this->baseUrl}users/me/meetings", $body);
+
+        if ($response->successful()) {
+            return $response->json();
+        }
+
+        Log::error('Zoom Create Meeting Error', ['body' => $response->body()]);
+        throw new Exception('Gagal membuat jadwal meeting Zoom: ' . $response->body());
+    }
+
+    /**
+     * Hapus Meeting di Zoom API
+     */
+    public function deleteMeeting(string $meetingId, ?string $token = null): bool
+    {
+        $token = $token ?? $this->getAccessToken();
+        $response = Http::withToken($token)->delete("{$this->baseUrl}meetings/{$meetingId}");
+        return $response->successful();
+    }
+}
