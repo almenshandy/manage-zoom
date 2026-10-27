@@ -51,18 +51,87 @@ class ZoomBookingController extends Controller
 
     public function create()
     {
-        $accounts = ZoomAccount::whereDate('expired_date', '>=', now()->toDateString())
+        $today = Carbon::today();
+        $endDate = (clone $today)->addDays(30);
+
+        // Ambil akun yang aktif & belum expired
+        $accounts = ZoomAccount::whereDate('expired_date', '>=', $today->toDateString())
             ->orderBy('expired_date', 'asc')
             ->get();
 
-        return view('bookings.create', compact('accounts'));
+        // Ambil semua booking aktif yang jatuh pada rentang 30 hari ke depan
+        $bookings = ZoomBooking::with(['user', 'account'])
+            ->whereNotNull('zoom_account_id')
+            ->where('status', '!=', ZoomBooking::STATUS_REJECTED)
+            ->where('status', '!=', ZoomBooking::STATUS_CANCELLED)
+            ->where(function ($q) use ($today, $endDate) {
+                $q->whereBetween('start_date', [$today->toDateString(), $endDate->toDateString()])
+                  ->orWhereBetween('end_date', [$today->toDateString(), $endDate->toDateString()])
+                  ->orWhere(function ($sub) use ($today, $endDate) {
+                      $sub->where('start_date', '<=', $today->toDateString())
+                          ->where('end_date', '>=', $endDate->toDateString());
+                  });
+            })
+            ->get();
+
+        // Siapkan rentang 31 hari (Hari ini s/d H+30)
+        $dates = [];
+        $cursor = clone $today;
+        while ($cursor->lte($endDate)) {
+            $dates[] = [
+                'date_string' => $cursor->toDateString(),
+                'day_num'     => $cursor->format('d'),
+                'month_name'  => $cursor->locale('id')->isoFormat('MMM'),
+                'day_name'    => $cursor->locale('id')->isoFormat('ddd'),
+                'is_today'    => $cursor->isToday(),
+                'is_sunday'   => $cursor->isSunday(),
+            ];
+            $cursor->addDay();
+        }
+
+        // Petakan bookings ke matrix [account_id][date_string][] = booking
+        $matrixBookings = [];
+        foreach ($bookings as $b) {
+            $bStart = Carbon::parse($b->start_date);
+            $bEnd = Carbon::parse($b->end_date);
+            $bCursor = (clone $bStart)->max($today);
+            $bLimit = (clone $bEnd)->min($endDate);
+
+            while ($bCursor->lte($bLimit)) {
+                $dateKey = $bCursor->toDateString();
+                $matrixBookings[$b->zoom_account_id][$dateKey][] = [
+                    'id'               => $b->id,
+                    'slug'             => $b->slug,
+                    'topic'            => $b->topic,
+                    'user_name'        => $b->user?->name ?? 'User',
+                    'start_time'       => substr($b->start_time, 0, 5),
+                    'end_time'         => substr($b->end_time, 0, 5),
+                    'status_label'     => $b->status_label,
+                    'status'           => $b->status,
+                ];
+                $bCursor->addDay();
+            }
+        }
+
+        // Ambil daftar user jika admin ingin memilihkan pemohon
+        $users = auth()->user() && auth()->user()->isAdmin() 
+            ? \App\Models\User::orderBy('name')->get() 
+            : collect();
+
+        return view('bookings.create', compact('accounts', 'dates', 'matrixBookings', 'users'));
     }
 
     public function store(StoreBookingRequest $request)
     {
         $validated = $request->validated();
         $user = auth()->user();
-        $validated['user_id'] = $user ? $user->id : 1;
+
+        // Jika admin memilih pemohon lain dari dropdown
+        if ($user && $user->isAdmin() && !empty($request->user_id)) {
+            $validated['user_id'] = $request->user_id;
+        } else {
+            $validated['user_id'] = $user ? $user->id : 1;
+        }
 
         // Jika pengaju adalah Admin dan sudah memilih akun Zoom, otomatis disetujui (ACC / STATUS_APPROVED)
         $isAdmin = $user && $user->isAdmin();

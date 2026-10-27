@@ -251,8 +251,18 @@ Passcode: {{ $booking->passcode ?? '-' }}</textarea>
                     </div>
 
                     <div>
-                        <label class="block font-medium text-gray-700 mb-1">Passcode (Opsional)</label>
-                        <input type="text" name="passcode" value="123456" class="w-full px-3 py-1.5 bg-white border border-gray-300 rounded font-mono">
+                        <div class="flex items-center justify-between mb-1">
+                            <label class="block font-medium text-gray-700">Passcode (Opsional)</label>
+                            <button type="button" onclick="generateRandomPasscode()" class="text-[11px] text-blue-600 hover:text-blue-800 font-medium inline-flex items-center gap-1 transition">
+                                <i class="fa-solid fa-arrows-rotate text-[10px]"></i> Acak Passcode
+                            </button>
+                        </div>
+                        <div class="relative flex items-center">
+                            <input type="text" name="passcode" id="modal_passcode" value="123456" class="w-full px-3 py-1.5 pr-20 bg-white border border-gray-300 rounded font-mono focus:outline-none focus:border-gray-500">
+                            <button type="button" onclick="generateRandomPasscode()" class="absolute right-1 px-2.5 py-1 bg-gray-100 hover:bg-gray-200 text-gray-700 text-[10px] font-medium rounded border border-gray-200 transition">
+                                Random
+                            </button>
+                        </div>
                     </div>
 
                     <!-- Custom Meeting Overrides (From SystemSettings) -->
@@ -321,6 +331,18 @@ Passcode: {{ $booking->passcode ?? '-' }}</textarea>
         navigator.clipboard.writeText(textarea.value).then(() => {
             alert('Format undangan rapat berhasil disalin ke clipboard! Siap ditempel di WhatsApp atau Email.');
         });
+    }
+
+    function generateRandomPasscode() {
+        const input = document.getElementById('modal_passcode');
+        if (!input) return;
+        // Generate 6-8 karakter alfanumerik acak (kombinasi huruf besar, kecil & angka yang aman/mudah dibaca)
+        const chars = '23456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz';
+        let result = '';
+        for (let i = 0; i < 6; i++) {
+            result += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        input.value = result;
     }
 </script>
 @endpush

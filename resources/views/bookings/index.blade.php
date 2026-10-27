@@ -49,6 +49,7 @@
             <table class="w-full text-left text-xs">
                 <thead class="bg-gray-50 text-gray-600 font-semibold border-b border-gray-200 text-[11px] uppercase tracking-wider">
                     <tr>
+                        <th class="px-3 py-3 text-center w-12">No</th>
                         <th class="px-4 py-3">Kegiatan / Topik</th>
                         <th class="px-4 py-3">Pemohon</th>
                         <th class="px-4 py-3">Jadwal & Waktu</th>
@@ -58,8 +59,11 @@
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-200 text-gray-700">
-                    @forelse($bookings as $item)
+                    @forelse($bookings as $idx => $item)
                         <tr class="hover:bg-gray-50/75 transition-colors">
+                            <td class="px-3 py-3 text-center font-mono text-gray-500 text-[11px]">
+                                {{ $bookings->firstItem() + $idx }}
+                            </td>
                             <td class="px-4 py-3">
                                 <a href="{{ route('bookings.show', $item) }}" class="font-semibold text-gray-900 hover:text-blue-600 text-xs block">
                                     {{ $item->topic }}
@@ -124,7 +128,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="px-4 py-8 text-center text-gray-400">
+                            <td colspan="7" class="px-4 py-8 text-center text-gray-400">
                                 <i class="fa-regular fa-calendar-xmark text-2xl mb-2 text-gray-300 block"></i>
                                 Tidak ada data pengajuan booking ditemukan.
                             </td>
