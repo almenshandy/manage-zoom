@@ -30,6 +30,12 @@ class AuthController extends Controller
 
         $user = User::where($fieldType, $credentials['login'])->first();
 
+        if ($user && !$user->is_active) {
+            return back()->withErrors([
+                'login' => 'Akun Anda sedang dinonaktifkan. Silakan hubungi Administrator.',
+            ])->onlyInput('login');
+        }
+
         // Support migrasi password md5 dari CI3 jika ada kecocokan
         if ($user && strlen($user->password) === 32 && md5($credentials['password']) === $user->password) {
             // Rehash ke standard Bcrypt

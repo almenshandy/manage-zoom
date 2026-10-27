@@ -51,12 +51,19 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div class="grid grid-cols-1 sm:grid-cols-4 gap-3">
                     <div>
                         <label class="block font-medium text-gray-700 mb-1">Peran Akses (Role) *</label>
                         <select name="role" required class="w-full px-3 py-1.5 bg-white border border-gray-300 rounded focus:outline-none focus:border-gray-500">
                             <option value="2" {{ old('role', $user->role) == '2' ? 'selected' : '' }}>Pegawai / Staf</option>
                             <option value="1" {{ old('role', $user->role) == '1' ? 'selected' : '' }}>Administrator</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block font-medium text-gray-700 mb-1">Status Akun *</label>
+                        <select name="is_active" required class="w-full px-3 py-1.5 bg-white border border-gray-300 rounded focus:outline-none focus:border-gray-500">
+                            <option value="1" {{ old('is_active', $user->is_active) ? 'selected' : '' }}>Aktif</option>
+                            <option value="0" {{ !old('is_active', $user->is_active) ? 'selected' : '' }}>Nonaktif</option>
                         </select>
                     </div>
                     <div>

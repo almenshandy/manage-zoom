@@ -35,10 +35,16 @@
                 <option value="2" {{ request('role') === '2' ? 'selected' : '' }}>Pegawai / Staf</option>
             </select>
 
+            <select name="status" onchange="this.form.submit()" class="py-1.5 px-3 text-xs bg-white border border-gray-300 rounded focus:outline-none focus:border-gray-500 font-medium">
+                <option value="active" {{ ($status ?? request('status', 'active')) === 'active' ? 'selected' : '' }}>User Aktif (Default)</option>
+                <option value="inactive" {{ ($status ?? request('status')) === 'inactive' ? 'selected' : '' }}>User Nonaktif</option>
+                <option value="all" {{ ($status ?? request('status')) === 'all' ? 'selected' : '' }}>Semua Status</option>
+            </select>
+
             <button type="submit" class="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-800 text-xs font-semibold rounded border border-gray-300 transition">
                 Filter
             </button>
-            @if(request()->hasAny(['search', 'role']))
+            @if(request()->hasAny(['search', 'role']) || request('status') !== null)
                 <a href="{{ route('users.index') }}" class="px-2 py-1.5 text-xs text-gray-500 hover:text-gray-800">Reset</a>
             @endif
         </form>
@@ -50,17 +56,22 @@
             <table class="w-full text-left text-xs">
                 <thead class="bg-gray-50 text-gray-600 font-semibold border-b border-gray-200 uppercase tracking-wider text-[11px]">
                     <tr>
+                        <th class="px-3 py-3 text-center w-12">No</th>
                         <th class="px-4 py-3">Nama & Username</th>
                         <th class="px-4 py-3">Email</th>
                         <th class="px-4 py-3">Jabatan & Departemen</th>
                         <th class="px-4 py-3">No. HP</th>
                         <th class="px-4 py-3 text-center">Peran (Role)</th>
+                        <th class="px-4 py-3 text-center">Status</th>
                         <th class="px-4 py-3 text-right">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-200 text-gray-700">
-                    @forelse($users as $user)
+                    @forelse($users as $idx => $user)
                         <tr class="hover:bg-gray-50/75 transition-colors">
+                            <td class="px-3 py-3 text-center font-mono text-gray-500 text-[11px]">
+                                {{ $users->firstItem() + $idx }}
+                            </td>
                             <td class="px-4 py-3">
                                 <span class="font-semibold text-gray-900 block">{{ $user->name }}</span>
                                 <span class="text-gray-400 text-[11px] font-mono">@<!-- -->{{ $user->username }}</span>
@@ -85,6 +96,24 @@
                                     </select>
                                 </form>
                             </td>
+                            <td class="px-4 py-3 text-center whitespace-nowrap">
+                                @if($user->id === auth()->id())
+                                    <span class="inline-block px-2 py-0.5 text-[10px] font-semibold rounded border bg-emerald-50 text-emerald-700 border-emerald-200">
+                                        Aktif (Anda)
+                                    </span>
+                                @else
+                                    <form method="POST" action="{{ route('users.toggle-status', $user->id) }}" class="inline">
+                                        @csrf
+                                        <button type="submit" 
+                                            class="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-semibold rounded border transition
+                                            {{ $user->is_active ? 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-red-50 hover:text-red-700 hover:border-red-200' : 'bg-red-50 text-red-700 border-red-200 hover:bg-emerald-50 hover:text-emerald-700 hover:border-emerald-200' }}"
+                                            title="Klik untuk {{ $user->is_active ? 'Nonaktifkan' : 'Aktifkan' }} Pengguna">
+                                            <i class="fa-solid {{ $user->is_active ? 'fa-circle-check text-emerald-600' : 'fa-circle-xmark text-red-500' }} text-[9px]"></i>
+                                            <span>{{ $user->is_active ? 'Aktif' : 'Nonaktif' }}</span>
+                                        </button>
+                                    </form>
+                                @endif
+                            </td>
                             <td class="px-4 py-3 text-right whitespace-nowrap">
                                 <div class="flex items-center justify-end gap-1">
                                     <a href="{{ route('users.edit', $user->id) }}" class="p-1.5 text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded border border-transparent hover:border-gray-200 transition" title="Edit Pengguna">
@@ -104,7 +133,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="px-4 py-8 text-center text-gray-400">
+                            <td colspan="8" class="px-4 py-8 text-center text-gray-400">
                                 <i class="fa-solid fa-users text-2xl mb-2 text-gray-300 block"></i>
                                 Tidak ada data pengguna ditemukan.
                             </td>

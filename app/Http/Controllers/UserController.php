@@ -11,7 +11,16 @@ class UserController extends Controller
 {
     public function index(Request $request)
     {
-        $query = User::latest();
+        $query = User::orderBy('name', 'asc');
+
+        // Default status adalah 'active' jika tidak ada filter status yang dikirim
+        $status = $request->input('status', 'active');
+
+        if ($status === 'active') {
+            $query->where('is_active', true);
+        } elseif ($status === 'inactive') {
+            $query->where('is_active', false);
+        } // jika 'all', jangan batasi query
 
         if ($request->filled('search')) {
             $search = $request->search;
@@ -28,7 +37,7 @@ class UserController extends Controller
         }
 
         $users = $query->paginate(15)->withQueryString();
-        return view('users.index', compact('users'));
+        return view('users.index', compact('users', 'status'));
     }
 
     public function create()
@@ -68,6 +77,7 @@ class UserController extends Controller
             'email'      => ['required', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
             'password'   => ['nullable', 'string', 'min:6'],
             'role'       => ['required', 'in:1,2'],
+            'is_active'  => ['required', 'in:0,1'],
             'jabatan'    => ['nullable', 'string', 'max:100'],
             'departemen' => ['nullable', 'string', 'max:100'],
             'no_hp'      => ['nullable', 'string', 'max:20'],
@@ -97,6 +107,18 @@ class UserController extends Controller
         $user->update(['role' => $request->role]);
 
         return back()->with('success', "Role {$user->name} berhasil diperbarui.");
+    }
+
+    public function toggleStatus(User $user)
+    {
+        if ($user->id === auth()->id()) {
+            return back()->with('error', 'Anda tidak dapat menonaktifkan akun Anda sendiri.');
+        }
+
+        $user->update(['is_active' => !$user->is_active]);
+
+        $statusStr = $user->is_active ? 'diaktifkan' : 'dinonaktifkan';
+        return back()->with('success', "Akun pengguna {$user->name} berhasil {$statusStr}.");
     }
 
     public function destroy(User $user)
@@ -205,12 +227,15 @@ class UserController extends Controller
 
             $rawPassword = $k->password_text ?: 'password123';
 
+            $isActive = (string)($k->active ?? '1') === '1';
+
             $userData = [
                 'name'       => trim($k->nama_lengkap ?? $username),
                 'jabatan'    => trim($k->jabatan ?? ''),
                 'departemen' => trim($k->departemen ?? ''),
                 'no_hp'      => trim($k->no_hp ?? ''),
                 'role'       => 2, // Pegawai biasa
+                'is_active'  => $isActive,
             ];
 
             $existing = User::where('username', $username)->orWhere('email', $email)->first();

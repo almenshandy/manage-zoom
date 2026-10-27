@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ $title ?? 'Manajemen Zoom Meeting' }}</title>
+    <!-- Favicon & Custom App Icon -->
+    <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
+    <link rel="shortcut icon" href="{{ asset('favicon.svg') }}">
     <!-- Tailwind CSS CDN & FontAwesome & Inter Font -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -67,9 +70,7 @@
             <div>
                 <!-- Brand Header -->
                 <div class="h-14 px-5 flex items-center gap-3 border-b border-gray-200 bg-white">
-                    <div class="w-7 h-7 rounded bg-gray-900 flex items-center justify-center text-white">
-                        <i class="fa-solid fa-video text-xs"></i>
-                    </div>
+                    <img src="{{ asset('icon.svg') }}" alt="Logo ManageZoom" class="w-7 h-7 rounded shadow-xs">
                     <div class="flex items-center gap-2">
                         <span class="font-semibold text-gray-900 tracking-tight">ManageZoom</span>
                         <span class="text-[10px] font-medium bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded border border-gray-200">v2.0</span>

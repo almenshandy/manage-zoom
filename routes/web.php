@@ -64,6 +64,7 @@ Route::middleware('auth')->group(function () {
         Route::post('users/sync-execute', [UserController::class, 'syncExecute'])->name('users.sync-execute');
         Route::resource('users', UserController::class)->except(['show']);
         Route::post('users/{user}/role', [UserController::class, 'updateRole'])->name('users.update-role');
+        Route::post('users/{user}/toggle-status', [UserController::class, 'toggleStatus'])->name('users.toggle-status');
 
         // Master Proyek
         Route::resource('projects', ProjectController::class)->except(['create', 'show', 'edit']);

@@ -17,6 +17,7 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
+        'is_active',
         'jabatan',
         'departemen',
         'departemen2',
@@ -35,6 +36,7 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'role' => 'integer',
+            'is_active' => 'boolean',
         ];
     }
 

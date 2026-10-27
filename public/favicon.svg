@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
+    <rect width="32" height="32" rx="7" fill="#0F172A"/>
+    <!-- Camera Body -->
+    <rect x="6" y="9" width="13" height="14" rx="3" fill="#0284C7"/>
+    <!-- Lens -->
+    <path d="M21 13.5L25.5 10.5C26.3 9.9 27 10.4 27 11.4V20.6C27 21.6 26.3 22.1 25.5 21.5L21 18.5V13.5Z" fill="#38BDF8"/>
+    <!-- Top calendar tabs -->
+    <rect x="8.5" y="7" width="2" height="4" rx="1" fill="#FFFFFF"/>
+    <rect x="15.5" y="7" width="2" height="4" rx="1" fill="#FFFFFF"/>
+    <!-- Center white dot -->
+    <circle cx="12.5" cy="16" r="2" fill="#FFFFFF"/>
+</svg>

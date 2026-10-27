@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+    <!-- Rounded Background Container -->
+    <rect width="64" height="64" rx="14" fill="#0F172A"/>
+    
+    <!-- Accent subtle highlight gradient / glow -->
+    <rect x="1" y="1" width="62" height="62" rx="13" stroke="url(#paint0_linear)" stroke-width="1.5" stroke-opacity="0.2"/>
+    
+    <!-- Inner Video Camera / Zoom Meeting Symbol -->
+    <!-- Main Camera Body -->
+    <rect x="12" y="18" width="26" height="28" rx="6" fill="#0284C7"/>
+    
+    <!-- Camera Lens Cone -->
+    <path d="M41 26.5L49.5 21.2C50.8 20.4 52.5 21.3 52.5 22.8V41.2C52.5 42.7 50.8 43.6 49.5 42.8L41 37.5V26.5Z" fill="#38BDF8"/>
+    
+    <!-- Calendar Ring / Punch holes at the top to represent scheduling/booking -->
+    <circle cx="18" cy="14" r="2.5" fill="#F8FAFC"/>
+    <circle cx="32" cy="14" r="2.5" fill="#F8FAFC"/>
+    <rect x="16.5" y="14" width="3" height="8" rx="1.5" fill="#F8FAFC"/>
+    <rect x="30.5" y="14" width="3" height="8" rx="1.5" fill="#F8FAFC"/>
+
+    <!-- Subtle Play/Live Dot inside lens -->
+    <circle cx="25" cy="32" r="3.5" fill="#FFFFFF"/>
+
+    <defs>
+        <linearGradient id="paint0_linear" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#38BDF8"/>
+            <stop offset="1" stop-color="#0F172A"/>
+        </linearGradient>
+    </defs>
+</svg>
