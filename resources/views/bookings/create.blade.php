@@ -6,24 +6,29 @@
 
 @section('content')
 <div class="space-y-4">
-    <!-- Header Indicator & Search -->
-    <div class="bg-white p-4 rounded border border-gray-200 flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <!-- Top Action Bar (Flat Minimalis) -->
+    <div class="flex items-center justify-between gap-3">
+        <a href="{{ route('bookings.index') }}" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 text-xs font-medium rounded transition">
+            <i class="fa-solid fa-arrow-left text-[10px]"></i> Kembali ke Daftar Booking
+        </a>
+
+        <div class="flex items-center gap-2.5 text-[11px] text-gray-600 bg-white px-3 py-1.5 rounded border border-gray-200">
+            <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded bg-blue-100 border border-blue-400"></span> Terisi</span>
+            <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded bg-white border border-gray-300 text-gray-400 flex items-center justify-center text-[9px]">+</span> Kosong</span>
+            <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded bg-gray-100 border border-gray-300"></span> Expired</span>
+        </div>
+    </div>
+
+    <!-- Header Indicator & Search Card -->
+    <div class="bg-white p-4 rounded border border-gray-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
             <h3 class="text-xs font-semibold text-gray-900 uppercase tracking-wider">Matriks Ketersediaan Akun Zoom (30 Hari Ke Depan)</h3>
             <p class="text-xs text-gray-500 mt-0.5">Pilih slot tanggal kosong (ikon <span class="font-bold text-gray-700">+</span>) pada akun Zoom yang diinginkan untuk membuka form peminjaman.</p>
         </div>
 
-        <div class="flex flex-wrap items-center gap-3">
-            <div class="relative">
-                <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
-                <input type="text" id="searchAccount" placeholder="Filter akun..." class="pl-8 pr-3 py-1.5 bg-white border border-gray-300 rounded text-xs focus:outline-none focus:border-gray-500 w-48">
-            </div>
-
-            <div class="flex items-center gap-2.5 text-[11px] text-gray-600 border-l border-gray-200 pl-3">
-                <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded bg-blue-100 border border-blue-400"></span> Terisi</span>
-                <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded bg-white border border-gray-300 text-gray-400 flex items-center justify-center text-[9px]">+</span> Kosong</span>
-                <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded bg-gray-100 border border-gray-300"></span> Expired</span>
-            </div>
+        <div class="relative shrink-0">
+            <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
+            <input type="text" id="searchAccount" placeholder="Filter email akun..." class="pl-8 pr-3 py-1.5 bg-white border border-gray-300 rounded text-xs focus:outline-none focus:border-gray-500 w-full sm:w-56">
         </div>
     </div>
 
