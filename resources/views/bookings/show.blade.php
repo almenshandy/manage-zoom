@@ -89,12 +89,18 @@
                     </div>
 
                     <!-- Template Undangan Peserta (Siap Kirim WhatsApp / Email) -->
-                    <div class="pt-2 border-t border-gray-200">
-                        <div class="flex items-center justify-between mb-1.5">
+                    <div class="pt-2 border-t border-gray-200 space-y-2">
+                        <div class="flex items-center justify-between mb-1">
                             <span class="text-[11px] font-semibold text-gray-600 uppercase tracking-wider">Format Teks Undangan (Siap Sebar):</span>
-                            <button type="button" onclick="copyInvitationTemplate()" class="text-[11px] text-blue-600 hover:text-blue-800 font-medium inline-flex items-center gap-1">
-                                <i class="fa-regular fa-clipboard"></i> Salin Semua Teks
-                            </button>
+                            <div class="flex items-center gap-3">
+                                <button type="button" onclick="openWaModal()" class="text-[11px] text-emerald-700 hover:text-emerald-900 font-medium inline-flex items-center gap-1.5 transition">
+                                    <i class="fa-brands fa-whatsapp text-xs text-emerald-600"></i> Kirim WhatsApp
+                                </button>
+                                <span class="text-gray-300">|</span>
+                                <button type="button" onclick="copyInvitationTemplate()" class="text-[11px] text-blue-600 hover:text-blue-800 font-medium inline-flex items-center gap-1 transition">
+                                    <i class="fa-regular fa-clipboard"></i> Salin Semua Teks
+                                </button>
+                            </div>
                         </div>
                         <textarea id="invitationTemplate" rows="4" readonly
                             class="w-full p-2.5 bg-white border border-gray-300 rounded text-[11px] font-mono text-gray-700 select-all leading-relaxed focus:outline-none">Agenda: {{ $booking->topic }}
@@ -105,6 +111,17 @@ Join Zoom Meeting:
 
 Meeting ID: {{ $booking->zoom_meeting_id }}
 Passcode: {{ $booking->passcode ?? '-' }}</textarea>
+
+                        <!-- Action Bar WhatsApp Langsung -->
+                        <div class="flex flex-wrap items-center justify-between gap-2 pt-1">
+                            <span class="text-[10px] text-gray-500">
+                                Kirim teks undangan lengkap langsung ke WhatsApp pemohon atau nomor tujuan lain.
+                            </span>
+                            <button type="button" onclick="openWaModal()" 
+                                class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-xs font-medium transition shadow-xs">
+                                <i class="fa-brands fa-whatsapp text-sm"></i> Kirim Undangan via WhatsApp
+                            </button>
+                        </div>
                     </div>
                 </div>
             @endif
@@ -312,6 +329,76 @@ Passcode: {{ $booking->passcode ?? '-' }}</textarea>
     @endif
 @endif
 
+<!-- Modal Kirim WhatsApp (Flat, Minimalis & Fleksibel) -->
+<div id="waModal" class="fixed inset-0 z-50 hidden bg-gray-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded border border-gray-300 max-w-md w-full shadow-lg overflow-hidden animate-fadeIn">
+        <div class="px-5 py-3.5 border-b border-gray-200 flex items-center justify-between bg-white">
+            <div class="flex items-center gap-2.5">
+                <div class="w-7 h-7 rounded bg-emerald-100 text-emerald-700 flex items-center justify-center text-sm">
+                    <i class="fa-brands fa-whatsapp"></i>
+                </div>
+                <div>
+                    <h4 class="text-xs font-semibold text-gray-900 uppercase tracking-wider">Kirim Undangan WhatsApp</h4>
+                    <p class="text-[11px] text-gray-500">Kirim teks link pertemuan langsung ke kontak/grup WhatsApp</p>
+                </div>
+            </div>
+            <button type="button" onclick="closeWaModal()" class="w-6 h-6 rounded flex items-center justify-center text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition">
+                <i class="fa-solid fa-xmark text-sm"></i>
+            </button>
+        </div>
+
+        <div class="p-5 space-y-3.5 text-xs">
+            <div>
+                <label class="block font-medium text-gray-700 mb-1">Nomor WhatsApp Tujuan</label>
+                <div class="relative">
+                    <input type="text" id="waRecipientNumber" 
+                        value="{{ $booking->user->no_hp ?? '' }}" 
+                        placeholder="Contoh: 08123456789 atau 628123456789"
+                        class="w-full pl-3 pr-28 py-1.5 bg-white border border-gray-300 rounded focus:outline-none focus:border-gray-500 font-mono text-xs">
+                    
+                    @if(!empty($booking->user->no_hp))
+                        <button type="button" onclick="resetWaNumber('{{ $booking->user->no_hp }}')" 
+                            class="absolute right-1 top-1/2 -translate-y-1/2 px-2 py-0.5 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded text-[10px] font-medium border border-gray-200 transition"
+                            title="Kembalikan ke nomor pemohon di profil">
+                            No. Pemohon
+                        </button>
+                    @endif
+                </div>
+                <p class="text-[10px] text-gray-500 mt-1">
+                    * Bawaan nomor profil pemohon (<strong>{{ $booking->user->name ?? 'User' }}</strong>: {{ $booking->user->no_hp ?: 'Belum ada nomor di profil' }}). Anda bebas mengganti dengan nomor lain atau mengosongkannya.
+                </p>
+            </div>
+
+            <div>
+                <label class="block font-medium text-gray-700 mb-1">Pratinjau Pesan yang Dikirim</label>
+                <textarea id="waMessagePreview" rows="5"
+                    class="w-full p-2.5 bg-gray-50 border border-gray-300 rounded font-mono text-[11px] text-gray-700 leading-relaxed focus:outline-none focus:border-gray-500">Agenda: {{ $booking->topic }}
+Waktu: {{ $booking->date_range_formatted }}, Pukul {{ substr($booking->start_time, 0, 5) }} - {{ substr($booking->end_time, 0, 5) }} WIB
+
+Join Zoom Meeting:
+{{ $booking->join_url }}
+
+Meeting ID: {{ $booking->zoom_meeting_id }}
+Passcode: {{ $booking->passcode ?? '-' }}</textarea>
+            </div>
+
+            <div class="pt-3 border-t border-gray-200 flex items-center justify-between gap-2">
+                <button type="button" onclick="sendToGeneralWhatsApp()" class="text-gray-600 hover:text-gray-900 text-[11px] underline">
+                    Buka WA Tanpa Nomor (Pilih di Chat)
+                </button>
+                <div class="flex items-center gap-2">
+                    <button type="button" onclick="closeWaModal()" class="px-3.5 py-1.5 bg-white border border-gray-300 rounded text-gray-700 hover:bg-gray-50 font-medium transition">
+                        Batal
+                    </button>
+                    <button type="button" onclick="sendToTargetWhatsApp()" class="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded font-medium transition inline-flex items-center gap-1.5 shadow-xs">
+                        <i class="fa-brands fa-whatsapp text-sm"></i> Buka WhatsApp
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 @push('scripts')
 <script>
     function copyJoinUrl() {
@@ -349,6 +436,67 @@ Passcode: {{ $booking->passcode ?? '-' }}</textarea>
             result += chars.charAt(Math.floor(Math.random() * chars.length));
         }
         input.value = result;
+    }
+
+    // Modal WhatsApp Logic
+    const waModal = document.getElementById('waModal');
+    const waRecipientInput = document.getElementById('waRecipientNumber');
+    const waMessageInput = document.getElementById('waMessagePreview');
+
+    function openWaModal() {
+        if (!waModal) return;
+        waModal.classList.remove('hidden');
+    }
+
+    function closeWaModal() {
+        if (!waModal) return;
+        waModal.classList.add('hidden');
+    }
+
+    function resetWaNumber(originalNum) {
+        if (waRecipientInput) {
+            waRecipientInput.value = originalNum;
+        }
+    }
+
+    function formatWaPhoneNumber(phone) {
+        if (!phone) return '';
+        // Bersihkan spasi, tanda strip, plus, dan karakter non-angka
+        let cleaned = phone.replace(/[^0-9]/g, '');
+        // Jika berawalan '0', ganti menjadi '62' (kode negara Indonesia)
+        if (cleaned.startsWith('0')) {
+            cleaned = '62' + cleaned.substring(1);
+        }
+        return cleaned;
+    }
+
+    function sendToTargetWhatsApp() {
+        const rawPhone = waRecipientInput ? waRecipientInput.value.trim() : '';
+        const message = waMessageInput ? waMessageInput.value : '';
+        const encodedMsg = encodeURIComponent(message);
+
+        if (!rawPhone) {
+            // Jika nomor dikosongkan, buka whatsapp api tanpa nomor target (bisa pilih kontak di WA)
+            window.open(`https://api.whatsapp.com/send?text=${encodedMsg}`, '_blank');
+            return;
+        }
+
+        const formattedPhone = formatWaPhoneNumber(rawPhone);
+        window.open(`https://api.whatsapp.com/send?phone=${formattedPhone}&text=${encodedMsg}`, '_blank');
+    }
+
+    function sendToGeneralWhatsApp() {
+        const message = waMessageInput ? waMessageInput.value : '';
+        const encodedMsg = encodeURIComponent(message);
+        window.open(`https://api.whatsapp.com/send?text=${encodedMsg}`, '_blank');
+    }
+
+    if (waModal) {
+        waModal.addEventListener('click', function(e) {
+            if (e.target === waModal) {
+                closeWaModal();
+            }
+        });
     }
 </script>
 @endpush

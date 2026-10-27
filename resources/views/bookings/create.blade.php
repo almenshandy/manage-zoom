@@ -204,15 +204,45 @@
                 </div>
 
                 @if(auth()->user() && auth()->user()->isAdmin())
-                    <div>
+                    <div class="relative">
                         <label class="block font-medium text-gray-700 mb-1">Nama Pemohon (Karyawan / User) <span class="text-red-500">*</span></label>
-                        <select name="user_id" class="w-full px-3 py-1.5 bg-white border border-gray-300 rounded focus:outline-none focus:border-gray-500 text-xs">
-                            @foreach($users as $u)
-                                <option value="{{ $u->id }}" {{ $u->id == auth()->id() ? 'selected' : '' }}>
-                                    {{ $u->name }} &bull; {{ $u->email }}
-                                </option>
-                            @endforeach
-                        </select>
+                        
+                        <!-- Searchable User Select Component (Flat Minimalist) -->
+                        <div class="relative">
+                            <input type="hidden" name="user_id" id="modal_user_id" value="{{ auth()->id() }}">
+                            
+                            <div class="relative">
+                                <i class="fa-solid fa-user absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
+                                <input type="text" id="userSearchInput" 
+                                    value="{{ auth()->user()->name }} ({{ auth()->user()->email }})"
+                                    placeholder="Ketik untuk mencari nama karyawan / email..." 
+                                    autocomplete="off"
+                                    class="w-full pl-8 pr-8 py-1.5 bg-white border border-gray-300 rounded focus:outline-none focus:border-gray-500 text-xs cursor-pointer">
+                                <button type="button" onclick="toggleUserDropdown()" class="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                                    <i class="fa-solid fa-chevron-down text-[10px]" id="userDropdownArrow"></i>
+                                </button>
+                            </div>
+
+                            <!-- Dropdown List Hasil Pencarian -->
+                            <div id="userDropdownList" class="hidden absolute left-0 right-0 top-full mt-1 bg-white border border-gray-300 rounded shadow-md max-h-48 overflow-y-auto z-30 divide-y divide-gray-100 text-xs custom-scrollbar">
+                                @foreach($users as $u)
+                                    <div class="user-option-item px-3 py-2 hover:bg-gray-50 cursor-pointer flex items-center justify-between"
+                                        data-id="{{ $u->id }}"
+                                        data-name="{{ $u->name }}"
+                                        data-email="{{ $u->email }}"
+                                        data-dept="{{ $u->departemen ?: 'Umum' }}">
+                                        <div>
+                                            <span class="font-medium text-gray-900 block user-item-name">{{ $u->name }}</span>
+                                            <span class="text-[10px] text-gray-500 user-item-meta">{{ $u->email }} &bull; {{ $u->departemen ?: 'Umum' }}</span>
+                                        </div>
+                                        <i class="fa-solid fa-check text-emerald-600 text-xs user-check-icon {{ $u->id == auth()->id() ? '' : 'hidden' }}"></i>
+                                    </div>
+                                @endforeach
+                                <div id="userNotFoundMsg" class="hidden px-3 py-4 text-center text-gray-400 text-xs">
+                                    Karyawan / user tidak ditemukan.
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 @endif
 
@@ -364,7 +394,80 @@
 
     function closeModal() {
         modal.classList.add('hidden');
+        closeUserDropdown();
     }
+
+    // Searchable User Select Logic
+    const userSearchInput = document.getElementById('userSearchInput');
+    const userDropdownList = document.getElementById('userDropdownList');
+    const modalUserId = document.getElementById('modal_user_id');
+    const userNotFoundMsg = document.getElementById('userNotFoundMsg');
+    const userOptionItems = document.querySelectorAll('.user-option-item');
+
+    function toggleUserDropdown() {
+        if (!userDropdownList) return;
+        userDropdownList.classList.toggle('hidden');
+    }
+
+    function closeUserDropdown() {
+        if (userDropdownList) {
+            userDropdownList.classList.add('hidden');
+        }
+    }
+
+    if (userSearchInput) {
+        userSearchInput.addEventListener('focus', function() {
+            userDropdownList.classList.remove('hidden');
+        });
+
+        userSearchInput.addEventListener('input', function() {
+            const query = this.value.toLowerCase().trim();
+            let hasVisible = false;
+
+            userOptionItems.forEach(item => {
+                const name = item.getAttribute('data-name').toLowerCase();
+                const email = item.getAttribute('data-email').toLowerCase();
+                const dept = item.getAttribute('data-dept').toLowerCase();
+
+                if (name.includes(query) || email.includes(query) || dept.includes(query)) {
+                    item.style.display = 'flex';
+                    hasVisible = true;
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+
+            if (userNotFoundMsg) {
+                userNotFoundMsg.style.display = hasVisible ? 'none' : 'block';
+            }
+            userDropdownList.classList.remove('hidden');
+        });
+    }
+
+    userOptionItems.forEach(item => {
+        item.addEventListener('click', function() {
+            const id = this.getAttribute('data-id');
+            const name = this.getAttribute('data-name');
+            const email = this.getAttribute('data-email');
+
+            if (modalUserId) modalUserId.value = id;
+            if (userSearchInput) userSearchInput.value = `${name} (${email})`;
+
+            // Update centang ikon
+            document.querySelectorAll('.user-check-icon').forEach(icon => icon.classList.add('hidden'));
+            const checkIcon = this.querySelector('.user-check-icon');
+            if (checkIcon) checkIcon.classList.remove('hidden');
+
+            closeUserDropdown();
+        });
+    });
+
+    // Close dropdown on outside click
+    document.addEventListener('click', function(e) {
+        if (userSearchInput && !userSearchInput.contains(e.target) && userDropdownList && !userDropdownList.contains(e.target)) {
+            closeUserDropdown();
+        }
+    });
 
     modal.addEventListener('click', function(e) {
         if (e.target === modal) {
