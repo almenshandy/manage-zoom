@@ -62,5 +62,8 @@ class DatabaseSeeder extends Seeder
                 'status'       => 'active',
             ]
         );
+
+        // 4. Master Proyek
+        $this->call(ProjectSeeder::class);
     }
 }

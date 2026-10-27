@@ -11,6 +11,7 @@ use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\BookingReportController;
 use App\Http\Controllers\DatabaseBackupController;
+use App\Http\Controllers\ProjectController;
 use App\Http\Middleware\EnsureAdmin;
 
 /*
@@ -63,6 +64,9 @@ Route::middleware('auth')->group(function () {
         Route::post('users/sync-execute', [UserController::class, 'syncExecute'])->name('users.sync-execute');
         Route::resource('users', UserController::class)->except(['show']);
         Route::post('users/{user}/role', [UserController::class, 'updateRole'])->name('users.update-role');
+
+        // Master Proyek
+        Route::resource('projects', ProjectController::class)->except(['create', 'show', 'edit']);
 
         // Database Backup & Export
         Route::get('backup', [DatabaseBackupController::class, 'index'])->name('backup.index');

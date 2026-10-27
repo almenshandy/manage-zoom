@@ -113,6 +113,11 @@
                             <span>Manajemen Pengguna</span>
                         </a>
 
+                        <a href="{{ route('projects.index') }}" class="flex items-center gap-3 px-3 py-2 rounded border {{ request()->routeIs('projects.*') ? 'bg-gray-100 text-gray-900 border-gray-300 font-semibold' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50 border-transparent' }} transition-colors">
+                            <i class="fa-solid fa-briefcase w-4 text-center {{ request()->routeIs('projects.*') ? 'text-gray-900' : 'text-gray-400' }}"></i>
+                            <span>Master Proyek</span>
+                        </a>
+
                         <a href="{{ route('backup.index') }}" class="flex items-center gap-3 px-3 py-2 rounded border {{ request()->routeIs('backup.*') ? 'bg-gray-100 text-gray-900 border-gray-300 font-semibold' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50 border-transparent' }} transition-colors">
                             <i class="fa-solid fa-database w-4 text-center {{ request()->routeIs('backup.*') ? 'text-gray-900' : 'text-gray-400' }}"></i>
                             <span>Backup & Ekspor DB</span>

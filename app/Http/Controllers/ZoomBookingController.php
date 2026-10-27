@@ -120,7 +120,10 @@ class ZoomBookingController extends Controller
             ? \App\Models\User::orderBy('name')->get() 
             : collect();
 
-        return view('bookings.create', compact('accounts', 'dates', 'matrixBookings', 'users'));
+        // Ambil daftar master proyek aktif untuk dropdown booking
+        $projects = \App\Models\Project::where('status', 'active')->orderBy('name')->get();
+
+        return view('bookings.create', compact('accounts', 'dates', 'matrixBookings', 'users', 'projects'));
     }
 
     public function store(StoreBookingRequest $request)
@@ -198,7 +201,8 @@ class ZoomBookingController extends Controller
         $accounts = ZoomAccount::whereDate('expired_date', '>=', now()->toDateString())
             ->orderBy('expired_date', 'asc')
             ->get();
-        return view('bookings.edit', compact('booking', 'accounts'));
+        $projects = \App\Models\Project::where('status', 'active')->orderBy('name')->get();
+        return view('bookings.edit', compact('booking', 'accounts', 'projects'));
     }
 
     public function update(UpdateBookingRequest $request, ZoomBooking $booking)

@@ -219,10 +219,16 @@
                     </div>
                     <div>
                         <label class="block font-medium text-gray-700 mb-1">
-                            Nama Proyek / Pelaksanaan <span class="text-gray-400 font-normal">(Opsional)</span>
+                            Pilih Proyek / Pelaksanaan <span class="text-gray-400 font-normal">(Opsional)</span>
                         </label>
-                        <input type="text" name="project_name" placeholder="Contoh: Proyek Asesmen Mandiri..."
-                            class="w-full px-3 py-1.5 bg-white border border-gray-300 rounded focus:outline-none focus:border-gray-500 text-xs">
+                        <select name="project_name" class="w-full px-3 py-1.5 bg-white border border-gray-300 rounded focus:outline-none focus:border-gray-500 text-xs">
+                            <option value="">-- Tanpa Proyek (Rapat Internal Biasa) --</option>
+                            @foreach($projects as $prj)
+                                <option value="{{ $prj->name }}">
+                                    {{ $prj->name }} {{ $prj->code ? "({$prj->code})" : '' }}
+                                </option>
+                            @endforeach
+                        </select>
                     </div>
                 </div>
 
