@@ -17,6 +17,7 @@ class ZoomBooking extends Model
         'user_id',
         'zoom_account_id',
         'topic',
+        'project_name',
         'slug',
         'description',
         'start_date',

@@ -103,6 +103,8 @@ class ZoomBookingController extends Controller
                     'id'               => $b->id,
                     'slug'             => $b->slug,
                     'topic'            => $b->topic,
+                    'project_name'     => $b->project_name,
+                    'display_title'    => $b->project_name ? "{$b->project_name} - {$b->topic}" : $b->topic,
                     'user_name'        => $b->user?->name ?? 'User',
                     'start_time'       => substr($b->start_time, 0, 5),
                     'end_time'         => substr($b->end_time, 0, 5),

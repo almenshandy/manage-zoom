@@ -110,9 +110,11 @@
                                             @foreach($dayBookings as $b)
                                                 <a href="{{ route('bookings.show', $b['slug'] ?? $b['id']) }}" 
                                                    class="block w-full py-1 px-1.5 rounded bg-blue-50 border border-blue-200 text-blue-900 hover:bg-blue-100 transition text-[10px] text-left leading-tight"
-                                                   title="{{ $b['topic'] }} ({{ $b['user_name'] }}) - {{ $b['start_time'] }} s/d {{ $b['end_time'] }} WIB">
+                                                   title="{{ $b['display_title'] ?? $b['topic'] }} ({{ $b['user_name'] }}) - {{ $b['start_time'] }} s/d {{ $b['end_time'] }} WIB">
                                                     <span class="font-semibold block truncate">{{ $b['start_time'] }}-{{ $b['end_time'] }}</span>
-                                                    <span class="text-[9px] text-blue-700 block truncate">{{ $b['user_name'] }}</span>
+                                                    <span class="text-[9px] text-blue-700 block truncate font-medium">
+                                                        {{ !empty($b['project_name']) ? '[' . $b['project_name'] . ']' : $b['user_name'] }}
+                                                    </span>
                                                 </a>
                                             @endforeach
                                             <button type="button" 
@@ -209,10 +211,19 @@
                     </div>
                 @endif
 
-                <div>
-                    <label class="block font-medium text-gray-700 mb-1">Topik / Nama Kegiatan Rapat <span class="text-red-500">*</span></label>
-                    <input type="text" name="topic" required placeholder="Contoh: Rapat Koordinasi PMB 2026..."
-                        class="w-full px-3 py-1.5 bg-white border border-gray-300 rounded focus:outline-none focus:border-gray-500 text-xs">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-medium text-gray-700 mb-1">Topik / Nama Kegiatan <span class="text-red-500">*</span></label>
+                        <input type="text" name="topic" required placeholder="Contoh: Rapat Koordinasi PMB 2026..."
+                            class="w-full px-3 py-1.5 bg-white border border-gray-300 rounded focus:outline-none focus:border-gray-500 text-xs">
+                    </div>
+                    <div>
+                        <label class="block font-medium text-gray-700 mb-1">
+                            Nama Proyek / Pelaksanaan <span class="text-gray-400 font-normal">(Opsional)</span>
+                        </label>
+                        <input type="text" name="project_name" placeholder="Contoh: Proyek Asesmen Mandiri..."
+                            class="w-full px-3 py-1.5 bg-white border border-gray-300 rounded focus:outline-none focus:border-gray-500 text-xs">
+                    </div>
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">

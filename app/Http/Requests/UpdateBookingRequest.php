@@ -16,6 +16,7 @@ class UpdateBookingRequest extends FormRequest
         return [
             'zoom_account_id'  => ['nullable', 'exists:zoom_accounts,id'],
             'topic'            => ['required', 'string', 'max:255'],
+            'project_name'     => ['nullable', 'string', 'max:255'],
             'description'      => ['nullable', 'string'],
             'start_date'       => ['required', 'date'],
             'end_date'         => ['required', 'date', 'after_or_equal:start_date'],

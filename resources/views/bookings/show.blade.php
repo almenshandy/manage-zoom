@@ -117,6 +117,12 @@ Passcode: {{ $booking->passcode ?? '-' }}</textarea>
                     <p class="text-gray-500 mt-0.5">
                         Pukul {{ substr($booking->start_time, 0, 5) }} - {{ substr($booking->end_time, 0, 5) }} WIB ({{ $booking->duration_minutes }} Menit)
                     </p>
+                    @if($booking->project_name)
+                        <div class="mt-2 inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-200 text-[11px]">
+                            <i class="fa-solid fa-briefcase text-[10px]"></i>
+                            <span>Proyek: <strong>{{ $booking->project_name }}</strong></span>
+                        </div>
+                    @endif
                 </div>
 
                 <div>

@@ -65,9 +65,16 @@
                                 {{ $bookings->firstItem() + $idx }}
                             </td>
                             <td class="px-4 py-3">
-                                <a href="{{ route('bookings.show', $item) }}" class="font-semibold text-gray-900 hover:text-blue-600 text-xs block">
-                                    {{ $item->topic }}
-                                </a>
+                                <div class="flex items-center gap-1.5 flex-wrap">
+                                    <a href="{{ route('bookings.show', $item) }}" class="font-semibold text-gray-900 hover:text-blue-600 text-xs">
+                                        {{ $item->topic }}
+                                    </a>
+                                    @if($item->project_name)
+                                        <span class="inline-block px-1.5 py-0.5 rounded text-[10px] bg-slate-100 text-slate-700 border border-slate-200 font-medium">
+                                            {{ $item->project_name }}
+                                        </span>
+                                    @endif
+                                </div>
                                 @if($item->description)
                                     <p class="text-[11px] text-gray-500 line-clamp-1 mt-0.5">{{ $item->description }}</p>
                                 @endif
