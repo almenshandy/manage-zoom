@@ -107,29 +107,50 @@
                                 </span>
                             </td>
                             <td class="px-4 py-3 text-right whitespace-nowrap">
-                                <div class="flex items-center justify-end gap-1">
-                                    <a href="{{ route('bookings.print', $item) }}" target="_blank" class="p-1.5 text-gray-500 hover:text-red-600 hover:bg-gray-100 rounded border border-transparent hover:border-gray-200" title="Cetak Bukti Booking PDF">
-                                        <i class="fa-solid fa-print"></i>
-                                    </a>
-                                    <a href="{{ route('bookings.show', $item) }}" class="p-1.5 text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded border border-transparent hover:border-gray-200" title="Detail">
-                                        <i class="fa-regular fa-eye"></i>
-                                    </a>
+                                <div class="relative inline-block text-left">
+                                    <button type="button" 
+                                        onclick="toggleActionDropdown('dropdown-{{ $item->id }}', this, event)"
+                                        class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-white hover:bg-gray-100 text-gray-700 border border-gray-300 rounded text-xs font-medium transition shadow-2xs">
+                                        <span>Aksi</span>
+                                        <i class="fa-solid fa-chevron-down text-[9px] text-gray-400"></i>
+                                    </button>
 
-                                    @if(auth()->user()->isAdmin() || ($item->status === 0 && $item->user_id === auth()->id()))
-                                        <a href="{{ route('bookings.edit', $item) }}" class="p-1.5 text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded border border-transparent hover:border-gray-200" title="Edit">
-                                            <i class="fa-regular fa-pen-to-square"></i>
-                                        </a>
-                                    @endif
+                                    <!-- Dropdown Menu (Fixed Overlay on top of everything) -->
+                                    <div id="dropdown-{{ $item->id }}" 
+                                        class="action-dropdown hidden fixed bg-white border border-gray-200 rounded shadow-xl z-50 py-1 text-xs divide-y divide-gray-100 text-left w-44">
+                                        <div class="py-1">
+                                            <a href="{{ route('bookings.show', $item) }}" class="flex items-center gap-2 px-3 py-1.5 text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition">
+                                                <i class="fa-regular fa-eye w-4 text-center text-gray-400"></i>
+                                                <span>Detail Booking</span>
+                                            </a>
+                                            <a href="{{ route('bookings.print', $item) }}" target="_blank" class="flex items-center gap-2 px-3 py-1.5 text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition">
+                                                <i class="fa-solid fa-print w-4 text-center text-gray-400"></i>
+                                                <span>Cetak Bukti (PDF)</span>
+                                            </a>
+                                        </div>
 
-                                    @if(auth()->user()->isAdmin() || $item->user_id === auth()->id())
-                                        <form method="POST" action="{{ route('bookings.destroy', $item) }}" onsubmit="return confirm('Hapus pengajuan booking ini?')" class="inline">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="p-1.5 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded border border-transparent hover:border-red-200" title="Hapus">
-                                                <i class="fa-regular fa-trash-can"></i>
-                                            </button>
-                                        </form>
-                                    @endif
+                                        @if(auth()->user()->isAdmin() || ($item->status === 0 && $item->user_id === auth()->id()))
+                                            <div class="py-1">
+                                                <a href="{{ route('bookings.edit', $item) }}" class="flex items-center gap-2 px-3 py-1.5 text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition">
+                                                    <i class="fa-regular fa-pen-to-square w-4 text-center text-gray-400"></i>
+                                                    <span>Edit Data</span>
+                                                </a>
+                                            </div>
+                                        @endif
+
+                                        @if(auth()->user()->isAdmin() || $item->user_id === auth()->id())
+                                            <div class="py-1">
+                                                <form method="POST" action="{{ route('bookings.destroy', $item) }}" onsubmit="return confirm('Apakah Anda yakin ingin menghapus pengajuan booking ini?')" class="block">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="w-full flex items-center gap-2 px-3 py-1.5 text-red-600 hover:bg-red-50 hover:text-red-700 transition text-left">
+                                                        <i class="fa-regular fa-trash-can w-4 text-center text-red-500"></i>
+                                                        <span>Hapus Booking</span>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        @endif
+                                    </div>
                                 </div>
                             </td>
                         </tr>
@@ -152,4 +173,49 @@
         @endif
     </div>
 </div>
+
+@push('scripts')
+<script>
+    function toggleActionDropdown(id, button, event) {
+        event.stopPropagation();
+        const target = document.getElementById(id);
+        const allDropdowns = document.querySelectorAll('.action-dropdown');
+
+        const isCurrentlyHidden = target.classList.contains('hidden');
+
+        // Sembunyikan semua dropdown lain
+        allDropdowns.forEach(d => d.classList.add('hidden'));
+
+        if (isCurrentlyHidden) {
+            // Hitung posisi tombol di viewport agar overlay melayang bebas tanpa terpotong overflow tabel
+            const rect = button.getBoundingClientRect();
+            target.classList.remove('hidden');
+
+            const dropdownHeight = target.offsetHeight || 150;
+            const dropdownWidth = target.offsetWidth || 176;
+
+            // Cek apakah ada ruang di bawah, jika tidak balik ke atas
+            let top = rect.bottom + 4;
+            if (top + dropdownHeight > window.innerHeight) {
+                top = rect.top - dropdownHeight - 4;
+            }
+
+            let left = rect.right - dropdownWidth;
+            if (left < 10) left = 10;
+
+            target.style.top = `${top}px`;
+            target.style.left = `${left}px`;
+        }
+    }
+
+    // Tutup dropdown jika klik di luar atau saat scrolling halaman
+    document.addEventListener('click', function() {
+        document.querySelectorAll('.action-dropdown').forEach(d => d.classList.add('hidden'));
+    });
+
+    window.addEventListener('scroll', function() {
+        document.querySelectorAll('.action-dropdown').forEach(d => d.classList.add('hidden'));
+    }, true);
+</script>
+@endpush
 @endsection
