@@ -402,6 +402,34 @@ class ZoomBookingController extends Controller
     }
 
     /**
+     * Kirim undangan rapat via WhatsApp menggunakan Multi-Gateway (FlowKirim / Fonnte)
+     */
+    public function sendWhatsApp(Request $request, ZoomBooking $booking, \App\Services\WhatsAppService $waService)
+    {
+        $request->validate([
+            'target'   => 'required|string',
+            'message'  => 'required|string',
+            'provider' => 'nullable|string',
+        ]);
+
+        $target = $request->input('target');
+        $message = $request->input('message');
+        $provider = $request->input('provider');
+
+        $result = $waService->sendMessage($target, $message, $provider);
+
+        if ($request->wantsJson()) {
+            return response()->json($result);
+        }
+
+        if ($result['success']) {
+            return back()->with('success', $result['message']);
+        }
+
+        return back()->with('error', $result['message']);
+    }
+
+    /**
      * Helper untuk mendeteksi apakah terjadi overlap/bentrok waktu pada akun yang sama
      */
     private function hasScheduleConflict($accountId, $startDate, $endDate, $startTime, $endTime, $ignoreBookingId = null): bool

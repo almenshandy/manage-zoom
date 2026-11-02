@@ -329,7 +329,7 @@ Passcode: {{ $booking->passcode ?? '-' }}</textarea>
     @endif
 @endif
 
-<!-- Modal Kirim WhatsApp (Flat, Minimalis & Fleksibel) -->
+<!-- Modal Kirim WhatsApp (Multi-Gateway: FlowKirim / Fonnte & Fallback WA Web) -->
 <div id="waModal" class="fixed inset-0 z-50 hidden bg-gray-900/60 backdrop-blur-xs flex items-center justify-center p-4">
     <div class="bg-white rounded border border-gray-300 max-w-md w-full shadow-lg overflow-hidden animate-fadeIn">
         <div class="px-5 py-3.5 border-b border-gray-200 flex items-center justify-between bg-white">
@@ -339,7 +339,7 @@ Passcode: {{ $booking->passcode ?? '-' }}</textarea>
                 </div>
                 <div>
                     <h4 class="text-xs font-semibold text-gray-900 uppercase tracking-wider">Kirim Undangan WhatsApp</h4>
-                    <p class="text-[11px] text-gray-500">Kirim teks link pertemuan langsung ke kontak/grup WhatsApp</p>
+                    <p class="text-[11px] text-gray-500">Kirim tautan Zoom otomatis ke kontak peserta/pemohon</p>
                 </div>
             </div>
             <button type="button" onclick="closeWaModal()" class="w-6 h-6 rounded flex items-center justify-center text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition">
@@ -348,8 +348,26 @@ Passcode: {{ $booking->passcode ?? '-' }}</textarea>
         </div>
 
         <div class="p-5 space-y-3.5 text-xs">
+            <!-- Indikator Gateway Aktif -->
+            @php
+                $waService = app(\App\Services\WhatsAppService::class);
+                $activeGateway = $waService->getActiveProvider();
+                $isGatewayReady = $waService->isEnabled();
+            @endphp
+            <div class="p-2.5 rounded border {{ $isGatewayReady ? 'bg-emerald-50/60 border-emerald-200 text-emerald-900' : 'bg-amber-50/70 border-amber-200 text-amber-900' }} flex items-center justify-between gap-2">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid {{ $isGatewayReady ? 'fa-circle-check text-emerald-600' : 'fa-circle-exclamation text-amber-600' }} text-sm"></i>
+                    <span class="text-[11px]">
+                        Gateway Aktif: <strong class="uppercase font-mono">{{ $activeGateway }}</strong> ({{ $isGatewayReady ? 'Siap Kirim' : 'Token Belum Diatur' }})
+                    </span>
+                </div>
+                @if(auth()->user()?->isAdmin())
+                    <a href="{{ route('settings.index') }}" class="text-[10px] text-blue-600 hover:underline font-semibold">Atur Gateway &rarr;</a>
+                @endif
+            </div>
+
             <div>
-                <label class="block font-medium text-gray-700 mb-1">Nomor WhatsApp Tujuan</label>
+                <label class="block font-medium text-gray-700 mb-1">Nomor WhatsApp Tujuan <span class="text-red-500">*</span></label>
                 <div class="relative">
                     <input type="text" id="waRecipientNumber" 
                         value="{{ $booking->user->no_hp ?? '' }}" 
@@ -365,7 +383,7 @@ Passcode: {{ $booking->passcode ?? '-' }}</textarea>
                     @endif
                 </div>
                 <p class="text-[10px] text-gray-500 mt-1">
-                    * Bawaan nomor profil pemohon (<strong>{{ $booking->user->name ?? 'User' }}</strong>: {{ $booking->user->no_hp ?: 'Belum ada nomor di profil' }}). Anda bebas mengganti dengan nomor lain atau mengosongkannya.
+                    * Nomor pemohon (<strong>{{ $booking->user->name ?? 'User' }}</strong>: {{ $booking->user->no_hp ?: 'Belum ada nomor di profil' }}). Pisahkan tanda koma untuk mengirim ke beberapa nomor.
                 </p>
             </div>
 
@@ -382,16 +400,19 @@ Meeting ID: {{ $booking->zoom_meeting_id }}
 Passcode: {{ $booking->passcode ?? '-' }}</textarea>
             </div>
 
-            <div class="pt-3 border-t border-gray-200 flex items-center justify-between gap-2">
-                <button type="button" onclick="sendToGeneralWhatsApp()" class="text-gray-600 hover:text-gray-900 text-[11px] underline">
-                    Buka WA Tanpa Nomor (Pilih di Chat)
+            <div id="waStatusAlert" class="hidden p-3 rounded text-xs border"></div>
+
+            <div class="pt-3 border-t border-gray-200 flex flex-col sm:flex-row items-center justify-between gap-2">
+                <button type="button" onclick="openFallbackWhatsAppWeb()" class="text-gray-500 hover:text-gray-800 text-[11px] underline self-start sm:self-auto" title="Buka via tautan manual wa.me">
+                    Buka WhatsApp Web
                 </button>
-                <div class="flex items-center gap-2">
+                <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
                     <button type="button" onclick="closeWaModal()" class="px-3.5 py-1.5 bg-white border border-gray-300 rounded text-gray-700 hover:bg-gray-50 font-medium transition">
-                        Batal
+                        Tutup
                     </button>
-                    <button type="button" onclick="sendToTargetWhatsApp()" class="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded font-medium transition inline-flex items-center gap-1.5 shadow-xs">
-                        <i class="fa-brands fa-whatsapp text-sm"></i> Buka WhatsApp
+                    <button type="button" id="btnSendGateway" onclick="sendViaGateway()" class="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded font-medium transition inline-flex items-center gap-1.5 shadow-xs">
+                        <i class="fa-solid fa-paper-plane text-xs" id="iconSendGateway"></i>
+                        <span id="textSendGateway">Kirim via {{ strtoupper($activeGateway) }}</span>
                     </button>
                 </div>
             </div>
@@ -442,9 +463,11 @@ Passcode: {{ $booking->passcode ?? '-' }}</textarea>
     const waModal = document.getElementById('waModal');
     const waRecipientInput = document.getElementById('waRecipientNumber');
     const waMessageInput = document.getElementById('waMessagePreview');
+    const waStatusAlert = document.getElementById('waStatusAlert');
 
     function openWaModal() {
         if (!waModal) return;
+        if (waStatusAlert) waStatusAlert.classList.add('hidden');
         waModal.classList.remove('hidden');
     }
 
@@ -461,34 +484,88 @@ Passcode: {{ $booking->passcode ?? '-' }}</textarea>
 
     function formatWaPhoneNumber(phone) {
         if (!phone) return '';
-        // Bersihkan spasi, tanda strip, plus, dan karakter non-angka
         let cleaned = phone.replace(/[^0-9]/g, '');
-        // Jika berawalan '0', ganti menjadi '62' (kode negara Indonesia)
         if (cleaned.startsWith('0')) {
             cleaned = '62' + cleaned.substring(1);
         }
         return cleaned;
     }
 
-    function sendToTargetWhatsApp() {
+    function sendViaGateway() {
+        const target = waRecipientInput ? waRecipientInput.value.trim() : '';
+        const message = waMessageInput ? waMessageInput.value.trim() : '';
+        const btn = document.getElementById('btnSendGateway');
+        const icon = document.getElementById('iconSendGateway');
+        const text = document.getElementById('textSendGateway');
+
+        if (!target) {
+            alert('Silakan masukkan nomor WhatsApp tujuan terlebih dahulu.');
+            if (waRecipientInput) waRecipientInput.focus();
+            return;
+        }
+
+        if (!message) {
+            alert('Isi pesan tidak boleh kosong.');
+            return;
+        }
+
+        if (waStatusAlert) {
+            waStatusAlert.classList.add('hidden');
+        }
+
+        if (btn) btn.disabled = true;
+        if (icon) icon.className = 'fa-solid fa-circle-notch fa-spin text-xs';
+        const originalText = text ? text.textContent : 'Kirim';
+        if (text) text.textContent = 'Mengirim...';
+
+        fetch("{{ route('bookings.send-whatsapp', $booking) }}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({ target, message })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (waStatusAlert) {
+                waStatusAlert.classList.remove('hidden');
+                if (data.success) {
+                    waStatusAlert.className = 'p-3 rounded text-xs border bg-emerald-50 border-emerald-200 text-emerald-800';
+                    waStatusAlert.innerHTML = `<div class="flex items-center gap-2"><i class="fa-solid fa-circle-check text-emerald-600"></i><span><strong>Berhasil!</strong> ${data.message}</span></div>`;
+                } else {
+                    waStatusAlert.className = 'p-3 rounded text-xs border bg-rose-50 border-rose-200 text-rose-800';
+                    waStatusAlert.innerHTML = `<div class="flex items-start gap-2"><i class="fa-solid fa-circle-xmark text-rose-600 mt-0.5"></i><div><strong>Gagal mengirim [${(data.provider || 'Gateway').toUpperCase()}]:</strong><p class="mt-0.5 text-[11px]">${data.message}</p></div></div>`;
+                }
+            }
+        })
+        .catch(err => {
+            if (waStatusAlert) {
+                waStatusAlert.classList.remove('hidden');
+                waStatusAlert.className = 'p-3 rounded text-xs border bg-rose-50 border-rose-200 text-rose-800';
+                waStatusAlert.innerHTML = `<div class="flex items-center gap-2"><i class="fa-solid fa-triangle-exclamation text-rose-600"></i><span><strong>Koneksi Error:</strong> ${err.message}</span></div>`;
+            }
+        })
+        .finally(() => {
+            if (btn) btn.disabled = false;
+            if (icon) icon.className = 'fa-solid fa-paper-plane text-xs';
+            if (text) text.textContent = originalText;
+        });
+    }
+
+    function openFallbackWhatsAppWeb() {
         const rawPhone = waRecipientInput ? waRecipientInput.value.trim() : '';
         const message = waMessageInput ? waMessageInput.value : '';
         const encodedMsg = encodeURIComponent(message);
 
         if (!rawPhone) {
-            // Jika nomor dikosongkan, buka whatsapp api tanpa nomor target (bisa pilih kontak di WA)
             window.open(`https://api.whatsapp.com/send?text=${encodedMsg}`, '_blank');
             return;
         }
 
         const formattedPhone = formatWaPhoneNumber(rawPhone);
         window.open(`https://api.whatsapp.com/send?phone=${formattedPhone}&text=${encodedMsg}`, '_blank');
-    }
-
-    function sendToGeneralWhatsApp() {
-        const message = waMessageInput ? waMessageInput.value : '';
-        const encodedMsg = encodeURIComponent(message);
-        window.open(`https://api.whatsapp.com/send?text=${encodedMsg}`, '_blank');
     }
 
     if (waModal) {

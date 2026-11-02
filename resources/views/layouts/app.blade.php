@@ -158,9 +158,9 @@
                             <span class="sidebar-text">Backup & Ekspor DB</span>
                         </a>
 
-                        <a href="{{ route('settings.index') }}" class="sidebar-nav-item flex items-center gap-3 px-3 py-2 rounded border {{ request()->routeIs('settings.*') ? 'bg-gray-100 text-gray-900 border-gray-300 font-semibold' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50 border-transparent' }} transition-colors" title="Pengaturan Zoom">
+                        <a href="{{ route('settings.index') }}" class="sidebar-nav-item flex items-center gap-3 px-3 py-2 rounded border {{ request()->routeIs('settings.*') ? 'bg-gray-100 text-gray-900 border-gray-300 font-semibold' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50 border-transparent' }} transition-colors" title="Pengaturan Sistem & WhatsApp">
                             <i class="fa-solid fa-sliders w-4 text-center shrink-0 {{ request()->routeIs('settings.*') ? 'text-gray-900' : 'text-gray-400' }}"></i>
-                            <span class="sidebar-text">Pengaturan Zoom</span>
+                            <span class="sidebar-text">Pengaturan Sistem</span>
                         </a>
 
                         <a href="{{ route('activity-logs.index') }}" class="sidebar-nav-item flex items-center gap-3 px-3 py-2 rounded border {{ request()->routeIs('activity-logs.*') ? 'bg-gray-100 text-gray-900 border-gray-300 font-semibold' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50 border-transparent' }} transition-colors" title="Audit & Log Aktivitas">

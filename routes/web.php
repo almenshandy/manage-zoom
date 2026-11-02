@@ -36,6 +36,7 @@ Route::middleware('auth')->group(function () {
     Route::post('bookings/{booking}/approve', [ZoomBookingController::class, 'approve'])->name('bookings.approve');
     Route::post('bookings/{booking}/reject', [ZoomBookingController::class, 'reject'])->name('bookings.reject');
     Route::post('bookings/{booking}/generate-meeting', [ZoomBookingController::class, 'generateMeeting'])->name('bookings.generate-meeting');
+    Route::post('bookings/{booking}/send-whatsapp', [ZoomBookingController::class, 'sendWhatsApp'])->name('bookings.send-whatsapp');
     Route::get('bookings/{booking}/print', [BookingReportController::class, 'printBooking'])->name('bookings.print');
     Route::get('bookings-report/print-all', [BookingReportController::class, 'printAll'])->name('bookings.print-all');
 
@@ -56,9 +57,12 @@ Route::middleware('auth')->group(function () {
         Route::post('zoom-accounts/{zoom_account}/test-connection', [ZoomAccountController::class, 'testConnection'])->name('zoom-accounts.test-connection');
         Route::resource('zoom-accounts', ZoomAccountController::class);
 
-        // Zoom API Global Settings
+        // Settings Area (Zoom & Multi-Gateway WhatsApp)
         Route::get('settings/zoom', [\App\Http\Controllers\SettingController::class, 'index'])->name('settings.index');
         Route::post('settings/zoom', [\App\Http\Controllers\SettingController::class, 'update'])->name('settings.update');
+        Route::post('settings/whatsapp', [\App\Http\Controllers\SettingController::class, 'updateWhatsApp'])->name('settings.update-whatsapp');
+        Route::post('settings/whatsapp/check-status', [\App\Http\Controllers\SettingController::class, 'checkWhatsAppStatus'])->name('settings.whatsapp-status');
+        Route::post('settings/whatsapp/test-send', [\App\Http\Controllers\SettingController::class, 'testWhatsApp'])->name('settings.whatsapp-test');
 
         // User Management & Remote Sync
         Route::get('users/sync-preview', [UserController::class, 'syncPreview'])->name('users.sync-preview');
