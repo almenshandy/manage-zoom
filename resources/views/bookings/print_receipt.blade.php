@@ -84,7 +84,7 @@
         <tr>
             <td class="label">Unit / Departemen</td>
             <td class="colon">:</td>
-            <td>{{ $booking->user->departemen ?? 'Umum' }}</td>
+            <td>{{ $booking->user->department_name ?? 'Umum' }}</td>
         </tr>
         <tr>
             <td class="label">Topik Kegiatan</td>
@@ -149,7 +149,7 @@
                 Pemohon Kegiatan,<br>
                 <div class="stamp-space"></div>
                 <strong>{{ $booking->user->name ?? '-' }}</strong><br>
-                <span>{{ $booking->user->jabatan ?? 'Staf Pegawai' }}</span>
+                <span>{{ $booking->user->position_name ?? 'Staf Pegawai' }}</span>
             </td>
             <td>
                 Administrator Layanan Zoom,<br>

@@ -80,8 +80,8 @@
                                 {{ $user->email }}
                             </td>
                             <td class="px-4 py-3">
-                                <span class="text-gray-800 font-medium block">{{ $user->jabatan ?: '-' }}</span>
-                                <span class="text-gray-500 text-[11px]">{{ $user->departemen ?: 'Umum' }}</span>
+                                <span class="text-gray-800 font-medium block">{{ $user->position_name ?: '-' }}</span>
+                                <span class="text-gray-500 text-[11px]">{{ $user->department_name ?: 'Umum' }}</span>
                             </td>
                             <td class="px-4 py-3 whitespace-nowrap text-gray-600 font-mono">
                                 {{ $user->no_hp ?: '-' }}

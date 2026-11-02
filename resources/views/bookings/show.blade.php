@@ -42,7 +42,7 @@
                     <h2 class="text-base font-bold text-gray-900">{{ $booking->topic }}</h2>
                     <p class="text-xs text-gray-500 mt-0.5">
                         Pemohon: <span class="font-medium text-gray-800">{{ $booking->user->name ?? '-' }}</span> &bull; 
-                        Unit/Departemen: <span class="text-gray-700">{{ $booking->user->departemen ?? 'Umum' }}</span>
+                        Unit/Departemen: <span class="text-gray-700">{{ $booking->user->department_name ?? 'Umum' }}</span>
                     </p>
                 </div>
                 <div class="text-left sm:text-right">

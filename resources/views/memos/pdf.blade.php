@@ -81,7 +81,7 @@
         @if($memo->booking)
             <tr>
                 <td class="label">Nama Pemohon</td>
-                <td>: {{ $memo->booking->user->name ?? '-' }} ({{ $memo->booking->user->departemen ?? 'Umum' }})</td>
+                <td>: {{ $memo->booking->user->name ?? '-' }} ({{ $memo->booking->user->department_name ?? 'Umum' }})</td>
             </tr>
             <tr>
                 <td class="label">Topik Kegiatan</td>

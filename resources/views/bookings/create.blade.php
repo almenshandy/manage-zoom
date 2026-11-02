@@ -230,10 +230,10 @@
                                         data-id="{{ $u->id }}"
                                         data-name="{{ $u->name }}"
                                         data-email="{{ $u->email }}"
-                                        data-dept="{{ $u->departemen ?: 'Umum' }}">
+                                        data-dept="{{ $u->department_name ?: 'Umum' }}">
                                         <div>
                                             <span class="font-medium text-gray-900 block user-item-name">{{ $u->name }}</span>
-                                            <span class="text-[10px] text-gray-500 user-item-meta">{{ $u->email }} &bull; {{ $u->departemen ?: 'Umum' }}</span>
+                                            <span class="text-[10px] text-gray-500 user-item-meta">{{ $u->email }} &bull; {{ $u->department_name ?: 'Umum' }}</span>
                                         </div>
                                         <i class="fa-solid fa-check text-emerald-600 text-xs user-check-icon {{ $u->id == auth()->id() ? '' : 'hidden' }}"></i>
                                     </div>

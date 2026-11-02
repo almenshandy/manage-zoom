@@ -143,6 +143,11 @@
                             <span class="sidebar-text">Manajemen Pengguna</span>
                         </a>
 
+                        <a href="{{ route('departments-positions.index') }}" class="sidebar-nav-item flex items-center gap-3 px-3 py-2 rounded border {{ request()->routeIs('departments-positions.*') ? 'bg-gray-100 text-gray-900 border-gray-300 font-semibold' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50 border-transparent' }} transition-colors" title="Departemen & Jabatan">
+                            <i class="fa-solid fa-sitemap w-4 text-center shrink-0 {{ request()->routeIs('departments-positions.*') ? 'text-gray-900' : 'text-gray-400' }}"></i>
+                            <span class="sidebar-text">Departemen & Jabatan</span>
+                        </a>
+
                         <a href="{{ route('projects.index') }}" class="sidebar-nav-item flex items-center gap-3 px-3 py-2 rounded border {{ request()->routeIs('projects.*') ? 'bg-gray-100 text-gray-900 border-gray-300 font-semibold' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50 border-transparent' }} transition-colors" title="Master Proyek">
                             <i class="fa-solid fa-briefcase w-4 text-center shrink-0 {{ request()->routeIs('projects.*') ? 'text-gray-900' : 'text-gray-400' }}"></i>
                             <span class="sidebar-text">Master Proyek</span>

@@ -52,7 +52,7 @@
                         <p class="text-gray-500 text-[11px]">Mengetahui,</p>
                         <div class="h-16"></div>
                         <p class="font-bold text-gray-900 underline">{{ $memo->user->name ?? 'Administrator' }}</p>
-                        <p class="text-gray-500 text-[10px]">{{ $memo->user->jabatan ?? 'Pejabat Berwenang' }}</p>
+                        <p class="text-gray-500 text-[10px]">{{ $memo->user->position_name ?? 'Pejabat Berwenang' }}</p>
                     </div>
                 </div>
             @endif

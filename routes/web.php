@@ -11,6 +11,7 @@ use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\BookingReportController;
 use App\Http\Controllers\DatabaseBackupController;
+use App\Http\Controllers\DepartmentPositionController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Middleware\EnsureAdmin;
 
@@ -68,6 +69,17 @@ Route::middleware('auth')->group(function () {
 
         // Master Proyek
         Route::resource('projects', ProjectController::class)->except(['create', 'show', 'edit']);
+
+        // Master Departemen & Jabatan LSP
+        Route::get('departments-positions', [DepartmentPositionController::class, 'index'])->name('departments-positions.index');
+        Route::get('departments-positions/sync-preview', [DepartmentPositionController::class, 'syncPreview'])->name('departments-positions.sync-preview');
+        Route::post('departments-positions/sync-execute', [DepartmentPositionController::class, 'syncExecute'])->name('departments-positions.sync-execute');
+        Route::post('departments', [DepartmentPositionController::class, 'storeDepartment'])->name('departments.store');
+        Route::put('departments/{department}', [DepartmentPositionController::class, 'updateDepartment'])->name('departments.update');
+        Route::delete('departments/{department}', [DepartmentPositionController::class, 'destroyDepartment'])->name('departments.destroy');
+        Route::post('positions', [DepartmentPositionController::class, 'storePosition'])->name('positions.store');
+        Route::put('positions/{position}', [DepartmentPositionController::class, 'updatePosition'])->name('positions.update');
+        Route::delete('positions/{position}', [DepartmentPositionController::class, 'destroyPosition'])->name('positions.destroy');
 
         // Database Backup & Export
         Route::get('backup', [DatabaseBackupController::class, 'index'])->name('backup.index');

@@ -85,7 +85,7 @@
                     </td>
                     <td>
                         {{ $b->user->name ?? '-' }}
-                        <div style="font-size: 7.5pt; color: #6b7280;">{{ $b->user->departemen ?? 'Umum' }}</div>
+                        <div style="font-size: 7.5pt; color: #6b7280;">{{ $b->user->department_name ?? 'Umum' }}</div>
                     </td>
                     <td>{{ $b->date_range_formatted }}</td>
                     <td>{{ substr($b->start_time, 0, 5) }} - {{ substr($b->end_time, 0, 5) }} WIB</td>

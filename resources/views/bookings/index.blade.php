@@ -81,7 +81,7 @@
                             </td>
                             <td class="px-4 py-3 whitespace-nowrap">
                                 <span class="font-medium text-gray-900 block">{{ $item->user->name ?? '-' }}</span>
-                                <span class="text-[10px] text-gray-500">{{ $item->user->departemen ?? 'Umum' }}</span>
+                                <span class="text-[10px] text-gray-500">{{ $item->user->department_name ?? 'Umum' }}</span>
                             </td>
                             <td class="px-4 py-3 whitespace-nowrap">
                                 <div class="font-medium text-gray-900">{{ $item->date_range_formatted }}</div>

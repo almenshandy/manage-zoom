@@ -64,4 +64,58 @@ class User extends Authenticatable
     {
         return $this->hasMany(ActivityLog::class);
     }
+
+    public function departmentRel()
+    {
+        return $this->belongsTo(Department::class, 'departemen', 'kode_departemen');
+    }
+
+    public function positionRel()
+    {
+        return $this->belongsTo(Position::class, 'jabatan', 'kode_jabatan');
+    }
+
+    /**
+     * Accessor nama departemen yang human-readable
+     */
+    public function getDepartmentNameAttribute(): string
+    {
+        if (empty($this->departemen)) {
+            return '-';
+        }
+
+        // Cek jika relasi department ada berdasarkan kode (misal: DP-001)
+        if ($this->relationLoaded('departmentRel') && $this->departmentRel) {
+            return $this->departmentRel->nama_departemen;
+        }
+
+        $dept = Department::where('kode_departemen', $this->departemen)->first();
+        if ($dept) {
+            return $dept->nama_departemen;
+        }
+
+        return $this->departemen;
+    }
+
+    /**
+     * Accessor nama jabatan yang human-readable
+     */
+    public function getPositionNameAttribute(): string
+    {
+        if (empty($this->jabatan)) {
+            return '-';
+        }
+
+        // Cek jika relasi position ada berdasarkan kode (misal: JBT-01)
+        if ($this->relationLoaded('positionRel') && $this->positionRel) {
+            return $this->positionRel->nama_jabatan;
+        }
+
+        $pos = Position::where('kode_jabatan', $this->jabatan)->first();
+        if ($pos) {
+            return $pos->nama_jabatan;
+        }
+
+        return $this->jabatan;
+    }
 }
