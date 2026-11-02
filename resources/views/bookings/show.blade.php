@@ -389,16 +389,25 @@ Passcode: {{ $booking->passcode ?? '-' }}</textarea>
 
             <div>
                 <label class="block font-medium text-gray-700 mb-1">Pratinjau Pesan yang Dikirim</label>
-                <textarea id="waMessagePreview" rows="5"
-                    class="w-full p-2.5 bg-gray-50 border border-gray-300 rounded font-mono text-[11px] text-gray-700 leading-relaxed focus:outline-none focus:border-gray-500">Agenda: {{ $booking->topic }}
-Waktu: {{ $booking->date_range_formatted }}, Pukul {{ substr($booking->start_time, 0, 5) }} - {{ substr($booking->end_time, 0, 5) }} WIB
-
-Join Zoom Meeting:
-{{ $booking->join_url }}
-
-Meeting ID: {{ $booking->zoom_meeting_id }}
-Passcode: {{ $booking->passcode ?? '-' }}</textarea>
+                <textarea id="waMessagePreview" rows="6"
+                    class="w-full p-2.5 bg-gray-50 border border-gray-300 rounded font-mono text-[11px] text-gray-700 leading-relaxed focus:outline-none focus:border-gray-500"></textarea>
             </div>
+
+            <!-- Opsi Tambahan: Sertakan Akun Host (Email & Password) -->
+            @if(!empty($booking->account))
+                <div class="p-2.5 bg-gray-50 border border-gray-200 rounded flex items-center justify-between gap-3">
+                    <div class="flex items-center gap-2">
+                        <input type="checkbox" id="checkIncludeCredentials" onchange="toggleCredentialsInMessage(this.checked)"
+                            class="rounded border-gray-300 text-gray-900 focus:ring-0 cursor-pointer">
+                        <label for="checkIncludeCredentials" class="font-medium text-gray-800 cursor-pointer text-xs select-none">
+                            Sertakan Email & Password Akun Zoom (Host)
+                        </label>
+                    </div>
+                    <span class="text-[10px] text-gray-400 font-mono hidden sm:inline">
+                        {{ $booking->account->email }}
+                    </span>
+                </div>
+            @endif
 
             <div id="waStatusAlert" class="hidden p-3 rounded text-xs border"></div>
 
@@ -459,15 +468,58 @@ Passcode: {{ $booking->passcode ?? '-' }}</textarea>
         input.value = result;
     }
 
+    // Template teks dasar pertemuan
+    const baseMeetingMessage = `Agenda: {{ $booking->topic }}
+Waktu: {{ $booking->date_range_formatted }}, Pukul {{ substr($booking->start_time, 0, 5) }} - {{ substr($booking->end_time, 0, 5) }} WIB
+
+Join Zoom Meeting:
+{{ $booking->join_url }}
+
+Meeting ID: {{ $booking->zoom_meeting_id }}
+Passcode: {{ $booking->passcode ?? '-' }}`;
+
+    // Teks kredensial Host Akun Zoom
+    @if(!empty($booking->account))
+    const hostCredentialsText = `
+
+-----------------------------
+*AKUN HOST ZOOM:*
+Email: {{ $booking->account->email }}
+Password: {{ $booking->account->password ?? '-' }}`;
+    @else
+    const hostCredentialsText = '';
+    @endif
+
+    function updateWaMessageText(includeCredentials = false) {
+        if (!waMessageInput) return;
+        if (includeCredentials && hostCredentialsText) {
+            waMessageInput.value = baseMeetingMessage + hostCredentialsText;
+        } else {
+            waMessageInput.value = baseMeetingMessage;
+        }
+    }
+
+    function toggleCredentialsInMessage(isChecked) {
+        updateWaMessageText(isChecked);
+    }
+
     // Modal WhatsApp Logic
     const waModal = document.getElementById('waModal');
     const waRecipientInput = document.getElementById('waRecipientNumber');
     const waMessageInput = document.getElementById('waMessagePreview');
     const waStatusAlert = document.getElementById('waStatusAlert');
 
+    // Inisialisasi awal isi textarea saat script dimuat
+    updateWaMessageText(false);
+
     function openWaModal() {
         if (!waModal) return;
         if (waStatusAlert) waStatusAlert.classList.add('hidden');
+        const checkCreds = document.getElementById('checkIncludeCredentials');
+        if (checkCreds) {
+            checkCreds.checked = false; // Reset checklist ke uncheck setiap buka modal
+        }
+        updateWaMessageText(false);
         waModal.classList.remove('hidden');
     }
 
