@@ -43,9 +43,16 @@
 
                 <div>
                     <label class="block text-xs font-medium text-gray-700 mb-1">Password</label>
-                    <input type="password" name="password" required
-                        class="w-full px-3 py-1.5 bg-white border border-gray-300 rounded text-xs focus:outline-none focus:border-gray-500 transition"
-                        placeholder="••••••••">
+                    <div class="relative">
+                        <input type="password" name="password" id="loginPassword" required
+                            class="w-full pl-3 pr-9 py-1.5 bg-white border border-gray-300 rounded text-xs focus:outline-none focus:border-gray-500 transition"
+                            placeholder="••••••••">
+                        <button type="button" onclick="togglePasswordVisibility()" tabindex="-1"
+                            class="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none"
+                            title="Tampilkan / Sembunyikan Password">
+                            <i class="fa-regular fa-eye text-xs" id="passwordEyeIcon"></i>
+                        </button>
+                    </div>
                 </div>
 
                 <div class="flex items-center justify-between text-xs pt-1">
@@ -65,5 +72,21 @@
             </div>
         </div>
     </div>
+
+    <script>
+        function togglePasswordVisibility() {
+            const passwordInput = document.getElementById('loginPassword');
+            const eyeIcon = document.getElementById('passwordEyeIcon');
+            if (!passwordInput || !eyeIcon) return;
+
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                eyeIcon.className = 'fa-regular fa-eye-slash text-xs text-gray-700';
+            } else {
+                passwordInput.type = 'password';
+                eyeIcon.className = 'fa-regular fa-eye text-xs text-gray-400';
+            }
+        }
+    </script>
 </body>
 </html>

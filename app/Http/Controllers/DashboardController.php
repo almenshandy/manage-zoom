@@ -14,6 +14,7 @@ class DashboardController extends Controller
         $today = now()->toDateString();
 
         $stats = [
+            'total_bookings'     => ZoomBooking::count(),
             'total_accounts'     => ZoomAccount::count(),
             'active_accounts'    => ZoomAccount::whereDate('expired_date', '>=', $today)->count(),
             'pending_bookings'   => ZoomBooking::where('status', ZoomBooking::STATUS_PENDING)->count(),
@@ -24,6 +25,21 @@ class DashboardController extends Controller
                 ->whereDate('end_date', '>=', $today)
                 ->count(),
         ];
+
+        // Hitung perbandingan meeting per departemen
+        $allBookings = ZoomBooking::with('user')->get();
+        $departmentMeetings = [];
+
+        foreach ($allBookings as $booking) {
+            $deptName = $booking->user?->department_name ?: 'Lainnya / Umum';
+            $departmentMeetings[$deptName] = ($departmentMeetings[$deptName] ?? 0) + 1;
+        }
+
+        arsort($departmentMeetings);
+
+        // Ambil label dan jumlah untuk chart
+        $chartLabels = array_keys($departmentMeetings);
+        $chartData = array_values($departmentMeetings);
 
         $upcomingBookings = ZoomBooking::with(['user', 'account'])
             ->whereIn('status', [ZoomBooking::STATUS_APPROVED, ZoomBooking::STATUS_EXECUTED])
@@ -39,6 +55,13 @@ class DashboardController extends Controller
             ->take(5)
             ->get();
 
-        return view('dashboard', compact('stats', 'upcomingBookings', 'recentPending'));
+        return view('dashboard', compact(
+            'stats',
+            'departmentMeetings',
+            'chartLabels',
+            'chartData',
+            'upcomingBookings',
+            'recentPending'
+        ));
     }
 }
