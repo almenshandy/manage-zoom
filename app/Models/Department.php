@@ -20,4 +20,9 @@ class Department extends Model
     {
         return $this->hasMany(User::class, 'departemen', 'kode_departemen');
     }
+
+    public function projects()
+    {
+        return $this->hasMany(Project::class, 'department_id');
+    }
 }

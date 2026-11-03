@@ -10,6 +10,7 @@ class Project extends Model
     use HasFactory;
 
     protected $fillable = [
+        'department_id',
         'name',
         'code',
         'description',
@@ -26,6 +27,17 @@ class Project extends Model
         ];
     }
 
+    /**
+     * Relasi ke Departemen penanggung jawab proyek
+     */
+    public function department()
+    {
+        return $this->belongsTo(Department::class, 'department_id');
+    }
+
+    /**
+     * Relasi ke seluruh booking Zoom yang terkait dengan proyek ini
+     */
     public function bookings()
     {
         return $this->hasMany(ZoomBooking::class, 'project_name', 'name');
