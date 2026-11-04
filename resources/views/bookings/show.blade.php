@@ -102,9 +102,10 @@
                                 </button>
                             </div>
                         </div>
-                        <textarea id="invitationTemplate" rows="4" readonly
+                        <textarea id="invitationTemplate" rows="5" readonly
                             class="w-full p-2.5 bg-white border border-gray-300 rounded text-[11px] font-mono text-gray-700 select-all leading-relaxed focus:outline-none">Agenda: {{ $booking->topic }}
-Waktu: {{ $booking->date_range_formatted }}, Pukul {{ substr($booking->start_time, 0, 5) }} - {{ substr($booking->end_time, 0, 5) }} WIB
+Hari/Tanggal: {{ $booking->date_range_formatted }}
+Waktu: {{ substr($booking->start_time, 0, 5) }} - {{ substr($booking->end_time, 0, 5) }} WIB
 
 Join Zoom Meeting:
 {{ $booking->join_url }}
@@ -470,7 +471,8 @@ Passcode: {{ $booking->passcode ?? '-' }}</textarea>
 
     // Template teks dasar pertemuan
     const baseMeetingMessage = `Agenda: {{ $booking->topic }}
-Waktu: {{ $booking->date_range_formatted }}, Pukul {{ substr($booking->start_time, 0, 5) }} - {{ substr($booking->end_time, 0, 5) }} WIB
+Hari/Tanggal: {{ $booking->date_range_formatted }}
+Waktu: {{ substr($booking->start_time, 0, 5) }} - {{ substr($booking->end_time, 0, 5) }} WIB
 
 Join Zoom Meeting:
 {{ $booking->join_url }}

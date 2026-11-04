@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\ZoomBooking;
 use App\Models\ZoomAccount;
+use App\Models\User;
 use App\Services\ZoomService;
 use App\Http\Requests\StoreBookingRequest;
 use App\Http\Requests\UpdateBookingRequest;
@@ -202,7 +203,11 @@ class ZoomBookingController extends Controller
             ->orderBy('expired_date', 'asc')
             ->get();
         $projects = \App\Models\Project::where('status', 'active')->orderBy('name')->get();
-        return view('bookings.edit', compact('booking', 'accounts', 'projects'));
+        $users = auth()->user()->isAdmin() 
+            ? User::where('is_active', true)->orderBy('name')->get() 
+            : collect([]);
+
+        return view('bookings.edit', compact('booking', 'accounts', 'projects', 'users'));
     }
 
     public function update(UpdateBookingRequest $request, ZoomBooking $booking)
