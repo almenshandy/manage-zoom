@@ -18,7 +18,7 @@
     <!-- Table Card (Flat) -->
     <x-card>
         <div class="overflow-x-auto">
-            <table class="w-full text-left text-xs">
+            <table class="mobile-card-table w-full text-left text-xs">
                 <thead class="bg-gray-50 text-gray-600 font-semibold border-b border-gray-200 uppercase tracking-wider text-[11px]">
                     <tr>
                         <th class="px-4 py-3">Nomor Memo / Surat</th>
@@ -31,10 +31,10 @@
                 <tbody class="divide-y divide-gray-200 text-gray-700">
                     @forelse($memos as $m)
                         <tr class="hover:bg-gray-50/75 transition-colors">
-                            <td class="px-4 py-3 font-mono font-semibold text-gray-900 text-xs">
+                            <td data-label="Nomor Memo / Surat" class="px-4 py-3 font-mono font-semibold text-gray-900 text-xs">
                                 {{ $m->memo_number }}
                             </td>
-                            <td class="px-4 py-3">
+                            <td data-label="Kegiatan Terkait" class="px-4 py-3">
                                 @if($m->booking)
                                     <a href="{{ route('bookings.show', $m->booking->id) }}" class="font-semibold text-gray-900 hover:text-blue-600 block">
                                         {{ $m->booking->topic }}
@@ -44,13 +44,13 @@
                                     <span class="text-gray-400 italic">Umum / Tanpa Booking</span>
                                 @endif
                             </td>
-                            <td class="px-4 py-3 text-gray-700 whitespace-nowrap">
+                            <td data-label="Tanggal Surat" class="px-4 py-3 text-gray-700 whitespace-nowrap">
                                 {{ $m->memo_date ? $m->memo_date->format('d M Y') : '-' }}
                             </td>
-                            <td class="px-4 py-3 text-gray-700 whitespace-nowrap">
+                            <td data-label="Pembuat Memo" class="px-4 py-3 text-gray-700 whitespace-nowrap">
                                 {{ $m->user->name ?? '-' }}
                             </td>
-                            <td class="px-4 py-3 text-right whitespace-nowrap">
+                            <td data-label="Aksi" class="px-4 py-3 text-right whitespace-nowrap">
                                 <div class="flex items-center justify-end gap-1">
                                     <a href="{{ route('memos.show', $m->id) }}" class="p-1.5 text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded border border-transparent hover:border-gray-200 transition" title="Lihat">
                                         <i class="fa-regular fa-eye"></i>

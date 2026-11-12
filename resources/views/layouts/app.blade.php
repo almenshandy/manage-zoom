@@ -9,32 +9,11 @@
     <!-- Favicon & Custom App Icon -->
     <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
     <link rel="shortcut icon" href="{{ asset('favicon.svg') }}">
-    <!-- Tailwind CSS CDN & FontAwesome & Inter Font -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['"Inter"', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', 'sans-serif'],
-                    },
-                    colors: {
-                        brand: {
-                            50: '#f0f7ff',
-                            100: '#e0effe',
-                            600: '#0284c7',
-                            700: '#0369a1',
-                            800: '#075985',
-                        }
-                    }
-                }
-            }
-        }
-    </script>
     <style>
         /* Flat UI Reset for professional minimalism */
         body {
@@ -75,6 +54,7 @@
             transition: width 0.2s ease-in-out;
         }
 
+        @media (min-width: 768px) {
         body.sidebar-mini #mainSidebar {
             width: 4.25rem !important;
         }
@@ -103,11 +83,14 @@
             justify-content: center !important;
             padding: 0.5rem !important;
         }
+        }
     </style>
     @stack('styles')
 </head>
 
 <body class="bg-gray-50 text-gray-800 antialiased font-sans text-sm selection:bg-gray-200">
+    <button id="sidebarBackdrop" type="button" onclick="closeSidebar()" tabindex="-1" aria-label="Tutup menu"
+        class="hidden fixed inset-0 z-40 bg-gray-900/60 md:hidden"></button>
     <div class="min-h-screen flex flex-col md:flex-row">
         <!-- Sidebar Navigation (Clean, Flat, Bordered) -->
         <aside id="mainSidebar"
@@ -122,6 +105,10 @@
                         <span
                             class="text-[10px] font-medium bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded border border-gray-200">v2.0</span>
                     </div>
+                    <button id="sidebarCloseBtn" type="button" onclick="closeSidebar()" aria-label="Tutup menu"
+                        class="ml-auto w-11 h-11 rounded hover:bg-gray-100 md:hidden">
+                        <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+                    </button>
                 </div>
 
                 <!-- Nav links -->
@@ -251,27 +238,29 @@
         </aside>
 
         <!-- Main Body -->
-        <div class="flex-1 flex flex-col min-h-screen overflow-x-hidden bg-gray-50/50">
+        <div class="app-main min-w-0 w-full flex-1 flex flex-col min-h-screen bg-gray-50/50">
             <!-- Topbar Header (Flat, border-only) -->
-            <header class="h-14 bg-white border-b border-gray-200 px-4 sm:px-6 flex items-center justify-between">
-                <div class="flex items-center gap-3">
+            <header class="app-topbar min-h-16 md:min-h-14 bg-white border-b border-gray-200 px-4 sm:px-6 py-2 md:py-0 flex items-center justify-between gap-2">
+                <div class="min-w-0 flex items-center gap-2 md:gap-3">
                     <!-- Toggle Minimize / Maximize Sidebar Button -->
-                    <button type="button" id="sidebarToggleBtn" onclick="toggleSidebar()"
-                        class="w-8 h-8 rounded flex items-center justify-center text-gray-500 hover:text-gray-900 hover:bg-gray-100 transition border border-gray-200"
-                        title="Perkecil / Perbesar Sidebar">
+                    <button type="button" id="sidebarToggleBtn" onclick="toggleSidebar()" aria-controls="mainSidebar" aria-expanded="false" aria-label="Buka menu"
+                        class="w-11 h-11 md:w-8 md:h-8 shrink-0 rounded hidden md:flex items-center justify-center text-gray-500 hover:text-gray-900 hover:bg-gray-100 transition border border-gray-200"
+                        title="Buka menu">
                         <i class="fa-solid fa-bars-staggered text-xs"></i>
                     </button>
 
-                    <h2 class="text-base font-semibold text-gray-900 leading-tight">{{ $header ?? 'Dashboard' }}</h2>
+                    <a href="{{ route('dashboard') }}" class="mobile-app-brand md:hidden"><img src="{{ asset('icon.svg') }}" alt="" width="28" height="28"> ManageZoom</a>
+                    <h2 class="hidden md:block min-w-0 text-sm md:text-base font-semibold text-gray-900 leading-tight break-words">{{ $header ?? 'Dashboard' }}</h2>
                 </div>
-                <div class="flex items-center gap-3">
-                    <span class="text-xs text-gray-500 hidden sm:inline border-r border-gray-200 pr-3">
+                <div class="flex items-center gap-3 shrink-0">
+                    <span class="text-xs text-gray-500 hidden md:inline border-r border-gray-200 pr-3">
                         <i class="fa-regular fa-clock mr-1 text-gray-400"></i> {{ now()->format('d M Y, H:i') }} WIB
                     </span>
                     <a href="{{ route('bookings.create') }}"
-                        class="inline-flex items-center gap-1.5 bg-gray-900 hover:bg-black text-white text-xs font-medium px-3 py-1.5 rounded transition">
-                        <i class="fa-solid fa-plus text-[10px]"></i> Booking Baru
+                        class="hidden md:inline-flex items-center gap-1.5 bg-gray-900 hover:bg-black text-white text-xs font-medium px-3 py-1.5 rounded transition">
+                        <i class="fa-solid fa-plus text-[10px]"></i> <span>Booking<span class="hidden sm:inline"> Baru</span></span>
                     </a>
+                    <span class="mobile-user-avatar md:hidden" role="img" aria-label="Masuk sebagai {{ auth()->user()?->name ?? 'Pengguna' }}">{{ strtoupper(substr(auth()->user()?->name ?? 'U', 0, 1)) }}</span>
                 </div>
             </header>
 
@@ -325,31 +314,44 @@
             </div>
 
             <!-- Page Content -->
-            <main class="p-6 flex-1">
+            <main id="mainContent" class="min-w-0 p-4 md:p-6 flex-1">
+                @php
+                    $mobilePageTitle = match (true) {
+                        request()->routeIs('dashboard') => 'Ringkasan',
+                        request()->routeIs('bookings.index') => 'Booking Zoom',
+                        request()->routeIs('bookings.create') => 'Booking baru',
+                        request()->routeIs('bookings.edit') => 'Edit booking',
+                        request()->routeIs('bookings.show') => 'Detail booking',
+                        request()->routeIs('zoom-accounts.index') => 'Akun Zoom',
+                        request()->routeIs('zoom-accounts.create') => 'Tambah akun Zoom',
+                        request()->routeIs('zoom-accounts.edit') => 'Edit akun Zoom',
+                        request()->routeIs('projects.*') => 'Proyek kegiatan',
+                        request()->routeIs('calendar.*') => 'Kalender meeting',
+                        request()->routeIs('users.*') => 'Pengguna',
+                        request()->routeIs('memos.*') => 'Memo & surat',
+                        request()->routeIs('settings.*') => 'Pengaturan',
+                        default => $header ?? 'ManageZoom',
+                    };
+                @endphp
+                <div class="mobile-page-heading md:hidden"><h1>{{ $mobilePageTitle }}</h1></div>
                 @yield('content')
             </main>
 
+            <nav id="mobileBottomNav" class="mobile-bottom-nav md:hidden" aria-label="Navigasi utama">
+                <a href="{{ route('dashboard') }}" @if(request()->routeIs('dashboard')) aria-current="page" @endif><i class="fa-solid fa-house" aria-hidden="true"></i><span>Beranda</span></a>
+                <a href="{{ route('bookings.index') }}" @if(request()->routeIs('bookings.*')) aria-current="page" @endif><i class="fa-regular fa-calendar-check" aria-hidden="true"></i><span>Booking</span></a>
+                <a href="{{ route('calendar.index') }}" @if(request()->routeIs('calendar.*')) aria-current="page" @endif><i class="fa-regular fa-calendar" aria-hidden="true"></i><span>Kalender</span></a>
+                <button id="mobileMenuBtn" type="button" onclick="toggleSidebar()" aria-controls="mainSidebar" aria-expanded="false" data-current-section="{{ request()->routeIs('dashboard', 'bookings.*', 'calendar.*') ? 'false' : 'true' }}"><i class="fa-solid fa-bars" aria-hidden="true"></i><span>Menu</span></button>
+            </nav>
+
             <!-- Footer -->
-            <footer class="bg-white border-t border-gray-200 px-6 py-2.5 text-center text-[11px] text-gray-500">
+            <footer class="hidden md:block bg-white border-t border-gray-200 px-6 py-2.5 text-center text-[11px] text-gray-500">
                 &copy; {{ date('Y') }} Sistem Manajemen Zoom
             </footer>
         </div>
     </div>
 
     <script>
-        // Sidebar Minimize & Maximize with LocalStorage state persistence
-        function toggleSidebar() {
-            const isMini = document.body.classList.toggle('sidebar-mini');
-            localStorage.setItem('managezoom_sidebar_mini', isMini ? '1' : '0');
-        }
-
-        // Apply saved sidebar state on page load
-        (function () {
-            if (localStorage.getItem('managezoom_sidebar_mini') === '1') {
-                document.body.classList.add('sidebar-mini');
-            }
-        })();
-
         function dismissToast(element) {
             if (!element) return;
             element.classList.add('opacity-0', 'translate-x-2');

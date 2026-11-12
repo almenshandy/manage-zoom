@@ -7,7 +7,7 @@
 @section('content')
 <div class="space-y-6">
     <!-- Stat Cards (5 Kolom: Total Meeting, Akun Aktif, Menunggu ACC, Disetujui, Meeting Hari Ini) -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+    <div class="mobile-dashboard-stats grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
         <!-- Card 1: Total Pengajuan Meeting -->
         <div class="bg-white p-4 rounded border border-gray-200 flex items-center justify-between">
             <div>
@@ -120,7 +120,7 @@
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <!-- Upcoming Approved Meetings -->
         <div class="bg-white p-5 rounded border border-gray-200">
-            <div class="flex items-center justify-between pb-3 mb-4 border-b border-gray-100">
+            <div class="flex flex-wrap items-center justify-between gap-2 pb-3 mb-4 border-b border-gray-100">
                 <h3 class="text-xs font-semibold text-gray-900 uppercase tracking-wider flex items-center gap-2">
                     <i class="fa-solid fa-calendar-check text-gray-400"></i> Meeting Mendatang (Telah Disetujui)
                 </h3>
@@ -163,7 +163,7 @@
 
         <!-- Latest Bookings Waiting for Review -->
         <div class="bg-white p-5 rounded border border-gray-200">
-            <div class="flex items-center justify-between pb-3 mb-4 border-b border-gray-100">
+            <div class="flex flex-wrap items-center justify-between gap-2 pb-3 mb-4 border-b border-gray-100">
                 <h3 class="text-xs font-semibold text-gray-900 uppercase tracking-wider flex items-center gap-2">
                     <i class="fa-regular fa-hourglass-half text-gray-400"></i> Pengajuan Perlu Ditinjau
                 </h3>

@@ -31,7 +31,7 @@
     </div>
 
     <!-- Tab Navigation (Flat Minimalist) -->
-    <div class="flex items-center gap-2 border-b border-gray-200">
+    <div class="flex flex-wrap items-center gap-2 border-b border-gray-200">
         <a href="{{ route('departments-positions.index', ['tab' => 'departments']) }}" 
             class="px-4 py-2 text-xs font-medium border-b-2 transition -mb-px flex items-center gap-2
             {{ $tab === 'departments' ? 'border-gray-900 text-gray-900 font-semibold' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }}">
@@ -58,7 +58,7 @@
         <!-- Tabel Departemen -->
         <div class="bg-white rounded border border-gray-200 overflow-hidden">
             <div class="overflow-x-auto">
-                <table class="w-full text-left text-xs">
+                <table class="mobile-card-table w-full text-left text-xs">
                     <thead class="bg-gray-50 text-gray-600 font-semibold border-b border-gray-200 text-[11px] uppercase tracking-wider">
                         <tr>
                             <th class="px-3 py-3 text-center w-12">No</th>
@@ -72,24 +72,24 @@
                     <tbody class="divide-y divide-gray-200 text-gray-700">
                         @forelse($departments as $idx => $d)
                             <tr class="hover:bg-gray-50/75 transition-colors">
-                                <td class="px-3 py-3 text-center font-mono text-gray-500 text-[11px]">
+                                <td data-label="No" class="px-3 py-3 text-center font-mono text-gray-500 text-[11px]">
                                     {{ $idx + 1 }}
                                 </td>
-                                <td class="px-4 py-3 font-mono font-semibold text-gray-900">
+                                <td data-label="Kode Departemen" class="px-4 py-3 font-mono font-semibold text-gray-900">
                                     <span class="px-2 py-0.5 rounded bg-gray-100 border border-gray-200 text-[11px]">
                                         {{ $d->kode_departemen }}
                                     </span>
                                 </td>
-                                <td class="px-4 py-3 font-semibold text-gray-900 text-xs">
+                                <td data-label="Nama Departemen" class="px-4 py-3 font-semibold text-gray-900 text-xs">
                                     {{ $d->nama_departemen }}
                                 </td>
-                                <td class="px-4 py-3 text-gray-600">
+                                <td data-label="Rumpun Direksi" class="px-4 py-3 text-gray-600">
                                     {{ $d->rumpun_direksi ?: '-' }}
                                 </td>
-                                <td class="px-4 py-3 text-gray-600 font-mono text-[11px]">
+                                <td data-label="Pejabat" class="px-4 py-3 text-gray-600 font-mono text-[11px]">
                                     {{ $d->pejabat ?: '-' }}
                                 </td>
-                                <td class="px-4 py-3 text-right whitespace-nowrap">
+                                <td data-label="Aksi" class="px-4 py-3 text-right whitespace-nowrap">
                                     <div class="flex items-center justify-end gap-1">
                                         <button type="button" 
                                             onclick="openEditDeptModal({{ json_encode($d) }})"
@@ -123,7 +123,7 @@
         <!-- Tabel Jabatan -->
         <div class="bg-white rounded border border-gray-200 overflow-hidden">
             <div class="overflow-x-auto">
-                <table class="w-full text-left text-xs">
+                <table class="mobile-card-table w-full text-left text-xs">
                     <thead class="bg-gray-50 text-gray-600 font-semibold border-b border-gray-200 text-[11px] uppercase tracking-wider">
                         <tr>
                             <th class="px-3 py-3 text-center w-12">No</th>
@@ -135,18 +135,18 @@
                     <tbody class="divide-y divide-gray-200 text-gray-700">
                         @forelse($positions as $idx => $p)
                             <tr class="hover:bg-gray-50/75 transition-colors">
-                                <td class="px-3 py-3 text-center font-mono text-gray-500 text-[11px]">
+                                <td data-label="No" class="px-3 py-3 text-center font-mono text-gray-500 text-[11px]">
                                     {{ $idx + 1 }}
                                 </td>
-                                <td class="px-4 py-3 font-mono font-semibold text-gray-900">
+                                <td data-label="Kode Jabatan" class="px-4 py-3 font-mono font-semibold text-gray-900">
                                     <span class="px-2 py-0.5 rounded bg-gray-100 border border-gray-200 text-[11px]">
                                         {{ $p->kode_jabatan }}
                                     </span>
                                 </td>
-                                <td class="px-4 py-3 font-semibold text-gray-900 text-xs">
+                                <td data-label="Nama Jabatan" class="px-4 py-3 font-semibold text-gray-900 text-xs">
                                     {{ $p->nama_jabatan }}
                                 </td>
-                                <td class="px-4 py-3 text-right whitespace-nowrap">
+                                <td data-label="Aksi" class="px-4 py-3 text-right whitespace-nowrap">
                                     <div class="flex items-center justify-end gap-1">
                                         <button type="button" 
                                             onclick="openEditPosModal({{ json_encode($p) }})"

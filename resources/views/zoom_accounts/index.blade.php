@@ -7,32 +7,34 @@
 @section('content')
 <div class="space-y-4">
     <!-- Header & Action Buttons (Flat Minimalist) -->
-    <div class="bg-white p-4 rounded border border-gray-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+    <div class="mobile-list-toolbar bg-white p-4 rounded border border-gray-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
             <h3 class="text-xs font-semibold text-gray-900 uppercase tracking-wider">Inventaris Akun Zoom</h3>
             <p class="text-xs text-gray-500 mt-0.5">Kelola akun Zoom, kredensial Server-to-Server OAuth, dan masa aktif lisensi.</p>
         </div>
-        <div class="flex items-center gap-2">
-            <a href="{{ route('zoom-accounts.export-pdf') }}" target="_blank" class="inline-flex items-center gap-1.5 bg-white hover:bg-gray-50 text-gray-700 text-xs font-medium px-3 py-1.5 rounded border border-gray-300 transition" title="Export Rekap Akun ke PDF">
-                <i class="fa-solid fa-file-pdf text-red-600 text-[11px]"></i> Export PDF
+        <div class="mobile-toolbar flex items-center gap-2">
+            <a href="{{ route('zoom-accounts.export-pdf') }}" target="_blank" class="mobile-utility-action inline-flex items-center gap-1.5 bg-white hover:bg-gray-50 text-gray-700 text-xs font-medium px-3 py-1.5 rounded border border-gray-300 transition" aria-label="Export PDF" title="Export Rekap Akun ke PDF">
+                <i class="fa-solid fa-file-pdf text-red-600 text-[11px]"></i> <span class="hidden md:inline">Export PDF</span>
             </a>
-            <button type="button" onclick="openSyncModal()" class="inline-flex items-center gap-1.5 bg-white hover:bg-gray-50 text-gray-700 text-xs font-medium px-3 py-1.5 rounded border border-gray-300 transition">
-                <i class="fa-solid fa-arrows-rotate text-gray-500 text-[11px]"></i> Sinkron dari DB `zoom`
+            <button type="button" onclick="openSyncModal()" class="mobile-utility-action inline-flex items-center gap-1.5 bg-white hover:bg-gray-50 text-gray-700 text-xs font-medium px-3 py-1.5 rounded border border-gray-300 transition" aria-label="Sinkron akun Zoom" title="Sinkron akun Zoom">
+                <i class="fa-solid fa-arrows-rotate text-gray-500 text-[11px]"></i> <span class="hidden md:inline">Sinkron dari DB `zoom`</span>
             </button>
-            <a href="{{ route('zoom-accounts.create') }}" class="inline-flex items-center gap-1.5 bg-gray-900 hover:bg-black text-white text-xs font-medium px-3.5 py-1.5 rounded transition">
+            <a href="{{ route('zoom-accounts.create') }}" class="mobile-primary-action inline-flex items-center gap-1.5 bg-gray-900 hover:bg-black text-white text-xs font-medium px-3.5 py-1.5 rounded transition">
                 <i class="fa-solid fa-plus text-[10px]"></i> Tambah Akun Baru
             </a>
         </div>
     </div>
 
     <!-- Table Container (Flat) -->
-    <div class="bg-white rounded border border-gray-200 overflow-hidden">
-        <div class="overflow-x-auto">
-            <table class="w-full text-left text-xs">
+    <div class="mobile-data-container bg-white rounded border border-gray-200 overflow-hidden">
+        @include('zoom_accounts.mobile-list')
+        <div class="hidden md:block overflow-x-auto">
+            <table class="mobile-card-table w-full text-left text-xs">
                 <thead class="bg-gray-50 text-gray-600 font-semibold border-b border-gray-200 uppercase tracking-wider text-[11px]">
                     <tr>
                         <th class="px-4 py-3">No</th>
                         <th class="px-4 py-3">Nama & Identitas Akun</th>
+                        <th class="px-4 py-3">Password</th>
                         <th class="px-4 py-3">Kapasitas</th>
                         <th class="px-4 py-3">Status API S2S</th>
                         <th class="px-4 py-3">Masa Berlaku</th>
@@ -44,20 +46,38 @@
                         @php
                             $isValid = $acc->expired_date && !$acc->expired_date->isPast();
                         @endphp
-                        <tr class="{{ $isValid ? 'bg-emerald-50/40 hover:bg-emerald-50/70 border-l-4 border-l-emerald-500' : 'bg-red-50/40 hover:bg-red-50/70 border-l-4 border-l-red-500' }} transition-colors">
-                            <td
+                        <tr class="{{ $isValid ? 'bg-emerald-50/40 hover:bg-emerald-50/70 border-l-4 border-l-emerald-500' : 'bg-red-50/40 hover:bg-red-50/70 border-l-4 border-l-red-500' }} transition-colors"
+                            data-zoom-account data-account-name="{{ $acc->name }}"
+                            data-account-email="{{ $acc->email }}"
+                            data-account-password="{{ $acc->password ?? '' }}">
+                            <td data-label="No"
                                 class="px-4 py-3">
                                 {{ $accounts->firstItem() + $loop->index }}
                             </td>
-                            <td class="px-4 py-3">
+                            <td data-label="Nama & Identitas Akun" class="px-4 py-3">
                                 <span class="font-semibold text-gray-900 block">{{ $acc->name }}</span>
                                 <span class="text-gray-500 text-[11px] font-mono">{{ $acc->email }}</span>
                             </td>
-                            <td class="px-4 py-3 whitespace-nowrap">
+                            <td data-label="Password" class="px-4 py-3 whitespace-nowrap">
+                                @if($acc->password !== null && $acc->password !== '')
+                                    <div class="flex items-center gap-2">
+                                        <span id="account-password-{{ $acc->id }}" class="account-password font-mono text-gray-700">********</span>
+                                        <button type="button" onclick="toggleAccountPassword(this)"
+                                            class="p-1.5 text-gray-500 hover:text-gray-900 hover:bg-white rounded border border-transparent hover:border-gray-200 transition"
+                                            aria-controls="account-password-{{ $acc->id }}" aria-pressed="false"
+                                            aria-label="Tampilkan password" title="Tampilkan password">
+                                            <i class="fa-regular fa-eye" aria-hidden="true"></i>
+                                        </button>
+                                    </div>
+                                @else
+                                    <span class="text-gray-400 italic">Belum diisi</span>
+                                @endif
+                            </td>
+                            <td data-label="Kapasitas" class="px-4 py-3 whitespace-nowrap">
                                 <span class="font-medium text-gray-900">{{ $acc->capacity }}</span>
                                 <span class="text-gray-400 text-[11px]">Peserta</span>
                             </td>
-                            <td class="px-4 py-3 whitespace-nowrap">
+                            <td data-label="Status API S2S" class="px-4 py-3 whitespace-nowrap">
                                 @if($acc->account_id && $acc->client_id)
                                     <span class="inline-flex items-center gap-1.5 text-emerald-700 bg-white px-2 py-0.5 rounded border border-emerald-300 text-[10px] font-medium">
                                         <i class="fa-solid fa-check text-[9px]"></i> S2S Siap
@@ -68,7 +88,7 @@
                                     </span>
                                 @endif
                             </td>
-                            <td class="px-4 py-3 whitespace-nowrap">
+                            <td data-label="Masa Berlaku" class="px-4 py-3 whitespace-nowrap">
                                 @if($acc->expired_date)
                                     <div class="flex items-center gap-2">
                                         <span class="font-semibold {{ $isValid ? 'text-emerald-800' : 'text-red-700' }}">
@@ -88,21 +108,30 @@
                                     <span class="text-gray-400 italic">Tidak diset</span>
                                 @endif
                             </td>
-                            <td class="px-4 py-3 text-right whitespace-nowrap">
-                                <div class="flex items-center justify-end gap-1">
+                            <td data-label="Aksi" class="px-4 py-3 text-right whitespace-nowrap">
+                                <div class="mobile-actions flex items-center justify-end gap-1">
+                                    <button type="button" onclick="copyZoomAccount(this)"
+                                        class="p-1.5 text-gray-500 hover:text-gray-900 hover:bg-white rounded border border-transparent hover:border-gray-200 transition"
+                                        aria-label="Salin Akun" title="Salin Akun (email dan password)">
+                                        <i class="fa-regular fa-copy" aria-hidden="true"></i>
+                                        <span class="md:sr-only">Salin Akun</span>
+                                    </button>
                                     <button type="button" onclick="testConnection({{ $acc->id }}, '{{ addslashes($acc->name) }}', this)"
                                         class="p-1.5 text-gray-500 hover:text-emerald-700 hover:bg-white rounded border border-transparent hover:border-gray-200 transition"
                                         title="Uji Koneksi API Zoom">
                                         <i class="fa-solid fa-plug text-[11px]"></i>
+                                        <span class="md:sr-only">Uji Koneksi</span>
                                     </button>
                                     <a href="{{ route('zoom-accounts.edit', $acc->id) }}" class="p-1.5 text-gray-500 hover:text-gray-900 hover:bg-white rounded border border-transparent hover:border-gray-200 transition" title="Edit">
                                         <i class="fa-regular fa-pen-to-square"></i>
+                                        <span class="md:sr-only">Edit</span>
                                     </a>
                                     <form method="POST" action="{{ route('zoom-accounts.destroy', $acc->id) }}" class="inline" onsubmit="return confirm('Hapus akun Zoom ini?')">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="p-1.5 text-gray-500 hover:text-red-600 hover:bg-white rounded border border-transparent hover:border-red-200 transition" title="Hapus">
                                             <i class="fa-regular fa-trash-can"></i>
+                                            <span class="md:sr-only">Hapus</span>
                                         </button>
                                     </form>
                                 </div>
@@ -110,7 +139,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="5" class="px-4 py-8 text-center text-gray-400">
+                            <td colspan="7" class="px-4 py-8 text-center text-gray-400">
                                 <i class="fa-solid fa-server text-2xl mb-2 text-gray-300 block"></i>
                                 Belum ada akun Zoom yang ditambahkan. Anda dapat sinkronkan dari database lama.
                             </td>
@@ -220,6 +249,54 @@
 
 @push('scripts')
 <script>
+    function toggleAccountPassword(button) {
+        const row = button.closest('[data-zoom-account]');
+        const passwordDisplay = row.querySelector('.account-password');
+        const showPassword = button.getAttribute('aria-pressed') !== 'true';
+
+        passwordDisplay.textContent = showPassword ? row.dataset.accountPassword : '********';
+        button.setAttribute('aria-pressed', String(showPassword));
+        const label = showPassword ? 'Samarkan password' : 'Tampilkan password';
+        button.setAttribute('aria-label', label);
+        button.title = label;
+        button.querySelector('i').className = showPassword ? 'fa-regular fa-eye-slash' : 'fa-regular fa-eye';
+    }
+
+    async function copyZoomAccount(button) {
+        const account = button.closest('[data-zoom-account]').dataset;
+        const text = `Akun Zoom: ${account.accountName}\nEmail: ${account.accountEmail}\nPassword: ${account.accountPassword || 'Belum diisi'}`;
+        button.disabled = true;
+
+        try {
+            if (navigator.clipboard && window.isSecureContext) {
+                await navigator.clipboard.writeText(text);
+            } else {
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                textarea.setAttribute('readonly', '');
+                textarea.style.position = 'fixed';
+                textarea.style.opacity = '0';
+                document.body.appendChild(textarea);
+
+                try {
+                    textarea.select();
+                    if (!document.execCommand('copy')) {
+                        throw new Error('Copy failed');
+                    }
+                } finally {
+                    textarea.remove();
+                    button.focus();
+                }
+            }
+
+            showCustomToast('success', 'Akun Disalin', 'Data akun Zoom berhasil disalin.');
+        } catch (error) {
+            showCustomToast('error', 'Gagal Menyalin', 'Data akun belum tersalin. Silakan coba lagi atau salin secara manual.');
+        } finally {
+            button.disabled = false;
+        }
+    }
+
     const syncModal = document.getElementById('syncModal');
     const syncTableBody = document.getElementById('syncTableBody');
     const syncSummaryText = document.getElementById('syncSummaryText');

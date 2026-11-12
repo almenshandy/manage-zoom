@@ -14,6 +14,7 @@ class WhatsAppService
     public function getActiveProvider(): string
     {
         $provider = SystemSetting::get('wa_default_provider', 'flowkirim');
+
         return in_array($provider, ['flowkirim', 'fonnte']) ? $provider : 'flowkirim';
     }
 
@@ -23,12 +24,13 @@ class WhatsAppService
     public function isEnabled(?string $provider = null): bool
     {
         $gatewayEnabled = (bool) SystemSetting::get('wa_gateway_enabled', '1');
-        if (!$gatewayEnabled) {
+        if (! $gatewayEnabled) {
             return false;
         }
 
         $active = $provider ?: $this->getActiveProvider();
-        return !empty($this->getToken($active));
+
+        return ! empty($this->getToken($active));
     }
 
     /**
@@ -38,16 +40,22 @@ class WhatsAppService
     {
         if ($provider === 'flowkirim') {
             $dbToken = SystemSetting::get('flowkirim_token');
-            if (!empty($dbToken)) return trim($dbToken);
+            if (! empty($dbToken)) {
+                return trim($dbToken);
+            }
             $envToken = env('FLOWKIRIM_TOKEN');
-            return !empty($envToken) ? trim($envToken) : null;
+
+            return ! empty($envToken) ? trim($envToken) : null;
         }
 
         if ($provider === 'fonnte') {
             $dbToken = SystemSetting::get('fonnte_token');
-            if (!empty($dbToken)) return trim($dbToken);
+            if (! empty($dbToken)) {
+                return trim($dbToken);
+            }
             $envToken = env('FONNTE_TOKEN');
-            return !empty($envToken) ? trim($envToken) : null;
+
+            return ! empty($envToken) ? trim($envToken) : null;
         }
 
         return null;
@@ -62,7 +70,7 @@ class WhatsAppService
         $defaultCountry = SystemSetting::get('wa_country_code', '62') ?: '62';
 
         if (str_starts_with($clean, '0')) {
-            $clean = $defaultCountry . substr($clean, 1);
+            $clean = $defaultCountry.substr($clean, 1);
         }
 
         return $clean;
@@ -84,9 +92,9 @@ class WhatsAppService
         }
 
         return [
-            'success'  => false,
+            'success' => false,
             'provider' => $selectedProvider,
-            'message'  => "Provider WhatsApp '{$selectedProvider}' tidak didukung.",
+            'message' => "Provider WhatsApp '{$selectedProvider}' tidak didukung.",
         ];
     }
 
@@ -112,10 +120,11 @@ class WhatsAppService
                 $actualSessionId = $data['data']['session_id'];
                 // Update ke database cache agar pemanggilan selanjutnya semakin cepat
                 SystemSetting::set('flowkirim_session_id', $actualSessionId);
+
                 return $actualSessionId;
             }
         } catch (\Throwable $e) {
-            Log::warning("Gagal auto-resolve session FlowKirim: " . $e->getMessage());
+            Log::warning('Gagal auto-resolve session FlowKirim: '.$e->getMessage());
         }
 
         return $cleanInput;
@@ -132,9 +141,9 @@ class WhatsAppService
 
         if (empty($token)) {
             return [
-                'success'  => false,
+                'success' => false,
                 'provider' => 'flowkirim',
-                'message'  => 'API Token FlowKirim belum dikonfigurasi. Silakan isi di Pengaturan Sistem.',
+                'message' => 'API Token FlowKirim belum dikonfigurasi. Silakan isi di Pengaturan Sistem.',
             ];
         }
 
@@ -143,13 +152,13 @@ class WhatsAppService
 
         // Siapkan target
         $targetList = is_array($targets) ? $targets : explode(',', $targets);
-        $cleanTargets = array_values(array_filter(array_map(fn($t) => $this->formatTargetNumber($t), $targetList)));
+        $cleanTargets = array_values(array_filter(array_map(fn ($t) => $this->formatTargetNumber($t), $targetList)));
 
         if (empty($cleanTargets)) {
             return [
-                'success'  => false,
+                'success' => false,
                 'provider' => 'flowkirim',
-                'message'  => 'Nomor tujuan WhatsApp tidak valid atau kosong.',
+                'message' => 'Nomor tujuan WhatsApp tidak valid atau kosong.',
             ];
         }
 
@@ -162,11 +171,11 @@ class WhatsAppService
             $toJid = str_contains($recipient, '@') ? $recipient : "{$recipient}@s.whatsapp.net";
 
             $payload = [
-                'to'      => $toJid,
+                'to' => $toJid,
                 'message' => $message,
             ];
 
-            if (!empty($sessionId)) {
+            if (! empty($sessionId)) {
                 $payload['session_id'] = $sessionId;
             }
 
@@ -179,40 +188,40 @@ class WhatsAppService
                 $result = $response->json() ?? [];
                 $lastResponse = $result;
 
-                $isOk = $response->successful() && (!isset($result['success']) || $result['success'] === true);
+                $isOk = $response->successful() && (! isset($result['success']) || $result['success'] === true);
                 if ($isOk) {
                     $successCount++;
                 } else {
                     $msg = $result['message'] ?? '';
-                    if (!empty($result['errors'])) {
+                    if (! empty($result['errors'])) {
                         $errDetails = [];
                         foreach ($result['errors'] as $fld => $errs) {
                             $errDetails[] = implode(', ', (array) $errs);
                         }
-                        $msg .= ' (' . implode('; ', $errDetails) . ')';
+                        $msg .= ' ('.implode('; ', $errDetails).')';
                     }
-                    $errors[] = $msg ?: ('Gagal mengirim ke ' . $recipient);
+                    $errors[] = $msg ?: ('Gagal mengirim ke '.$recipient);
                 }
             } catch (\Throwable $e) {
                 $errors[] = $e->getMessage();
-                Log::error("FlowKirim Send Exception: " . $e->getMessage());
+                Log::error('FlowKirim Send Exception: '.$e->getMessage());
             }
         }
 
         if ($successCount > 0) {
             return [
-                'success'  => true,
+                'success' => true,
                 'provider' => 'flowkirim',
-                'message'  => "Berhasil mengirim {$successCount} pesan WhatsApp via FlowKirim.",
-                'data'     => $lastResponse,
+                'message' => "Berhasil mengirim {$successCount} pesan WhatsApp via FlowKirim.",
+                'data' => $lastResponse,
             ];
         }
 
         return [
-            'success'  => false,
+            'success' => false,
             'provider' => 'flowkirim',
-            'message'  => 'FlowKirim: ' . implode('; ', array_unique($errors)),
-            'data'     => $lastResponse,
+            'message' => 'FlowKirim: '.implode('; ', array_unique($errors)),
+            'data' => $lastResponse,
         ];
     }
 
@@ -226,21 +235,21 @@ class WhatsAppService
 
         if (empty($token)) {
             return [
-                'success'  => false,
+                'success' => false,
                 'provider' => 'fonnte',
-                'message'  => 'Device Token Fonnte belum dikonfigurasi. Silakan isi di Pengaturan Sistem.',
+                'message' => 'Device Token Fonnte belum dikonfigurasi. Silakan isi di Pengaturan Sistem.',
             ];
         }
 
         $targetList = is_array($targets) ? $targets : explode(',', $targets);
-        $cleanTargets = array_values(array_filter(array_map(fn($t) => $this->formatTargetNumber($t), $targetList)));
+        $cleanTargets = array_values(array_filter(array_map(fn ($t) => $this->formatTargetNumber($t), $targetList)));
         $targetString = implode(',', $cleanTargets);
 
         if (empty($targetString)) {
             return [
-                'success'  => false,
+                'success' => false,
                 'provider' => 'fonnte',
-                'message'  => 'Nomor tujuan WhatsApp tidak valid atau kosong.',
+                'message' => 'Nomor tujuan WhatsApp tidak valid atau kosong.',
             ];
         }
 
@@ -248,8 +257,8 @@ class WhatsAppService
             $response = Http::withHeaders([
                 'Authorization' => $token,
             ])->timeout(20)->post($endpoint, [
-                'target'      => $targetString,
-                'message'     => $message,
+                'target' => $targetString,
+                'message' => $message,
                 'countryCode' => SystemSetting::get('wa_country_code', '62') ?: '62',
             ]);
 
@@ -258,26 +267,28 @@ class WhatsAppService
 
             if ($response->successful() && $isStatusTrue) {
                 return [
-                    'success'  => true,
+                    'success' => true,
                     'provider' => 'fonnte',
-                    'message'  => 'Pesan WhatsApp berhasil dikirim via Fonnte.',
-                    'data'     => $result,
+                    'message' => 'Pesan WhatsApp berhasil dikirim via Fonnte.',
+                    'data' => $result,
                 ];
             }
 
             $reason = $result['reason'] ?? ($result['message'] ?? 'Gagal mengirim pesan dari gateway Fonnte.');
+
             return [
-                'success'  => false,
+                'success' => false,
                 'provider' => 'fonnte',
-                'message'  => 'Fonnte error: ' . $reason,
-                'data'     => $result,
+                'message' => 'Fonnte error: '.$reason,
+                'data' => $result,
             ];
         } catch (\Throwable $e) {
-            Log::error('Fonnte Send Exception: ' . $e->getMessage());
+            Log::error('Fonnte Send Exception: '.$e->getMessage());
+
             return [
-                'success'  => false,
+                'success' => false,
                 'provider' => 'fonnte',
-                'message'  => 'Terjadi kesalahan koneksi ke server Fonnte: ' . $e->getMessage(),
+                'message' => 'Terjadi kesalahan koneksi ke server Fonnte: '.$e->getMessage(),
             ];
         }
     }
@@ -325,26 +336,26 @@ class WhatsAppService
                 $email = $user['email'] ?? '';
 
                 $rawDevice = trim((string) SystemSetting::get('flowkirim_session_id', ''));
-                $deviceInfo = '';
-                if (!empty($rawDevice)) {
+                $resolvedSession = null;
+                if (! empty($rawDevice)) {
                     $resolvedSession = $this->resolveFlowKirimSessionId($token, $rawDevice);
-                    $deviceInfo = " &bull; Session: <code class='font-mono text-emerald-800 font-semibold'>{$resolvedSession}</code>";
                 }
 
                 return [
                     'success' => true,
-                    'message' => "Token FlowKirim Aktif! Akun: {$name} ({$email}){$deviceInfo}",
-                    'data'    => $user,
+                    'message' => "Token FlowKirim Aktif! Akun: {$name} ({$email})",
+                    'session_id' => $resolvedSession,
+                    'data' => $user,
                 ];
             }
 
             return [
                 'success' => false,
                 'message' => $data['message'] ?? 'Token FlowKirim tidak valid atau kedaluwarsa.',
-                'data'    => $data,
+                'data' => $data,
             ];
         } catch (\Throwable $e) {
-            return ['success' => false, 'message' => 'Koneksi ke FlowKirim gagal: ' . $e->getMessage()];
+            return ['success' => false, 'message' => 'Koneksi ke FlowKirim gagal: '.$e->getMessage()];
         }
     }
 
@@ -366,17 +377,17 @@ class WhatsAppService
                 return [
                     'success' => true,
                     'message' => 'Device Fonnte terhubung.',
-                    'data'    => $data,
+                    'data' => $data,
                 ];
             }
 
             return [
                 'success' => false,
                 'message' => $data['reason'] ?? 'Token tidak valid atau device Fonnte terputus.',
-                'data'    => $data,
+                'data' => $data,
             ];
         } catch (\Throwable $e) {
-            return ['success' => false, 'message' => 'Koneksi ke Fonnte gagal: ' . $e->getMessage()];
+            return ['success' => false, 'message' => 'Koneksi ke Fonnte gagal: '.$e->getMessage()];
         }
     }
 }

@@ -7,8 +7,8 @@
 @section('content')
 <div class="space-y-4">
     <!-- Filter & Action Header (Flat Minimalist) -->
-    <div class="bg-white p-4 rounded border border-gray-200 flex flex-col md:flex-row md:items-center justify-between gap-3">
-        <form method="GET" action="{{ route('bookings.index') }}" class="flex flex-wrap items-center gap-2 flex-1">
+    <div class="mobile-list-toolbar bg-white p-4 rounded border border-gray-200 flex flex-col md:flex-row md:items-center justify-between gap-3">
+        <form method="GET" action="{{ route('bookings.index') }}" class="mobile-filter-form flex flex-wrap items-center gap-2 flex-1">
             <div class="relative flex-1 min-w-[220px]">
                 <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
                     <i class="fa-solid fa-magnifying-glass text-xs"></i>
@@ -33,20 +33,21 @@
             @endif
         </form>
 
-        <div class="flex items-center gap-2 shrink-0">
-            <a href="{{ route('bookings.print-all', request()->query()) }}" target="_blank" class="inline-flex items-center gap-1.5 bg-white hover:bg-gray-50 text-gray-700 text-xs font-medium px-3 py-1.5 rounded border border-gray-300 transition" title="Cetak Rekap PDF">
-                <i class="fa-solid fa-print text-gray-500 text-[11px]"></i> Cetak Rekap PDF
+        <div class="mobile-toolbar flex items-center gap-2 shrink-0">
+            <a href="{{ route('bookings.print-all', request()->query()) }}" target="_blank" class="mobile-utility-action inline-flex items-center gap-1.5 bg-white hover:bg-gray-50 text-gray-700 text-xs font-medium px-3 py-1.5 rounded border border-gray-300 transition" aria-label="Cetak Rekap PDF" title="Cetak Rekap PDF">
+                <i class="fa-solid fa-print text-gray-500 text-[11px]"></i> <span class="hidden md:inline">Cetak Rekap PDF</span>
             </a>
-            <a href="{{ route('bookings.create') }}" class="inline-flex items-center gap-1.5 bg-gray-900 hover:bg-black text-white text-xs font-medium px-3.5 py-1.5 rounded transition">
+            <a href="{{ route('bookings.create') }}" class="mobile-primary-action inline-flex items-center gap-1.5 bg-gray-900 hover:bg-black text-white text-xs font-medium px-3.5 py-1.5 rounded transition">
                 <i class="fa-solid fa-plus text-[10px]"></i> Ajukan Booking Baru
             </a>
         </div>
     </div>
 
     <!-- Booking Table Card (Clean & Bordered) -->
-    <div class="bg-white rounded border border-gray-200 overflow-hidden">
-        <div class="overflow-x-auto">
-            <table class="w-full text-left text-xs">
+    <div class="mobile-data-container bg-white rounded border border-gray-200 overflow-hidden">
+        @include('bookings.mobile-list')
+        <div class="hidden md:block overflow-x-auto">
+            <table class="mobile-card-table w-full text-left text-xs">
                 <thead class="bg-gray-50 text-gray-600 font-semibold border-b border-gray-200 text-[11px] uppercase tracking-wider">
                     <tr>
                         <th class="px-3 py-3 text-center w-12">No</th>
@@ -61,10 +62,10 @@
                 <tbody class="divide-y divide-gray-200 text-gray-700">
                     @forelse($bookings as $idx => $item)
                         <tr class="hover:bg-gray-50/75 transition-colors">
-                            <td class="px-3 py-3 text-center font-mono text-gray-500 text-[11px]">
+                            <td data-label="No" class="px-3 py-3 text-center font-mono text-gray-500 text-[11px]">
                                 {{ $bookings->firstItem() + $idx }}
                             </td>
-                            <td class="px-4 py-3">
+                            <td data-label="Kegiatan / Topik" class="px-4 py-3">
                                 <div class="flex items-center gap-1.5 flex-wrap">
                                     <a href="{{ route('bookings.show', $item) }}" class="font-semibold text-gray-900 hover:text-blue-600 text-xs">
                                         {{ $item->topic }}
@@ -79,15 +80,15 @@
                                     <p class="text-[11px] text-gray-500 line-clamp-1 mt-0.5">{{ $item->description }}</p>
                                 @endif
                             </td>
-                            <td class="px-4 py-3 whitespace-nowrap">
+                            <td data-label="Pemohon" class="px-4 py-3 whitespace-nowrap">
                                 <span class="font-medium text-gray-900 block">{{ $item->user->name ?? '-' }}</span>
                                 <span class="text-[10px] text-gray-500">{{ $item->user->department_name ?? 'Umum' }}</span>
                             </td>
-                            <td class="px-4 py-3 whitespace-nowrap">
+                            <td data-label="Jadwal & Waktu" class="px-4 py-3 whitespace-nowrap">
                                 <div class="font-medium text-gray-900">{{ $item->date_range_formatted }}</div>
                                 <div class="text-[11px] text-gray-500">{{ substr($item->start_time, 0, 5) }} - {{ substr($item->end_time, 0, 5) }} WIB</div>
                             </td>
-                            <td class="px-4 py-3 whitespace-nowrap">
+                            <td data-label="Akun Zoom" class="px-4 py-3 whitespace-nowrap">
                                 @if($item->account)
                                     <span class="inline-flex items-center gap-1.5 font-medium text-gray-800">
                                         <i class="fa-solid fa-server text-[10px] text-gray-400"></i>
@@ -97,7 +98,7 @@
                                     <span class="text-gray-400 italic">Belum dialokasikan</span>
                                 @endif
                             </td>
-                            <td class="px-4 py-3 text-center whitespace-nowrap">
+                            <td data-label="Status" class="px-4 py-3 text-center whitespace-nowrap">
                                 <span class="inline-block px-2 py-0.5 text-[10px] font-semibold rounded border
                                     @if($item->status === 0) bg-amber-50 text-amber-700 border-amber-200
                                     @elseif($item->status === 1) bg-blue-50 text-blue-700 border-blue-200
@@ -106,7 +107,7 @@
                                     {{ $item->status_label }}
                                 </span>
                             </td>
-                            <td class="px-4 py-3 text-right whitespace-nowrap">
+                            <td data-label="Aksi" class="px-4 py-3 text-right whitespace-nowrap">
                                 <div class="relative inline-block text-left">
                                     <button type="button" 
                                         onclick="toggleActionDropdown('dropdown-{{ $item->id }}', this, event)"

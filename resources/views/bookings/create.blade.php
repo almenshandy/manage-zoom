@@ -7,12 +7,12 @@
 @section('content')
 <div class="space-y-4">
     <!-- Top Action Bar (Flat Minimalis) -->
-    <div class="flex items-center justify-between gap-3">
+    <div class="flex flex-wrap items-center justify-between gap-3">
         <a href="{{ route('bookings.index') }}" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 text-xs font-medium rounded transition">
-            <i class="fa-solid fa-arrow-left text-[10px]"></i> Kembali ke Daftar Booking
+            <i class="fa-solid fa-arrow-left text-[10px]"></i> <span>Kembali<span class="hidden md:inline"> ke Daftar Booking</span></span>
         </a>
 
-        <div class="flex items-center gap-2.5 text-[11px] text-gray-600 bg-white px-3 py-1.5 rounded border border-gray-200">
+        <div class="hidden md:flex items-center gap-2.5 text-[11px] text-gray-600 bg-white px-3 py-1.5 rounded border border-gray-200">
             <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded bg-blue-100 border border-blue-400"></span> Terisi</span>
             <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded bg-white border border-gray-300 text-gray-400 flex items-center justify-center text-[9px]">+</span> Kosong</span>
             <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded bg-gray-100 border border-gray-300"></span> Expired</span>
@@ -20,13 +20,14 @@
     </div>
 
     <!-- Header Indicator & Search Card -->
-    <div class="bg-white p-4 rounded border border-gray-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div class="mobile-availability-header bg-white p-4 rounded border border-gray-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-            <h3 class="text-xs font-semibold text-gray-900 uppercase tracking-wider">Matriks Ketersediaan Akun Zoom (30 Hari Ke Depan)</h3>
-            <p class="text-xs text-gray-500 mt-0.5">Pilih slot tanggal kosong (ikon <span class="font-bold text-gray-700">+</span>) pada akun Zoom yang diinginkan untuk membuka form peminjaman.</p>
+            <h3 class="text-xs font-semibold text-gray-900 uppercase tracking-wider">Ketersediaan Akun Zoom (30 Hari Ke Depan)</h3>
+            <p class="text-xs text-gray-500 mt-0.5 md:hidden">Pilih tanggal, periksa jadwal akun, lalu pilih jam peminjaman.</p>
+            <p class="hidden md:block text-xs text-gray-500 mt-0.5">Pilih slot tanggal (ikon <span class="font-bold text-gray-700">+</span>) pada akun Zoom yang diinginkan untuk membuka form peminjaman.</p>
         </div>
 
-        <div class="relative shrink-0">
+        <div class="hidden md:block relative shrink-0">
             <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
             <input type="text" id="searchAccount" placeholder="Filter email akun..." class="pl-8 pr-3 py-1.5 bg-white border border-gray-300 rounded text-xs focus:outline-none focus:border-gray-500 w-full sm:w-56">
         </div>
@@ -43,7 +44,44 @@
     @endif
 
     <!-- Timeline Grid Matrix Card -->
-    <div class="bg-white rounded border border-gray-200 overflow-hidden">
+    <div class="md:hidden space-y-3">
+        <div class="mobile-date-picker bg-white p-4 rounded border border-gray-200">
+            <label for="mobileBookingDate" class="block text-sm font-medium text-gray-700 mb-2">Tanggal peminjaman</label>
+            <select id="mobileBookingDate" class="w-full px-3 py-2 border border-gray-300 rounded">
+                @foreach($dates as $date)
+                    <option value="{{ $date['date_string'] }}">{{ \Carbon\Carbon::parse($date['date_string'])->locale('id')->isoFormat('dddd, D MMMM Y') }}</option>
+                @endforeach
+            </select>
+            <div class="mobile-account-search">
+                <label for="mobileAccountSearch" class="sr-only">Cari akun Zoom</label>
+                <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+                <input id="mobileAccountSearch" type="search" placeholder="Cari email akun Zoom..." autocomplete="off">
+            </div>
+        </div>
+        <div id="mobileAccountSchedules" class="space-y-3">
+            @forelse($accounts as $account)
+                <article class="mobile-record mobile-availability-card account-row bg-white p-4 rounded border border-gray-200 space-y-3" data-mobile-account="{{ $account->id }}">
+                    <div>
+                        <h4 class="font-semibold text-gray-900 break-words">{{ $account->name }}</h4>
+                        <p class="account-email text-sm text-gray-600 break-all">{{ $account->email }}</p>
+                        <p class="text-sm text-gray-500 mt-1">{{ $account->capacity }} peserta &bull; Berlaku s/d {{ $account->expired_date?->format('d/m/Y') ?? '-' }}</p>
+                    </div>
+                    <div data-mobile-schedule class="space-y-2" aria-live="polite"></div>
+                    <p data-mobile-expired class="hidden text-sm text-red-700">Akun sudah kedaluwarsa pada tanggal ini.</p>
+                    <button type="button" class="mobile-slot-action btn-book-slot w-full px-3 py-2 rounded bg-gray-900 text-white font-medium disabled:bg-gray-200 disabled:text-gray-500"
+                        data-account-id="{{ $account->id }}" data-account-email="{{ $account->email }}"
+                        data-date="{{ $dates[0]['date_string'] }}" data-date-display=""
+                        data-max-date="{{ $account->expired_date?->format('Y-m-d') ?? '' }}">
+                        <i class="fa-solid fa-plus mr-1" aria-hidden="true"></i> Pilih Jam Booking
+                    </button>
+                </article>
+            @empty
+                <p class="p-4 bg-white rounded border border-gray-200 text-sm text-gray-500">Tidak ada akun Zoom aktif yang tersedia saat ini.</p>
+            @endforelse
+        </div>
+        <p id="mobileAccountEmpty" class="hidden p-4 text-sm text-gray-500">Tidak ada akun yang sesuai pencarian.</p>
+    </div>
+    <div class="hidden md:block bg-white rounded border border-gray-200 overflow-hidden">
         <div class="overflow-x-auto custom-scrollbar">
             <table class="w-full text-left border-collapse whitespace-nowrap text-xs">
                 <thead>
@@ -165,7 +203,7 @@
 </div>
 
 <!-- Modal Form Booking Zoom (Flat Minimalis, Responsif & Scrollable) -->
-<div id="bookingModal" class="hidden fixed inset-0 bg-gray-900/50 z-50 flex items-center justify-center p-3 sm:p-4 backdrop-blur-xs overflow-y-auto">
+<div id="bookingModal" role="dialog" aria-modal="true" aria-labelledby="bookingModalTitle" class="hidden fixed inset-0 bg-gray-900/50 z-50 flex items-center justify-center p-3 sm:p-4 backdrop-blur-xs overflow-y-auto">
     <div class="bg-white rounded-lg border border-gray-200 w-full max-w-xl max-h-[92vh] flex flex-col overflow-hidden shadow-xl animate-fadeIn my-auto">
         <!-- Modal Header (Fixed Top) -->
         <div class="px-5 py-3 border-b border-gray-200 flex items-center justify-between bg-white shrink-0">
@@ -174,11 +212,11 @@
                     <i class="fa-solid fa-calendar-plus"></i>
                 </div>
                 <div>
-                    <h4 class="text-xs font-semibold text-gray-900 uppercase tracking-wider">Form Pengajuan Peminjaman Zoom</h4>
+                    <h4 id="bookingModalTitle" class="text-xs font-semibold text-gray-900 uppercase tracking-wider">Form Pengajuan Peminjaman Zoom</h4>
                     <p class="text-[10px] text-gray-500">Lengkapi formulir untuk slot waktu yang dipilih</p>
                 </div>
             </div>
-            <button type="button" onclick="closeModal()" class="w-7 h-7 rounded flex items-center justify-center text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition">
+            <button type="button" onclick="closeModal()" aria-label="Tutup form booking" class="w-7 h-7 rounded flex items-center justify-center text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition">
                 <i class="fa-solid fa-xmark text-sm"></i>
             </button>
         </div>
@@ -333,7 +371,54 @@
 
 @push('scripts')
 <script>
+    const mobileBookingDate = document.getElementById('mobileBookingDate');
+    const mobileScheduleBookings = {{ \Illuminate\Support\Js::from($matrixBookings) }};
+    const mobileBookingUrl = {{ \Illuminate\Support\Js::from(route('bookings.show', '__BOOKING__')) }};
+
+    function updateMobileSchedules() {
+        const date = mobileBookingDate.value;
+        document.querySelectorAll('[data-mobile-account]').forEach(card => {
+            const button = card.querySelector('.btn-book-slot');
+            const schedule = card.querySelector('[data-mobile-schedule]');
+            const expired = Boolean(button.dataset.maxDate && date > button.dataset.maxDate);
+            button.dataset.date = date;
+            button.dataset.dateDisplay = mobileBookingDate.selectedOptions[0].textContent;
+            button.disabled = expired;
+            card.querySelector('[data-mobile-expired]').classList.toggle('hidden', !expired);
+            schedule.replaceChildren();
+            const bookings = [...(mobileScheduleBookings[card.dataset.mobileAccount]?.[date] || [])]
+                .sort((first, second) => first.start_time.localeCompare(second.start_time));
+
+            if (!bookings.length) {
+                const empty = document.createElement('p');
+                empty.className = 'text-sm text-gray-500';
+                empty.textContent = expired ? 'Tidak tersedia untuk booking baru.' : 'Belum ada booking pada tanggal ini.';
+                schedule.appendChild(empty);
+            }
+            bookings.forEach(booking => {
+                const link = document.createElement('a');
+                link.href = mobileBookingUrl.replace('__BOOKING__', encodeURIComponent(booking.slug || booking.id));
+                link.className = 'mobile-slot-summary';
+                const time = document.createElement('span');
+                time.className = 'block font-semibold';
+                time.textContent = `${booking.start_time} - ${booking.end_time} WIB`;
+                const title = document.createElement('span');
+                title.className = 'block break-words';
+                title.textContent = booking.display_title;
+                const status = document.createElement('span');
+                status.className = 'block text-xs text-gray-600 mt-1';
+                status.textContent = `${booking.user_name} · ${booking.status_label}`;
+                link.append(time, title, status);
+                schedule.appendChild(link);
+            });
+        });
+    }
+    mobileBookingDate.addEventListener('change', updateMobileSchedules);
+    updateMobileSchedules();
+
     const modal = document.getElementById('bookingModal');
+    let bookingModalTrigger;
+    let previousBookingOverflow;
     const inputAccountId = document.getElementById('modal_zoom_account_id');
     const inputAccountDisplay = document.getElementById('modal_account_display');
     const inputDateDisplay = document.getElementById('modal_date_display');
@@ -360,11 +445,20 @@
     inputEndTime.addEventListener('change', calculateModalDuration);
 
     // Filter Akun
-    document.getElementById('searchAccount')?.addEventListener('input', function() {
-        const query = this.value.toLowerCase();
+    function filterBookingAccounts(value) {
+        const query = value.toLowerCase();
+        document.getElementById('searchAccount').value = value;
+        document.getElementById('mobileAccountSearch').value = value;
         document.querySelectorAll('.account-row').forEach(row => {
             const email = row.querySelector('.account-email')?.textContent.toLowerCase() || '';
             row.style.display = email.includes(query) ? '' : 'none';
+        });
+        const visible = Array.from(document.querySelectorAll('[data-mobile-account]')).some(card => card.style.display !== 'none');
+        document.getElementById('mobileAccountEmpty').classList.toggle('hidden', visible || !query);
+    }
+    ['searchAccount', 'mobileAccountSearch'].forEach(id => {
+        document.getElementById(id).addEventListener('input', function() {
+            filterBookingAccounts(this.value);
         });
     });
 
@@ -388,14 +482,27 @@
             }
 
             calculateModalDuration();
+            bookingModalTrigger = this;
+            previousBookingOverflow = document.body.style.overflow;
+            document.body.style.overflow = 'hidden';
             modal.classList.remove('hidden');
+            modal.querySelector('button[aria-label="Tutup form booking"]').focus();
         });
     });
 
     function closeModal() {
         modal.classList.add('hidden');
+        document.body.style.overflow = previousBookingOverflow ?? '';
+        bookingModalTrigger?.focus();
         closeUserDropdown();
     }
+
+    modal.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+            event.preventDefault();
+            closeModal();
+        }
+    });
 
     // Searchable User Select Logic
     const userSearchInput = document.getElementById('userSearchInput');

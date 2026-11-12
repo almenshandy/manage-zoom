@@ -53,7 +53,7 @@
     <!-- Table Users (Flat) -->
     <x-card>
         <div class="overflow-x-auto">
-            <table class="w-full text-left text-xs">
+            <table class="mobile-card-table w-full text-left text-xs">
                 <thead class="bg-gray-50 text-gray-600 font-semibold border-b border-gray-200 uppercase tracking-wider text-[11px]">
                     <tr>
                         <th class="px-3 py-3 text-center w-12">No</th>
@@ -69,24 +69,24 @@
                 <tbody class="divide-y divide-gray-200 text-gray-700">
                     @forelse($users as $idx => $user)
                         <tr class="hover:bg-gray-50/75 transition-colors">
-                            <td class="px-3 py-3 text-center font-mono text-gray-500 text-[11px]">
+                            <td data-label="No" class="px-3 py-3 text-center font-mono text-gray-500 text-[11px]">
                                 {{ $users->firstItem() + $idx }}
                             </td>
-                            <td class="px-4 py-3">
+                            <td data-label="Nama & Username" class="px-4 py-3">
                                 <span class="font-semibold text-gray-900 block">{{ $user->name }}</span>
                                 <span class="text-gray-400 text-[11px] font-mono">@<!-- -->{{ $user->username }}</span>
                             </td>
-                            <td class="px-4 py-3 whitespace-nowrap font-mono text-gray-600">
+                            <td data-label="Email" class="px-4 py-3 whitespace-nowrap font-mono text-gray-600">
                                 {{ $user->email }}
                             </td>
-                            <td class="px-4 py-3">
+                            <td data-label="Jabatan & Departemen" class="px-4 py-3">
                                 <span class="text-gray-800 font-medium block">{{ $user->position_name ?: '-' }}</span>
                                 <span class="text-gray-500 text-[11px]">{{ $user->department_name ?: 'Umum' }}</span>
                             </td>
-                            <td class="px-4 py-3 whitespace-nowrap text-gray-600 font-mono">
+                            <td data-label="No. HP" class="px-4 py-3 whitespace-nowrap text-gray-600 font-mono">
                                 {{ $user->no_hp ?: '-' }}
                             </td>
-                            <td class="px-4 py-3 text-center whitespace-nowrap">
+                            <td data-label="Peran" class="px-4 py-3 text-center whitespace-nowrap">
                                 <form method="POST" action="{{ route('users.update-role', $user->id) }}" class="inline">
                                     @csrf
                                     <select name="role" onchange="this.form.submit()" class="text-[10px] font-semibold px-2 py-0.5 rounded border focus:ring-0 cursor-pointer
@@ -96,7 +96,7 @@
                                     </select>
                                 </form>
                             </td>
-                            <td class="px-4 py-3 text-center whitespace-nowrap">
+                            <td data-label="Status" class="px-4 py-3 text-center whitespace-nowrap">
                                 @if($user->id === auth()->id())
                                     <span class="inline-block px-2 py-0.5 text-[10px] font-semibold rounded border bg-emerald-50 text-emerald-700 border-emerald-200">
                                         Aktif (Anda)
@@ -114,7 +114,7 @@
                                     </form>
                                 @endif
                             </td>
-                            <td class="px-4 py-3 text-right whitespace-nowrap">
+                            <td data-label="Aksi" class="px-4 py-3 text-right whitespace-nowrap">
                                 <div class="flex items-center justify-end gap-1">
                                     <a href="{{ route('users.edit', $user->id) }}" class="p-1.5 text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded border border-transparent hover:border-gray-200 transition" title="Edit Pengguna">
                                         <i class="fa-regular fa-pen-to-square"></i>

@@ -5,7 +5,7 @@
     'backText' => 'Kembali',
 ])
 
-<div class="bg-white p-4 rounded border border-gray-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+<div class="mobile-section-header bg-white p-4 rounded border border-gray-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
     <div>
         @if($backUrl)
             <div class="mb-1">
@@ -23,7 +23,7 @@
     </div>
 
     @if(isset($actions))
-        <div class="flex items-center gap-2">
+        <div class="flex flex-wrap items-center gap-2">
             {{ $actions }}
         </div>
     @endif

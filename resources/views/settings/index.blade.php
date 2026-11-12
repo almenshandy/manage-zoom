@@ -31,7 +31,7 @@
                     <div class="w-10 h-10 rounded border border-emerald-200 bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 text-lg">
                         <i class="fa-brands fa-whatsapp"></i>
                     </div>
-                    <div>
+                    <div class="min-w-0">
                         <div class="flex items-center gap-2 flex-wrap">
                             <h3 class="text-xs font-bold text-gray-900 uppercase tracking-wider">Gateway WhatsApp Aktif:</h3>
                             <span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold bg-gray-900 text-white font-mono uppercase">
@@ -45,6 +45,9 @@
                         </div>
                         <p class="text-[11px] text-gray-500 mt-1" id="gatewayStatusDesc">
                             {{ $statusInfo['message'] ?? 'Pilih provider default dan masukkan token API untuk mengaktifkan pengiriman otomatis.' }}
+                            @if(($statusInfo['success'] ?? false) && !empty($statusInfo['session_id']))
+                                <span>&bull; Session: <code class="font-mono text-emerald-800 font-semibold break-all">{{ $statusInfo['session_id'] }}</code></span>
+                            @endif
                         </p>
                     </div>
                 </div>
@@ -370,6 +373,21 @@
         }
     }
 
+    function renderGatewayStatusDescription(data) {
+        const desc = document.getElementById('gatewayStatusDesc');
+        const message = document.createElement('span');
+        message.className = data.success ? 'text-emerald-700 font-medium' : 'text-rose-600';
+        message.textContent = data.message || 'Gagal terhubung ke provider.';
+        desc.replaceChildren(message);
+
+        if (data.success && data.session_id) {
+            const session = document.createElement('code');
+            session.className = 'font-mono text-emerald-800 font-semibold break-all';
+            session.textContent = data.session_id;
+            desc.append(document.createTextNode(' • Session: '), session);
+        }
+    }
+
     function checkCurrentGatewayConnection() {
         const providerSelect = document.getElementById('wa_default_provider');
         const provider = providerSelect ? providerSelect.value : 'flowkirim';
@@ -377,7 +395,6 @@
         const btn = document.getElementById('btnCheckStatus');
         const icon = document.getElementById('iconCheckStatus');
         const badge = document.getElementById('gatewayStatusBadge');
-        const desc = document.getElementById('gatewayStatusDesc');
 
         if (btn) btn.disabled = true;
         if (icon) icon.classList.add('fa-spin');
@@ -398,17 +415,16 @@
             if (data.success) {
                 badge.className = 'inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200';
                 badge.innerHTML = '<i class="fa-solid fa-circle text-[6px] mr-1 text-emerald-500"></i> Terhubung (Connected)';
-                desc.innerHTML = `<span class="text-emerald-700 font-medium">${data.message}</span>`;
             } else {
                 badge.className = 'inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold bg-rose-50 text-rose-700 border border-rose-200';
                 badge.innerHTML = '<i class="fa-solid fa-circle text-[6px] mr-1 text-rose-500"></i> Terputus / Tidak Valid';
-                desc.innerHTML = `<span class="text-rose-600">${data.message || 'Gagal terhubung ke provider.'}</span>`;
             }
+            renderGatewayStatusDescription(data);
         })
         .catch(err => {
             badge.className = 'inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold bg-rose-50 text-rose-700 border border-rose-200';
             badge.innerHTML = '<i class="fa-solid fa-circle text-[6px] mr-1 text-rose-500"></i> Error Jaringan';
-            desc.innerHTML = `<span class="text-rose-600">Kesalahan koneksi: ${err.message}</span>`;
+            renderGatewayStatusDescription({ success: false, message: `Kesalahan koneksi: ${err.message}` });
         })
         .finally(() => {
             if (btn) btn.disabled = false;

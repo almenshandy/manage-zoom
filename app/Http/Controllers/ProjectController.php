@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Project;
 use App\Models\Department;
+use App\Models\Project;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
 
 class ProjectController extends Controller
 {
@@ -19,10 +20,10 @@ class ProjectController extends Controller
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('code', 'like', "%{$search}%")
-                  ->orWhereHas('department', function ($dq) use ($search) {
-                      $dq->where('nama_departemen', 'like', "%{$search}%");
-                  });
+                    ->orWhere('code', 'like', "%{$search}%")
+                    ->orWhereHas('department', function ($dq) use ($search) {
+                        $dq->where('nama_departemen', 'like', "%{$search}%");
+                    });
             });
         }
 
@@ -50,16 +51,28 @@ class ProjectController extends Controller
         return view('projects.index', compact('projects', 'departments', 'deptProjectCounts'));
     }
 
+    public function meetings(Project $project): View
+    {
+        $bookings = $project->bookings()
+            ->with(['user', 'account'])
+            ->orderByDesc('start_date')
+            ->orderBy('start_time')
+            ->orderByDesc('id')
+            ->paginate(10);
+
+        return view('projects.meetings', compact('project', 'bookings'));
+    }
+
     public function store(Request $request)
     {
         $validated = $request->validate([
             'department_id' => ['nullable', 'exists:departments,id'],
-            'name'          => ['required', 'string', 'max:255', 'unique:projects,name'],
-            'code'          => ['nullable', 'string', 'max:50'],
-            'description'   => ['nullable', 'string'],
-            'start_date'    => ['nullable', 'date'],
-            'end_date'      => ['nullable', 'date', 'after_or_equal:start_date'],
-            'status'        => ['required', 'in:active,completed,inactive'],
+            'name' => ['required', 'string', 'max:255', 'unique:projects,name'],
+            'code' => ['nullable', 'string', 'max:50'],
+            'description' => ['nullable', 'string'],
+            'start_date' => ['nullable', 'date'],
+            'end_date' => ['nullable', 'date', 'after_or_equal:start_date'],
+            'status' => ['required', 'in:active,completed,inactive'],
         ]);
 
         Project::create($validated);
@@ -71,12 +84,12 @@ class ProjectController extends Controller
     {
         $validated = $request->validate([
             'department_id' => ['nullable', 'exists:departments,id'],
-            'name'          => ['required', 'string', 'max:255', 'unique:projects,name,' . $project->id],
-            'code'          => ['nullable', 'string', 'max:50'],
-            'description'   => ['nullable', 'string'],
-            'start_date'    => ['nullable', 'date'],
-            'end_date'      => ['nullable', 'date', 'after_or_equal:start_date'],
-            'status'        => ['required', 'in:active,completed,inactive'],
+            'name' => ['required', 'string', 'max:255', 'unique:projects,name,'.$project->id],
+            'code' => ['nullable', 'string', 'max:50'],
+            'description' => ['nullable', 'string'],
+            'start_date' => ['nullable', 'date'],
+            'end_date' => ['nullable', 'date', 'after_or_equal:start_date'],
+            'status' => ['required', 'in:active,completed,inactive'],
         ]);
 
         $project->update($validated);

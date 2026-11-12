@@ -1,19 +1,20 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Auth\AuthController;
-use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\ZoomBookingController;
-use App\Http\Controllers\ZoomAccountController;
-use App\Http\Controllers\CalendarController;
-use App\Http\Controllers\MemoController;
 use App\Http\Controllers\ActivityLogController;
-use App\Http\Controllers\UserController;
+use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\BookingReportController;
+use App\Http\Controllers\CalendarController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DatabaseBackupController;
 use App\Http\Controllers\DepartmentPositionController;
+use App\Http\Controllers\MemoController;
 use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\SettingController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\ZoomAccountController;
+use App\Http\Controllers\ZoomBookingController;
 use App\Http\Middleware\EnsureAdmin;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -58,11 +59,11 @@ Route::middleware('auth')->group(function () {
         Route::resource('zoom-accounts', ZoomAccountController::class);
 
         // Settings Area (Zoom & Multi-Gateway WhatsApp)
-        Route::get('settings/zoom', [\App\Http\Controllers\SettingController::class, 'index'])->name('settings.index');
-        Route::post('settings/zoom', [\App\Http\Controllers\SettingController::class, 'update'])->name('settings.update');
-        Route::post('settings/whatsapp', [\App\Http\Controllers\SettingController::class, 'updateWhatsApp'])->name('settings.update-whatsapp');
-        Route::post('settings/whatsapp/check-status', [\App\Http\Controllers\SettingController::class, 'checkWhatsAppStatus'])->name('settings.whatsapp-status');
-        Route::post('settings/whatsapp/test-send', [\App\Http\Controllers\SettingController::class, 'testWhatsApp'])->name('settings.whatsapp-test');
+        Route::get('settings/zoom', [SettingController::class, 'index'])->name('settings.index');
+        Route::post('settings/zoom', [SettingController::class, 'update'])->name('settings.update');
+        Route::post('settings/whatsapp', [SettingController::class, 'updateWhatsApp'])->name('settings.update-whatsapp');
+        Route::post('settings/whatsapp/check-status', [SettingController::class, 'checkWhatsAppStatus'])->name('settings.whatsapp-status');
+        Route::post('settings/whatsapp/test-send', [SettingController::class, 'testWhatsApp'])->name('settings.whatsapp-test');
 
         // User Management & Remote Sync
         Route::get('users/sync-preview', [UserController::class, 'syncPreview'])->name('users.sync-preview');
@@ -72,6 +73,7 @@ Route::middleware('auth')->group(function () {
         Route::post('users/{user}/toggle-status', [UserController::class, 'toggleStatus'])->name('users.toggle-status');
 
         // Master Proyek
+        Route::get('projects/{project}/meetings', [ProjectController::class, 'meetings'])->name('projects.meetings');
         Route::resource('projects', ProjectController::class)->except(['create', 'show', 'edit']);
 
         // Master Departemen & Jabatan LSP

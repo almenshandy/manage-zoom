@@ -83,7 +83,7 @@
     <!-- Tabel Data Log Aktivitas -->
     <x-card>
         <div class="overflow-x-auto">
-            <table class="w-full text-left text-xs">
+            <table class="mobile-card-table w-full text-left text-xs">
                 <thead class="bg-gray-50 text-gray-600 font-semibold border-b border-gray-200 uppercase tracking-wider text-[11px]">
                     <tr>
                         <th class="px-4 py-3" style="width: 140px;">Waktu Kejadian</th>
@@ -96,15 +96,15 @@
                 <tbody class="divide-y divide-gray-200 text-gray-700">
                     @forelse($logs as $log)
                         <tr class="hover:bg-gray-50/75 transition-colors">
-                            <td class="px-4 py-2.5 font-mono text-gray-500 text-[11px] whitespace-nowrap">
+                            <td data-label="Waktu Kejadian" class="px-4 py-2.5 font-mono text-gray-500 text-[11px] whitespace-nowrap">
                                 <span class="text-gray-900 font-medium block">{{ $log->created_at->format('d/m/Y') }}</span>
                                 <span class="text-[10px] text-gray-400">{{ $log->created_at->format('H:i:s') }} WIB ({{ $log->created_at->diffForHumans() }})</span>
                             </td>
-                            <td class="px-4 py-2.5 whitespace-nowrap">
+                            <td data-label="Eksekutor / User" class="px-4 py-2.5 whitespace-nowrap">
                                 <span class="font-semibold text-gray-900 block">{{ $log->user->name ?? 'Sistem / Otomatis' }}</span>
                                 <span class="text-[10px] text-gray-400 font-mono">{{ $log->user->email ?? '-' }}</span>
                             </td>
-                            <td class="px-4 py-2.5 whitespace-nowrap">
+                            <td data-label="Aksi" class="px-4 py-2.5 whitespace-nowrap">
                                 @if($log->action === 'create_booking')
                                     <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-semibold bg-blue-50 text-blue-700 border border-blue-200">
                                         <i class="fa-solid fa-plus-circle text-[9px]"></i> Pengajuan Baru
@@ -123,10 +123,10 @@
                                     </span>
                                 @endif
                             </td>
-                            <td class="px-4 py-2.5 text-gray-800 leading-relaxed">
+                            <td data-label="Keterangan Aktivitas" class="px-4 py-2.5 text-gray-800 leading-relaxed">
                                 {{ $log->description }}
                             </td>
-                            <td class="px-4 py-2.5 text-right font-mono text-gray-400 text-[11px] whitespace-nowrap">
+                            <td data-label="IP Address" class="px-4 py-2.5 text-right font-mono text-gray-400 text-[11px] whitespace-nowrap">
                                 {{ $log->ip_address ?? '-' }}
                             </td>
                         </tr>

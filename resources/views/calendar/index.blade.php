@@ -44,7 +44,7 @@
             <p class="text-xs text-gray-500 mt-0.5">Semua agenda terdaftar dapat dipantau di kalender berikut.</p>
         </div>
 
-        <div class="flex items-center gap-3 text-xs">
+        <div class="flex flex-wrap items-center gap-3 text-xs">
             <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-emerald-600"></span> Link Siap</span>
             <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-blue-600"></span> Disetujui (ACC)</span>
             <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span> Pending</span>
@@ -63,14 +63,17 @@
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         const calendarEl = document.getElementById("calendar");
+        const mobileCalendar = window.matchMedia('(max-width: 767px)');
+        const calendarToolbar = mobile => ({
+            left: 'prev,next today',
+            center: 'title',
+            right: mobile ? 'listWeek,timeGridDay' : 'dayGridMonth,timeGridWeek,timeGridDay',
+        });
         const calendar = new FullCalendar.Calendar(calendarEl, {
-            initialView: "dayGridMonth",
+            initialView: mobileCalendar.matches ? 'listWeek' : 'dayGridMonth',
             locale: "id",
-            headerToolbar: {
-                left: "prev,next today",
-                center: "title",
-                right: "dayGridMonth,timeGridWeek,timeGridDay",
-            },
+            headerToolbar: calendarToolbar(mobileCalendar.matches),
+            height: 'auto',
             events: '{{ route("calendar.events") }}',
             eventClick: function (info) {
                 if (info.event.url) {
@@ -86,6 +89,10 @@
             }
         });
         calendar.render();
+        mobileCalendar.addEventListener('change', event => {
+            calendar.setOption('headerToolbar', calendarToolbar(event.matches));
+            calendar.changeView(event.matches ? 'listWeek' : 'dayGridMonth');
+        });
     });
 </script>
 @endpush

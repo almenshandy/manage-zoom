@@ -2,15 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\ZoomBooking;
-use App\Models\ZoomAccount;
-use App\Models\User;
-use App\Services\ZoomService;
 use App\Http\Requests\StoreBookingRequest;
 use App\Http\Requests\UpdateBookingRequest;
-use Illuminate\Http\Request;
+use App\Models\Project;
+use App\Models\User;
+use App\Models\ZoomAccount;
+use App\Models\ZoomBooking;
+use App\Services\WhatsAppService;
+use App\Services\ZoomService;
 use Carbon\Carbon;
 use Exception;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class ZoomBookingController extends Controller
 {
@@ -26,7 +29,7 @@ class ZoomBookingController extends Controller
         $query = ZoomBooking::with(['user', 'account'])->latest();
 
         // If not admin, only show user's own bookings
-        if (auth()->user() && !auth()->user()->isAdmin()) {
+        if (auth()->user() && ! auth()->user()->isAdmin()) {
             $query->where('user_id', auth()->id());
         }
 
@@ -38,7 +41,7 @@ class ZoomBookingController extends Controller
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('topic', 'like', "%{$search}%")
-                  ->orWhere('description', 'like', "%{$search}%");
+                    ->orWhere('description', 'like', "%{$search}%");
             });
         }
 
@@ -67,11 +70,11 @@ class ZoomBookingController extends Controller
             ->where('status', '!=', ZoomBooking::STATUS_CANCELLED)
             ->where(function ($q) use ($today, $endDate) {
                 $q->whereBetween('start_date', [$today->toDateString(), $endDate->toDateString()])
-                  ->orWhereBetween('end_date', [$today->toDateString(), $endDate->toDateString()])
-                  ->orWhere(function ($sub) use ($today, $endDate) {
-                      $sub->where('start_date', '<=', $today->toDateString())
-                          ->where('end_date', '>=', $endDate->toDateString());
-                  });
+                    ->orWhereBetween('end_date', [$today->toDateString(), $endDate->toDateString()])
+                    ->orWhere(function ($sub) use ($today, $endDate) {
+                        $sub->where('start_date', '<=', $today->toDateString())
+                            ->where('end_date', '>=', $endDate->toDateString());
+                    });
             })
             ->get();
 
@@ -81,11 +84,11 @@ class ZoomBookingController extends Controller
         while ($cursor->lte($endDate)) {
             $dates[] = [
                 'date_string' => $cursor->toDateString(),
-                'day_num'     => $cursor->format('d'),
-                'month_name'  => $cursor->locale('id')->isoFormat('MMM'),
-                'day_name'    => $cursor->locale('id')->isoFormat('ddd'),
-                'is_today'    => $cursor->isToday(),
-                'is_sunday'   => $cursor->isSunday(),
+                'day_num' => $cursor->format('d'),
+                'month_name' => $cursor->locale('id')->isoFormat('MMM'),
+                'day_name' => $cursor->locale('id')->isoFormat('ddd'),
+                'is_today' => $cursor->isToday(),
+                'is_sunday' => $cursor->isSunday(),
             ];
             $cursor->addDay();
         }
@@ -95,34 +98,35 @@ class ZoomBookingController extends Controller
         foreach ($bookings as $b) {
             $bStart = Carbon::parse($b->start_date);
             $bEnd = Carbon::parse($b->end_date);
-            $bCursor = (clone $bStart)->max($today);
-            $bLimit = (clone $bEnd)->min($endDate);
+            // max()/min() dapat mengembalikan objek batas; salin agar iterasi tidak mengubah rentang matriks.
+            $bCursor = $bStart->max($today)->copy();
+            $bLimit = $bEnd->min($endDate)->copy();
 
             while ($bCursor->lte($bLimit)) {
                 $dateKey = $bCursor->toDateString();
                 $matrixBookings[$b->zoom_account_id][$dateKey][] = [
-                    'id'               => $b->id,
-                    'slug'             => $b->slug,
-                    'topic'            => $b->topic,
-                    'project_name'     => $b->project_name,
-                    'display_title'    => $b->project_name ? "{$b->project_name} - {$b->topic}" : $b->topic,
-                    'user_name'        => $b->user?->name ?? 'User',
-                    'start_time'       => substr($b->start_time, 0, 5),
-                    'end_time'         => substr($b->end_time, 0, 5),
-                    'status_label'     => $b->status_label,
-                    'status'           => $b->status,
+                    'id' => $b->id,
+                    'slug' => $b->slug,
+                    'topic' => $b->topic,
+                    'project_name' => $b->project_name,
+                    'display_title' => $b->project_name ? "{$b->project_name} - {$b->topic}" : $b->topic,
+                    'user_name' => $b->user?->name ?? 'User',
+                    'start_time' => substr($b->start_time, 0, 5),
+                    'end_time' => substr($b->end_time, 0, 5),
+                    'status_label' => $b->status_label,
+                    'status' => $b->status,
                 ];
                 $bCursor->addDay();
             }
         }
 
         // Ambil daftar user jika admin ingin memilihkan pemohon
-        $users = auth()->user() && auth()->user()->isAdmin() 
-            ? \App\Models\User::orderBy('name')->get() 
+        $users = auth()->user() && auth()->user()->isAdmin()
+            ? User::orderBy('name')->get()
             : collect();
 
         // Ambil daftar master proyek aktif untuk dropdown booking
-        $projects = \App\Models\Project::where('status', 'active')->orderBy('name')->get();
+        $projects = Project::where('status', 'active')->orderBy('name')->get();
 
         return view('bookings.create', compact('accounts', 'dates', 'matrixBookings', 'users', 'projects'));
     }
@@ -133,7 +137,7 @@ class ZoomBookingController extends Controller
         $user = auth()->user();
 
         // Jika admin memilih pemohon lain dari dropdown
-        if ($user && $user->isAdmin() && !empty($request->user_id)) {
+        if ($user && $user->isAdmin() && ! empty($request->user_id)) {
             $validated['user_id'] = $request->user_id;
         } else {
             $validated['user_id'] = $user ? $user->id : 1;
@@ -141,7 +145,7 @@ class ZoomBookingController extends Controller
 
         // Jika pengaju adalah Admin dan sudah memilih akun Zoom, otomatis disetujui (ACC / STATUS_APPROVED)
         $isAdmin = $user && $user->isAdmin();
-        if ($isAdmin && !empty($validated['zoom_account_id'])) {
+        if ($isAdmin && ! empty($validated['zoom_account_id'])) {
             $validated['status'] = ZoomBooking::STATUS_APPROVED;
             $validated['admin_note'] = 'Disetujui otomatis oleh Administrator saat pengajuan.';
         } else {
@@ -154,16 +158,16 @@ class ZoomBookingController extends Controller
         $validated['day_count'] = $start->diffInDays($end) + 1;
 
         // Hitung otomatis durasi menit dari start_time dan end_time agar selalu akurat
-        if (!empty($validated['start_time']) && !empty($validated['end_time'])) {
-            $timeStart = Carbon::parse($validated['start_date'] . ' ' . $validated['start_time']);
-            $timeEnd = Carbon::parse($validated['start_date'] . ' ' . $validated['end_time']);
+        if (! empty($validated['start_time']) && ! empty($validated['end_time'])) {
+            $timeStart = Carbon::parse($validated['start_date'].' '.$validated['start_time']);
+            $timeEnd = Carbon::parse($validated['start_date'].' '.$validated['end_time']);
             if ($timeEnd->greaterThan($timeStart)) {
                 $validated['duration_minutes'] = $timeStart->diffInMinutes($timeEnd);
             }
         }
 
         // Cek potensi bentrok jadwal jika akun sudah dipilih
-        if (!empty($validated['zoom_account_id'])) {
+        if (! empty($validated['zoom_account_id'])) {
             $conflict = $this->hasScheduleConflict(
                 $validated['zoom_account_id'],
                 $validated['start_date'],
@@ -179,7 +183,7 @@ class ZoomBookingController extends Controller
 
         $booking = ZoomBooking::create($validated);
 
-        if ($isAdmin && !empty($validated['zoom_account_id'])) {
+        if ($isAdmin && ! empty($validated['zoom_account_id'])) {
             return redirect()->route('bookings.show', $booking->id)->with('success', 'Booking berhasil dibuat dan otomatis disetujui (ACC). Anda dapat langsung membuat Link Zoom!');
         }
 
@@ -189,22 +193,23 @@ class ZoomBookingController extends Controller
     public function show(ZoomBooking $booking)
     {
         $booking->load(['user', 'account', 'memo', 'meetings']);
+
         return view('bookings.show', compact('booking'));
     }
 
     public function edit(ZoomBooking $booking)
     {
         // Hanya bisa edit jika admin atau status masih pending
-        if (!auth()->user()->isAdmin() && $booking->user_id !== auth()->id()) {
+        if (! auth()->user()->isAdmin() && $booking->user_id !== auth()->id()) {
             abort(403);
         }
 
         $accounts = ZoomAccount::whereDate('expired_date', '>=', now()->toDateString())
             ->orderBy('expired_date', 'asc')
             ->get();
-        $projects = \App\Models\Project::where('status', 'active')->orderBy('name')->get();
-        $users = auth()->user()->isAdmin() 
-            ? User::where('is_active', true)->orderBy('name')->get() 
+        $projects = Project::where('status', 'active')->orderBy('name')->get();
+        $users = auth()->user()->isAdmin()
+            ? User::where('is_active', true)->orderBy('name')->get()
             : collect([]);
 
         return view('bookings.edit', compact('booking', 'accounts', 'projects', 'users'));
@@ -212,13 +217,13 @@ class ZoomBookingController extends Controller
 
     public function update(UpdateBookingRequest $request, ZoomBooking $booking)
     {
-        if (!auth()->user()->isAdmin() && $booking->user_id !== auth()->id()) {
+        if (! auth()->user()->isAdmin() && $booking->user_id !== auth()->id()) {
             abort(403);
         }
 
         $validated = $request->validated();
 
-        if (!empty($validated['zoom_account_id'])) {
+        if (! empty($validated['zoom_account_id'])) {
             $conflict = $this->hasScheduleConflict(
                 $validated['zoom_account_id'],
                 $validated['start_date'],
@@ -240,10 +245,10 @@ class ZoomBookingController extends Controller
         }
 
         // Hitung otomatis durasi menit dari start_time dan end_time
-        if (!empty($validated['start_time']) && !empty($validated['end_time'])) {
+        if (! empty($validated['start_time']) && ! empty($validated['end_time'])) {
             $refDate = $validated['start_date'] ?? $booking->start_date->format('Y-m-d');
-            $timeStart = Carbon::parse($refDate . ' ' . $validated['start_time']);
-            $timeEnd = Carbon::parse($refDate . ' ' . $validated['end_time']);
+            $timeStart = Carbon::parse($refDate.' '.$validated['start_time']);
+            $timeEnd = Carbon::parse($refDate.' '.$validated['end_time']);
             if ($timeEnd->greaterThan($timeStart)) {
                 $validated['duration_minutes'] = $timeStart->diffInMinutes($timeEnd);
             }
@@ -261,7 +266,7 @@ class ZoomBookingController extends Controller
     {
         $request->validate([
             'zoom_account_id' => ['required', 'exists:zoom_accounts,id'],
-            'admin_note'      => ['nullable', 'string', 'max:500'],
+            'admin_note' => ['nullable', 'string', 'max:500'],
         ]);
 
         // Cek potensi bentrok jadwal saat disetujui
@@ -280,8 +285,8 @@ class ZoomBookingController extends Controller
 
         $booking->update([
             'zoom_account_id' => $request->zoom_account_id,
-            'admin_note'      => $request->admin_note,
-            'status'          => ZoomBooking::STATUS_APPROVED, // Status 1: ACC
+            'admin_note' => $request->admin_note,
+            'status' => ZoomBooking::STATUS_APPROVED, // Status 1: ACC
         ]);
 
         return back()->with('success', 'Permohonan peminjaman berhasil disetujui (ACC). Silakan generate Link Zoom jika sudah siap.');
@@ -298,7 +303,7 @@ class ZoomBookingController extends Controller
 
         $booking->update([
             'admin_note' => $request->admin_note,
-            'status'     => ZoomBooking::STATUS_REJECTED,
+            'status' => ZoomBooking::STATUS_REJECTED,
         ]);
 
         return back()->with('success', 'Permohonan peminjaman berhasil ditolak.');
@@ -310,14 +315,14 @@ class ZoomBookingController extends Controller
     public function generateMeeting(Request $request, ZoomBooking $booking)
     {
         $request->validate([
-            'topic'      => ['required', 'string', 'max:255'],
+            'topic' => ['required', 'string', 'max:255'],
             'start_time' => ['required', 'date'],
-            'duration'   => ['required', 'integer', 'min:15'],
-            'passcode'   => ['nullable', 'string', 'max:10'],
+            'duration' => ['required', 'integer', 'min:15'],
+            'passcode' => ['nullable', 'string', 'max:10'],
         ]);
 
         $account = $booking->account;
-        if (!$account) {
+        if (! $account) {
             return back()->with('error', 'Akun Zoom belum ditentukan untuk booking ini.');
         }
 
@@ -346,31 +351,31 @@ class ZoomBookingController extends Controller
             }
 
             $zoomResponse = $this->zoomService->createMeeting([
-                'topic'      => $request->topic,
+                'topic' => $request->topic,
                 'start_time' => $startTimeFormatted,
-                'duration'   => (int) $request->duration,
-                'agenda'     => $booking->description,
-                'password'   => $request->passcode,
-                'settings'   => $customSettings,
+                'duration' => (int) $request->duration,
+                'agenda' => $booking->description,
+                'password' => $request->passcode,
+                'settings' => $customSettings,
             ], $token);
 
             $booking->update([
                 'zoom_meeting_id' => $zoomResponse['id'],
-                'join_url'        => $zoomResponse['join_url'],
-                'start_url'       => $zoomResponse['start_url'] ?? null,
-                'passcode'        => $zoomResponse['password'] ?? $request->passcode,
-                'status'          => ZoomBooking::STATUS_EXECUTED, // Status 3: Executed
+                'join_url' => $zoomResponse['join_url'],
+                'start_url' => $zoomResponse['start_url'] ?? null,
+                'passcode' => $zoomResponse['password'] ?? $request->passcode,
+                'status' => ZoomBooking::STATUS_EXECUTED, // Status 3: Executed
             ]);
 
             return back()->with('success', 'Link Zoom Meeting berhasil dibuat dan aktif via API!');
         } catch (Exception $e) {
-            return back()->with('error', 'Gagal memproses API Zoom: ' . $e->getMessage());
+            return back()->with('error', 'Gagal memproses API Zoom: '.$e->getMessage());
         }
     }
 
     public function destroy(ZoomBooking $booking)
     {
-        if (!auth()->user()->isAdmin() && $booking->user_id !== auth()->id()) {
+        if (! auth()->user()->isAdmin() && $booking->user_id !== auth()->id()) {
             abort(403);
         }
 
@@ -385,11 +390,11 @@ class ZoomBookingController extends Controller
                     $booking->account->client_id,
                     $booking->account->client_secret
                 );
-                
+
                 $zoomDeleted = $this->zoomService->deleteMeeting($booking->zoom_meeting_id, $token);
             } catch (\Throwable $e) {
                 $zoomError = $e->getMessage();
-                \Illuminate\Support\Facades\Log::warning("Gagal menghapus meeting di Zoom API ID {$booking->zoom_meeting_id}: " . $zoomError);
+                Log::warning("Gagal menghapus meeting di Zoom API ID {$booking->zoom_meeting_id}: ".$zoomError);
             }
         }
 
@@ -400,7 +405,7 @@ class ZoomBookingController extends Controller
         }
 
         if ($zoomError) {
-            return redirect()->route('bookings.index')->with('info', 'Booking di portal berhasil dihapus, namun terjadi kendala saat menghapus di Zoom API: ' . $zoomError);
+            return redirect()->route('bookings.index')->with('info', 'Booking di portal berhasil dihapus, namun terjadi kendala saat menghapus di Zoom API: '.$zoomError);
         }
 
         return redirect()->route('bookings.index')->with('success', 'Booking berhasil dihapus.');
@@ -409,11 +414,11 @@ class ZoomBookingController extends Controller
     /**
      * Kirim undangan rapat via WhatsApp menggunakan Multi-Gateway (FlowKirim / Fonnte)
      */
-    public function sendWhatsApp(Request $request, ZoomBooking $booking, \App\Services\WhatsAppService $waService)
+    public function sendWhatsApp(Request $request, ZoomBooking $booking, WhatsAppService $waService)
     {
         $request->validate([
-            'target'   => 'required|string',
-            'message'  => 'required|string',
+            'target' => 'required|string',
+            'message' => 'required|string',
             'provider' => 'nullable|string',
         ]);
 
