@@ -18,6 +18,7 @@ class ZoomBooking extends Model
         'user_id',
         'zoom_account_id',
         'topic',
+        'project_id',
         'project_name',
         'slug',
         'description',
@@ -57,6 +58,13 @@ class ZoomBooking extends Model
 
     protected static function booted(): void
     {
+        static::saving(function (ZoomBooking $booking): void {
+            if ($booking->isDirty('project_id')) {
+                $booking->project_name = $booking->project_id === null ? null : $booking->project()->first()?->name;
+                $booking->unsetRelation('project');
+            }
+        });
+
         static::creating(function ($booking) {
             if (empty($booking->slug)) {
                 $baseSlug = Str::slug($booking->topic);
@@ -82,6 +90,7 @@ class ZoomBooking extends Model
             'duration_minutes' => 'integer',
             'day_count' => 'integer',
             'status' => 'integer',
+            'project_id' => 'integer',
         ];
     }
 
@@ -161,6 +170,16 @@ class ZoomBooking extends Model
     public function account(): BelongsTo
     {
         return $this->belongsTo(ZoomAccount::class, 'zoom_account_id');
+    }
+
+    public function project(): BelongsTo
+    {
+        return $this->belongsTo(Project::class);
+    }
+
+    public function getProjectDisplayNameAttribute(): ?string
+    {
+        return $this->project?->name ?? $this->project_name;
     }
 
     public function meetings(): HasMany

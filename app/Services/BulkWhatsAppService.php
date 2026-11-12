@@ -18,8 +18,8 @@ class BulkWhatsAppService
     {
         $lines = ['Undangan Zoom Meeting', 'Agenda: '.$booking->topic];
         $lines[] = 'Booking atas nama: '.($booking->user?->name ?? '-');
-        if ($booking->project_name) {
-            $lines[] = 'Proyek: '.$booking->project_name;
+        if ($booking->project_display_name) {
+            $lines[] = 'Proyek: '.$booking->project_display_name;
         }
         $lines[] = 'Hari/Tanggal: '.$booking->date_range_formatted;
         $lines[] = 'Waktu: '.substr($booking->start_time ?? '', 0, 5).' - '.substr($booking->end_time ?? '', 0, 5).' WIB';
@@ -66,7 +66,7 @@ class BulkWhatsAppService
     public function selectedBookings(User $user, array $bookingIds): Collection
     {
         abort_unless($user->is_active, 403);
-        $bookings = ZoomBooking::with(['user', 'account'])->whereIn('id', $bookingIds)->orderBy('start_date')->orderBy('start_time')->orderBy('id')->get();
+        $bookings = ZoomBooking::with(['user', 'account', 'project'])->whereIn('id', $bookingIds)->orderBy('start_date')->orderBy('start_time')->orderBy('id')->get();
         if ($bookings->count() !== count($bookingIds)) {
             throw ValidationException::withMessages(['booking_ids' => 'Salah satu meeting sudah tidak tersedia. Muat ulang daftar booking.']);
         }

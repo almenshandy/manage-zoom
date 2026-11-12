@@ -99,14 +99,17 @@
                     <label class="block font-medium text-gray-700 mb-1">
                         Pilih Proyek / Pelaksanaan <span class="text-gray-400 font-normal">(Opsional)</span>
                     </label>
-                    <select name="project_name" class="w-full px-3 py-1.5 bg-white border border-gray-300 rounded-sm focus:outline-none focus:border-brand-600 text-xs">
+                    <select name="project_id" class="w-full px-3 py-1.5 bg-white border border-gray-300 rounded-sm focus:outline-none focus:border-brand-600 text-xs">
                         <option value="">-- Tanpa Proyek (Rapat Internal Biasa) --</option>
                         @foreach($projects as $prj)
-                            <option value="{{ $prj->name }}" {{ old('project_name', $booking->project_name) === $prj->name ? 'selected' : '' }}>
+                            <option value="{{ $prj->id }}" @selected((string) old('project_id', $booking->project_id) === (string) $prj->id)>
                                 {{ $prj->name }} {{ $prj->code ? "({$prj->code})" : '' }}
                             </option>
                         @endforeach
                     </select>
+                    @if(!$booking->project_id && $booking->project_name)
+                        <p class="text-xs text-amber-800 mt-1">Nama proyek lama: {{ $booking->project_name }}. Pilih proyek untuk menghubungkannya; nama lama tetap disimpan jika belum dipilih.</p>
+                    @endif
                 </div>
             </div>
 

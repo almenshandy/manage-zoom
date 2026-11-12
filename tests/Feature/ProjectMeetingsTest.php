@@ -144,6 +144,7 @@ class ProjectMeetingsTest extends TestCase
     {
         return ZoomBooking::create(array_merge([
             'user_id' => $user->id,
+            'project_id' => $project->id,
             'project_name' => $project->name,
             'topic' => 'Rapat Koordinasi',
             'start_date' => '2026-11-10',

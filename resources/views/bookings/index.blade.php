@@ -78,9 +78,9 @@
                                     <a href="{{ route('bookings.show', $item) }}" class="font-semibold text-gray-900 hover:text-blue-600 text-xs">
                                         {{ $item->topic }}
                                     </a>
-                                    @if($item->project_name)
+                                    @if($item->project_display_name)
                                         <span class="inline-block px-1.5 py-0.5 rounded-sm text-[10px] bg-slate-100 text-slate-700 border border-slate-200 font-medium">
-                                            {{ $item->project_name }}
+                                            {{ $item->project_display_name }}
                                         </span>
                                     @endif
                                 </div>
