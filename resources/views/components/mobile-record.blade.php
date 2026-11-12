@@ -2,6 +2,7 @@
 
 <article {{ $attributes->merge(['class' => 'mobile-record']) }}>
     <div class="mobile-record-header">
+        @isset($selection)<div class="mobile-record-selection">{{ $selection }}</div>@endisset
         <h2 class="mobile-record-title">
             @if($href)
                 <a href="{{ $href }}">{{ $title }}</a>

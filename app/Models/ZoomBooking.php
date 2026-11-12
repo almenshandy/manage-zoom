@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -60,7 +61,7 @@ class ZoomBooking extends Model
             if (empty($booking->slug)) {
                 $baseSlug = Str::slug($booking->topic);
                 $slug = $baseSlug ?: 'booking-zoom';
-                $booking->slug = $slug . '-' . Str::lower(Str::random(6));
+                $booking->slug = $slug.'-'.Str::lower(Str::random(6));
             }
         });
 
@@ -68,7 +69,7 @@ class ZoomBooking extends Model
             if ($booking->isDirty('topic') && empty($booking->slug)) {
                 $baseSlug = Str::slug($booking->topic);
                 $slug = $baseSlug ?: 'booking-zoom';
-                $booking->slug = $slug . '-' . Str::lower(Str::random(6));
+                $booking->slug = $slug.'-'.Str::lower(Str::random(6));
             }
         });
     }
@@ -86,11 +87,21 @@ class ZoomBooking extends Model
 
     // Status Constants
     public const STATUS_PENDING = 0;
+
     public const STATUS_APPROVED = 1; // ACC
+
     public const STATUS_REJECTED = 2;
+
     public const STATUS_EXECUTED = 3; // Link Ready
+
     public const STATUS_COMPLETED = 4;
+
     public const STATUS_CANCELLED = 5;
+
+    public function isEligibleForBulkWhatsApp(): bool
+    {
+        return in_array($this->status, [self::STATUS_APPROVED, self::STATUS_EXECUTED], true);
+    }
 
     public function getStatusLabelAttribute(): string
     {
@@ -123,23 +134,23 @@ class ZoomBooking extends Model
      */
     public function getDateRangeFormattedAttribute(): string
     {
-        if (!$this->start_date) {
+        if (! $this->start_date) {
             return '-';
         }
 
-        $start = \Carbon\Carbon::parse($this->start_date)->locale('id');
-        
-        if (!$this->end_date || $this->start_date->equalTo($this->end_date)) {
+        $start = Carbon::parse($this->start_date)->locale('id');
+
+        if (! $this->end_date || $this->start_date->equalTo($this->end_date)) {
             return $start->translatedFormat('l, d F Y');
         }
 
-        $end = \Carbon\Carbon::parse($this->end_date)->locale('id');
+        $end = Carbon::parse($this->end_date)->locale('id');
 
         if ($start->format('Y-m') === $end->format('Y-m')) {
-            return $start->translatedFormat('d') . ' - ' . $end->translatedFormat('d F Y');
+            return $start->translatedFormat('d').' - '.$end->translatedFormat('d F Y');
         }
 
-        return $start->translatedFormat('d F Y') . ' - ' . $end->translatedFormat('d F Y');
+        return $start->translatedFormat('d F Y').' - '.$end->translatedFormat('d F Y');
     }
 
     public function user(): BelongsTo

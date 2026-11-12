@@ -34,6 +34,9 @@
         </form>
 
         <div class="mobile-toolbar flex items-center gap-2 shrink-0">
+            <button type="button" id="openBulkWhatsApp" class="mobile-primary-action inline-flex items-center gap-1.5 bg-emerald-700 text-white text-xs font-medium px-3 py-1.5 border border-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                <i class="fa-brands fa-whatsapp" aria-hidden="true"></i> Kirim Bulk WhatsApp
+            </button>
             <a href="{{ route('bookings.print-all', request()->query()) }}" target="_blank" class="mobile-utility-action inline-flex items-center gap-1.5 bg-white hover:bg-gray-50 text-gray-700 text-xs font-medium px-3 py-1.5 rounded border border-gray-300 transition" aria-label="Cetak Rekap PDF" title="Cetak Rekap PDF">
                 <i class="fa-solid fa-print text-gray-500 text-[11px]"></i> <span class="hidden md:inline">Cetak Rekap PDF</span>
             </a>
@@ -41,12 +44,19 @@
     </div>
 
     <!-- Booking Table Card (Clean & Bordered) -->
+    <div class="flex flex-wrap items-center gap-3 text-xs text-gray-600">
+        <label class="inline-flex items-center gap-2 cursor-pointer py-1.5"><input type="checkbox" id="bulkSelectAll" aria-label="Pilih semua meeting yang dapat dikirim pada halaman ini"> Pilih semua di halaman ini</label>
+        <span id="bulkSelectedCount" class="font-semibold text-gray-900" aria-live="polite">0 meeting dipilih</span>
+        <span>Hanya booking Disetujui / Link Aktif.</span>
+        <a href="{{ route('bookings.whatsapp-bulk.create') }}" class="font-medium text-emerald-800 underline underline-offset-4 md:ml-auto">Riwayat antrean bulk</a>
+    </div>
     <div class="mobile-data-container bg-white rounded border border-gray-200 overflow-hidden">
         @include('bookings.mobile-list')
         <div class="hidden md:block overflow-x-auto">
             <table class="mobile-card-table w-full text-left text-xs">
                 <thead class="bg-gray-50 text-gray-600 font-semibold border-b border-gray-200 text-[11px] uppercase tracking-wider">
                     <tr>
+                        <th class="px-3 py-3 w-10"><span class="sr-only">Pilih meeting</span></th>
                         <th class="px-3 py-3 text-center w-12">No</th>
                         <th class="px-4 py-3">Kegiatan / Topik</th>
                         <th class="px-4 py-3">Pemohon</th>
@@ -59,6 +69,7 @@
                 <tbody class="divide-y divide-gray-200 text-gray-700">
                     @forelse($bookings as $idx => $item)
                         <tr class="hover:bg-gray-50/75 transition-colors">
+                            <td class="px-3 py-3"><input type="checkbox" class="bulk-booking-checkbox" value="{{ $item->id }}" aria-label="Pilih meeting {{ $item->topic }}" @disabled(!$item->isEligibleForBulkWhatsApp())></td>
                             <td data-label="No" class="px-3 py-3 text-center font-mono text-gray-500 text-[11px]">
                                 {{ $bookings->firstItem() + $idx }}
                             </td>
@@ -154,7 +165,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="7" class="px-4 py-8 text-center text-gray-400">
+                            <td colspan="8" class="px-4 py-8 text-center text-gray-400">
                                 <i class="fa-regular fa-calendar-xmark text-2xl mb-2 text-gray-300 block"></i>
                                 Tidak ada data pengajuan booking ditemukan.
                             </td>
@@ -174,6 +185,39 @@
 
 @push('scripts')
 <script>
+    (() => {
+        const checkboxes = Array.from(document.querySelectorAll('.bulk-booking-checkbox'));
+        const eligibleIds = [...new Set(checkboxes.filter(input => !input.disabled).map(input => input.value))];
+        const selected = new Set();
+        const selectAll = document.getElementById('bulkSelectAll');
+        const button = document.getElementById('openBulkWhatsApp');
+        function sync() {
+            checkboxes.forEach(input => { input.checked = selected.has(input.value); });
+            button.disabled = selected.size === 0;
+            document.getElementById('bulkSelectedCount').textContent = `${selected.size} meeting dipilih`;
+            selectAll.checked = eligibleIds.length > 0 && selected.size === eligibleIds.length;
+            selectAll.indeterminate = selected.size > 0 && selected.size < eligibleIds.length;
+            selectAll.disabled = !eligibleIds.length;
+        }
+        checkboxes.forEach(input => input.addEventListener('change', () => {
+            if (input.disabled) return;
+            if (input.checked) selected.add(input.value); else selected.delete(input.value);
+            sync();
+        }));
+        selectAll.addEventListener('change', () => {
+            selected.clear();
+            if (selectAll.checked) eligibleIds.forEach(id => selected.add(id));
+            sync();
+        });
+        button.addEventListener('click', () => {
+            if (!selected.size) return;
+            const url = new URL({{ \Illuminate\Support\Js::from(route('bookings.whatsapp-bulk.create')) }});
+            selected.forEach(id => url.searchParams.append('booking_ids[]', id));
+            window.location.assign(url);
+        });
+        sync();
+    })();
+
     function toggleActionDropdown(id, button, event) {
         event.stopPropagation();
         const target = document.getElementById(id);

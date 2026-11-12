@@ -12,6 +12,7 @@ use App\Services\WhatsAppService;
 use App\Services\ZoomService;
 use Carbon\Carbon;
 use Exception;
+use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
@@ -24,7 +25,7 @@ class ZoomBookingController extends Controller
         $this->zoomService = $zoomService;
     }
 
-    public function index(Request $request)
+    public function index(Request $request): View
     {
         $query = ZoomBooking::with(['user', 'account'])->latest();
 

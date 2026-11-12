@@ -3,6 +3,7 @@
 use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\BookingReportController;
+use App\Http\Controllers\BulkWhatsAppController;
 use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DatabaseBackupController;
@@ -33,6 +34,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
     // Zoom Bookings (User & Admin)
+    Route::get('bookings/whatsapp-bulk', [BulkWhatsAppController::class, 'create'])->name('bookings.whatsapp-bulk.create');
+    Route::get('bookings/whatsapp-bulk/contacts', [BulkWhatsAppController::class, 'contacts'])->name('bookings.whatsapp-bulk.contacts');
+    Route::post('bookings/whatsapp-bulk', [BulkWhatsAppController::class, 'store'])->name('bookings.whatsapp-bulk.store');
+    Route::get('bookings/whatsapp-bulk/{batch}', [BulkWhatsAppController::class, 'show'])->name('bookings.whatsapp-bulk.show');
     Route::resource('bookings', ZoomBookingController::class);
     Route::post('bookings/{booking}/approve', [ZoomBookingController::class, 'approve'])->name('bookings.approve');
     Route::post('bookings/{booking}/reject', [ZoomBookingController::class, 'reject'])->name('bookings.reject');

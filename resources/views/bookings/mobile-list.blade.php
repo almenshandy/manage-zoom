@@ -1,6 +1,7 @@
 <div class="mobile-record-list md:hidden">
     @forelse($bookings as $item)
         <x-mobile-record :title="$item->topic" :href="route('bookings.show', $item)" :badge="$item->status_label" :badge-class="$item->status_badge">
+            <x-slot:selection><label class="inline-flex items-center min-h-11"><input type="checkbox" class="bulk-booking-checkbox" value="{{ $item->id }}" aria-label="Pilih meeting {{ $item->topic }}" @disabled(!$item->isEligibleForBulkWhatsApp())></label></x-slot:selection>
             @if($item->project_name)
                 <p class="mobile-record-caption"><i class="fa-solid fa-briefcase" aria-hidden="true"></i> {{ $item->project_name }}</p>
             @endif
