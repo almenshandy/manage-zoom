@@ -12,6 +12,57 @@ use Tests\TestCase;
 
 class SqlBackupServiceTest extends TestCase
 {
+    #[TestWith([null])]
+    #[TestWith(['users'])]
+    public function test_windows_dumps_keep_system_root_when_web_request_globals_omit_it(?string $table): void
+    {
+        if (PHP_OS_FAMILY !== 'Windows') {
+            $this->markTestSkipped('Windows needs SystemRoot to initialize TCP/IP sockets.');
+        }
+
+        $systemRoot = getenv('SystemRoot');
+        $this->assertNotFalse($systemRoot);
+        $server = $_SERVER;
+        $environment = $_ENV;
+        $path = null;
+        Process::preventStrayProcesses();
+        Process::fake(function (PendingProcess $process) use ($systemRoot) {
+            $this->assertSame($systemRoot, $process->environment['SystemRoot'] ?? null);
+            if (in_array('--version', $process->command, true)) {
+                return Process::result(output: 'mysqldump Ver 8.0.30');
+            }
+
+            $dumpPath = substr(array_values(array_filter($process->command, fn (string $argument): bool => str_starts_with($argument, '--result-file=')))[0], strlen('--result-file='));
+            File::put($dumpPath, "CREATE TABLE sample (id INT);\nINSERT INTO sample VALUES (1);\n");
+
+            return Process::result();
+        });
+
+        try {
+            foreach (array_keys($_SERVER) as $key) {
+                if (in_array(strtoupper($key), ['SYSTEMROOT', 'WINDIR'], true)) {
+                    unset($_SERVER[$key]);
+                }
+            }
+            foreach (array_keys($_ENV) as $key) {
+                if (in_array(strtoupper($key), ['SYSTEMROOT', 'WINDIR'], true)) {
+                    unset($_ENV[$key]);
+                }
+            }
+
+            $path = app(SqlBackupService::class)->create($this->connection(), $table);
+
+            $this->assertFileExists($path);
+            Process::assertRanTimes(fn (PendingProcess $process): bool => is_array($process->command), 2);
+        } finally {
+            $_SERVER = $server;
+            $_ENV = $environment;
+            if ($path !== null) {
+                File::delete($path);
+            }
+        }
+    }
+
     #[TestWith([null, 'mysqldump Ver 8.0.30'])]
     #[TestWith(['odd table', 'mysqldump Ver 8.0.30'])]
     #[TestWith([null, 'mariadb-dump Ver 10.19 Distrib 10.11-MariaDB'])]

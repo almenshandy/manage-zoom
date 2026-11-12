@@ -48,7 +48,12 @@ class SqlBackupService
             chmod($dumpPath, 0600);
             File::put($optionsPath, $this->clientOptions($connection));
             $binary = (string) config('backup.dump_binary', 'mysqldump');
-            $version = Process::timeout(10)->run([$binary, '--version']);
+            $environment = [];
+            if (PHP_OS_FAMILY === 'Windows' && ($systemRoot = getenv('SystemRoot')) !== false) {
+                /** Windows web requests may omit SystemRoot from the globals used to inherit process environment variables. */
+                $environment['SystemRoot'] = $systemRoot;
+            }
+            $version = Process::env($environment)->timeout(10)->run([$binary, '--version']);
             if (! $version->successful()) {
                 throw new RuntimeException('Program dump MySQL tidak tersedia. Periksa pengaturan DB_DUMP_BINARY pada server.');
             }
@@ -73,7 +78,7 @@ class SqlBackupService
                 $command[] = $table;
             }
 
-            $result = Process::timeout((int) config('backup.timeout', 300))->run($command);
+            $result = Process::env($environment)->timeout((int) config('backup.timeout', 300))->run($command);
             if (! $result->successful()) {
                 Log::error('SQL backup process failed', ['exit_code' => $result->exitCode(), 'error' => $result->errorOutput()]);
 
