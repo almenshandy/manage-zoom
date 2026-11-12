@@ -37,9 +37,6 @@
             <a href="{{ route('bookings.print-all', request()->query()) }}" target="_blank" class="mobile-utility-action inline-flex items-center gap-1.5 bg-white hover:bg-gray-50 text-gray-700 text-xs font-medium px-3 py-1.5 rounded border border-gray-300 transition" aria-label="Cetak Rekap PDF" title="Cetak Rekap PDF">
                 <i class="fa-solid fa-print text-gray-500 text-[11px]"></i> <span class="hidden md:inline">Cetak Rekap PDF</span>
             </a>
-            <a href="{{ route('bookings.create') }}" class="mobile-primary-action inline-flex items-center gap-1.5 bg-gray-900 hover:bg-black text-white text-xs font-medium px-3.5 py-1.5 rounded transition">
-                <i class="fa-solid fa-plus text-[10px]"></i> Ajukan Booking Baru
-            </a>
         </div>
     </div>
 

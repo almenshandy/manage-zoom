@@ -257,7 +257,7 @@
                         <i class="fa-regular fa-clock mr-1 text-gray-400"></i> {{ now()->format('d M Y, H:i') }} WIB
                     </span>
                     <a href="{{ route('bookings.create') }}"
-                        class="hidden md:inline-flex items-center gap-1.5 bg-gray-900 hover:bg-black text-white text-xs font-medium px-3 py-1.5 rounded transition">
+                        class="{{ request()->routeIs('bookings.index') ? 'inline-flex' : 'hidden md:inline-flex' }} items-center gap-1.5 bg-gray-900 hover:bg-black text-white text-xs font-medium px-3 py-1.5 rounded transition">
                         <i class="fa-solid fa-plus text-[10px]"></i> <span>Booking<span class="hidden sm:inline"> Baru</span></span>
                     </a>
                     <span class="mobile-user-avatar md:hidden" role="img" aria-label="Masuk sebagai {{ auth()->user()?->name ?? 'Pengguna' }}">{{ strtoupper(substr(auth()->user()?->name ?? 'U', 0, 1)) }}</span>
