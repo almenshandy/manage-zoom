@@ -59,7 +59,7 @@ class SendBulkWhatsAppMessage implements ShouldQueue
         if ($message->batch->include_credentials) {
             $credentials = $message->account_credentials;
             $account = $message->booking->account;
-            if (! $account || ! $credentials || $account->status !== 'active'
+            if (! $account || ! $credentials
                 || $account->id !== ($credentials['account_id'] ?? null)
                 || $account->email !== ($credentials['email'] ?? null)
                 || $account->password !== ($credentials['password'] ?? null)) {

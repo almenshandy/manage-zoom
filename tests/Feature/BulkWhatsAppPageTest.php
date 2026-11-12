@@ -8,6 +8,8 @@ use App\Models\User;
 use App\Models\WhatsAppBulkBatch;
 use App\Models\ZoomAccount;
 use App\Models\ZoomBooking;
+use DOMDocument;
+use DOMXPath;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Str;
@@ -18,17 +20,23 @@ class BulkWhatsAppPageTest extends TestCase
 {
     use LazilyRefreshDatabase;
 
-    public function test_full_page_shows_booking_owner_masked_account_and_only_the_recipient_dialog(): void
+    #[TestWith(['active'])]
+    #[TestWith(['inactive'])]
+    #[TestWith(['maintenance'])]
+    public function test_full_page_shows_booking_owner_masked_account_and_enables_the_account_option(string $status): void
     {
         $user = User::factory()->create(['name' => '<script>dangerous-owner</script>', 'is_active' => true]);
-        $account = ZoomAccount::create(['name' => 'Zoom Host', 'email' => 'host@example.test', 'password' => 'private-zoom-password']);
+        $account = ZoomAccount::create(['name' => 'Zoom Host', 'email' => 'host@example.test', 'password' => 'private-zoom-password', 'status' => $status]);
         $booking = ZoomBooking::factory()->create(['user_id' => $user->id, 'zoom_account_id' => $account->id]);
-        $this->actingAs($user)->get(route('bookings.whatsapp-bulk.create', ['booking_ids' => [$booking->id]]))
+        $response = $this->actingAs($user)->get(route('bookings.whatsapp-bulk.create', ['booking_ids' => [$booking->id]]))
             ->assertOk()->assertViewIs('bookings.bulk-whatsapp-create')->assertSee('Booking atas nama:')
             ->assertSee($user->name)->assertDontSee($user->name, false)->assertSee('Sertakan akun Zoom')
             ->assertSee('bulkRecipientsModal', false)->assertDontSee('bulkWhatsAppModal', false)
             ->assertDontSee('private-zoom-password')->assertSee('host@example.test')
             ->assertViewHas('canIncludeAccounts', true);
+        $document = new DOMDocument;
+        @$document->loadHTML($response->getContent());
+        $this->assertSame(0, (new DOMXPath($document))->query('//input[@id="bulkIncludeCredentials"]/@disabled')->length);
     }
 
     public function test_page_rejects_other_users_bookings_and_guest_access(): void
@@ -69,14 +77,21 @@ class BulkWhatsAppPageTest extends TestCase
 
     #[TestWith(['missing'])]
     #[TestWith(['empty_password'])]
-    #[TestWith(['inactive'])]
+    #[TestWith(['empty_email'])]
     public function test_unavailable_account_blocks_only_the_opted_in_account_message(string $state): void
     {
         $user = User::factory()->create(['is_active' => true]);
-        $account = $state === 'missing' ? null : ZoomAccount::create(['name' => 'Incomplete', 'email' => 'incomplete@example.test', 'password' => $state === 'empty_password' ? null : 'secret', 'status' => $state === 'inactive' ? 'inactive' : 'active']);
+        $account = $state === 'missing' ? null : ZoomAccount::create(['name' => 'Incomplete', 'email' => $state === 'empty_email' ? '' : 'incomplete@example.test', 'password' => $state === 'empty_password' ? null : 'secret']);
         $booking = ZoomBooking::factory()->create(['user_id' => $user->id, 'zoom_account_id' => $account?->id]);
         Queue::fake([SendBulkWhatsAppMessage::class]);
         SystemSetting::set('flowkirim_token', 'test-token');
+        $reason = match ($state) {
+            'missing' => 'Belum ada akun Zoom yang ditetapkan.',
+            'empty_email' => 'Email akun Zoom belum diisi.',
+            'empty_password' => 'Password akun Zoom belum diisi.',
+        };
+        $this->actingAs($user)->get(route('bookings.whatsapp-bulk.create', ['booking_ids' => [$booking->id]]))
+            ->assertOk()->assertViewHas('canIncludeAccounts', false)->assertSee($reason);
         $this->actingAs($user)->postJson(route('bookings.whatsapp-bulk.store'), $this->payload($booking, true))->assertUnprocessable()->assertJsonValidationErrors('include_credentials');
         $this->assertDatabaseCount('whatsapp_bulk_batches', 0);
         Queue::assertNothingPushed();

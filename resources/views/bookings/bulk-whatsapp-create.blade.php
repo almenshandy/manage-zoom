@@ -6,7 +6,10 @@
 <div class="max-w-6xl mx-auto space-y-5">
     <div class="flex flex-wrap items-center justify-between gap-3">
         <p class="text-sm text-gray-600">Periksa meeting, isi pesan, dan nomor tujuan sebelum membuat antrean.</p>
-        <a href="{{ route('bookings.index') }}" class="text-sm font-medium text-gray-700 underline underline-offset-4">Kembali ke booking</a>
+        <div class="flex flex-wrap items-center gap-4">
+            <a href="{{ route('bookings.whatsapp-bulk.index') }}" class="text-sm font-medium text-emerald-800 underline underline-offset-4">Lihat antrean bulk</a>
+            <a href="{{ route('bookings.index') }}" class="text-sm font-medium text-gray-700 underline underline-offset-4">Kembali ke booking</a>
+        </div>
     </div>
     @if($errors->any())
         <div class="p-4 bg-red-50 border border-red-200 text-sm text-red-700" role="alert">{{ $errors->first() }}</div>
@@ -27,6 +30,11 @@
                             <h3 class="text-sm font-semibold text-gray-900 break-words">{{ $booking->topic }}</h3>
                             <p class="text-xs text-gray-600">{{ $booking->date_range_formatted }} &bull; {{ substr($booking->start_time ?? '', 0, 5) }}–{{ substr($booking->end_time ?? '', 0, 5) }} WIB</p>
                             <p class="text-xs text-gray-600">Akun Zoom: {{ $booking->account?->email ?? 'Belum ditentukan' }}</p>
+                            @if($accountIssues[$booking->id])
+                                <p class="text-xs text-amber-800">{{ $accountIssues[$booking->id] }}</p>
+                            @elseif($booking->account?->status !== 'active')
+                                <p class="text-xs text-gray-500">Status akun: {{ $booking->account?->status === 'maintenance' ? 'Dalam pemeliharaan' : 'Tidak aktif' }}. Data login tetap dapat disertakan.</p>
+                            @endif
                             <details class="border border-gray-200 text-xs">
                                 <summary class="p-3 cursor-pointer font-medium text-gray-700">Pratinjau pesan</summary>
                                 <pre data-bulk-preview="{{ $booking->id }}" class="p-3 pt-0 whitespace-pre-wrap break-words font-mono text-xs text-gray-600"></pre>
@@ -45,7 +53,7 @@
                     <span><span class="block text-sm font-medium text-gray-900">Sertakan akun Zoom</span><span class="block mt-1 text-xs text-gray-500">Tambahkan email dan password akun host ke setiap pesan. Password asli ikut dikirim; pratinjau menampilkan asterisk.</span></span>
                 </label>
                 @unless($canIncludeAccounts)
-                    <p class="text-xs text-amber-800">Pilihan akun tersedia jika setiap meeting yang dipilih memiliki akun Zoom aktif dengan email dan password lengkap.</p>
+                    <p class="text-xs text-amber-800">Pilihan akun tersedia jika setiap meeting memiliki email dan password akun Zoom lengkap. Periksa keterangan pada masing-masing meeting di atas.</p>
                 @endunless
             </section>
             <section class="p-4 bg-white border border-gray-200 space-y-3" aria-labelledby="bulkRecipientsHeading">
@@ -68,7 +76,6 @@
             <button type="submit" id="submitBulkWhatsApp" class="w-full px-4 py-3 bg-emerald-700 text-white text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed" disabled>Masukkan ke antrean</button>
         </aside>
     </form>
-    @include('bookings.bulk-whatsapp')
 </div>
 
 <div id="bulkRecipientsModal" class="hidden fixed inset-0 z-50 bg-gray-900/60 flex items-center justify-center p-3 sm:p-5" role="dialog" aria-modal="true" aria-labelledby="bulkRecipientsTitle">
@@ -302,11 +309,11 @@
             const data = await response.json();
             if (!response.ok) throw new Error(data.errors ? Object.values(data.errors).flat().join(' ') : data.message || 'Antrean belum dapat dibuat.');
             document.getElementById('bulkRequestId').value = data.next_request_id;
-            success.textContent = `Antrean berhasil dibuat untuk ${data.total_messages} pesan. Lihat progres di bagian antrean.`;
+            success.textContent = `Antrean berhasil dibuat untuk ${data.total_messages} pesan. Membuka halaman antrean...`;
             success.classList.remove('hidden');
             recipients.clear();
             renderRecipients();
-            document.dispatchEvent(new CustomEvent('bulk-whatsapp-queued', { detail: data }));
+            window.location.assign(data.queue_url);
         } catch (exception) {
             formError.textContent = controller.signal.aborted ? 'Respons terlalu lama. Coba lagi; permintaan yang sama tidak akan membuat antrean ganda.' : exception.message;
             formError.classList.remove('hidden');

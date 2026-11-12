@@ -82,8 +82,22 @@ class BulkWhatsAppService
 
     public function canIncludeAccount(ZoomBooking $booking): bool
     {
-        return $booking->account !== null && $booking->account->status === 'active'
-            && filled($booking->account->email) && filled($booking->account->password);
+        return $this->accountUnavailableReason($booking) === null;
+    }
+
+    public function accountUnavailableReason(ZoomBooking $booking): ?string
+    {
+        if (! $booking->account) {
+            return 'Belum ada akun Zoom yang ditetapkan.';
+        }
+        if (blank($booking->account->email)) {
+            return 'Email akun Zoom belum diisi.';
+        }
+        if (blank($booking->account->password)) {
+            return 'Password akun Zoom belum diisi.';
+        }
+
+        return null;
     }
 
     /** @param array{request_id: string, booking_ids: array, recipients: string, interval_seconds: int|string, include_credentials?: bool} $input */
@@ -98,8 +112,9 @@ class BulkWhatsAppService
         }
         $bookings = $this->selectedBookings($user, $input['booking_ids']);
         $includeCredentials = (bool) ($input['include_credentials'] ?? false);
-        if ($includeCredentials && $bookings->contains(fn (ZoomBooking $booking): bool => ! $this->canIncludeAccount($booking))) {
-            throw ValidationException::withMessages(['include_credentials' => 'Ada meeting yang belum memiliki akun Zoom aktif dengan email dan password lengkap. Lengkapi akun atau kirim undangan saja.']);
+        $unavailableBooking = $includeCredentials ? $bookings->first(fn (ZoomBooking $booking): bool => ! $this->canIncludeAccount($booking)) : null;
+        if ($unavailableBooking) {
+            throw ValidationException::withMessages(['include_credentials' => 'Meeting “'.$unavailableBooking->topic.'”: '.$this->accountUnavailableReason($unavailableBooking).' Lengkapi akun atau kirim undangan saja.']);
         }
         $recipients = $this->recipients($input['recipients']);
         $total = $bookings->count() * count($recipients);

@@ -17,6 +17,24 @@ use Illuminate\Support\Str;
 
 class BulkWhatsAppController extends Controller
 {
+    public function index(Request $request): View
+    {
+        abort_unless($request->user()->is_active, 403);
+        $input = $request->validate(['batch' => ['nullable', 'integer', 'min:1']]);
+        $focusedBatchId = isset($input['batch']) ? (int) $input['batch'] : null;
+        $query = WhatsAppBulkBatch::where('user_id', $request->user()->id);
+        $page = null;
+        if ($focusedBatchId !== null) {
+            (clone $query)->findOrFail($focusedBatchId);
+            if (! $request->has('page')) {
+                $page = intdiv((clone $query)->where('id', '>', $focusedBatchId)->count(), 15) + 1;
+            }
+        }
+        $bulkBatches = $query->orderByDesc('id')->paginate(15, ['*'], 'page', $page)->withQueryString();
+
+        return view('bookings.bulk-whatsapp-index', compact('bulkBatches', 'focusedBatchId'));
+    }
+
     public function create(Request $request, BulkWhatsAppService $service): View
     {
         $input = $request->validate([
@@ -32,10 +50,10 @@ class BulkWhatsAppController extends Controller
                 : null,
         ])->values();
         $canIncludeAccounts = $bookings->isNotEmpty() && $bookings->every(fn (ZoomBooking $booking): bool => $service->canIncludeAccount($booking));
-        $bulkBatches = WhatsAppBulkBatch::where('user_id', $request->user()->id)->latest()->limit(5)->get();
+        $accountIssues = $bookings->mapWithKeys(fn (ZoomBooking $booking): array => [$booking->id => $service->accountUnavailableReason($booking)]);
         $bulkCountryCode = SystemSetting::get('wa_country_code', '62') ?: '62';
 
-        return view('bookings.bulk-whatsapp-create', compact('bookings', 'bulkPreviews', 'canIncludeAccounts', 'bulkBatches', 'bulkCountryCode'));
+        return view('bookings.bulk-whatsapp-create', compact('bookings', 'bulkPreviews', 'canIncludeAccounts', 'accountIssues', 'bulkCountryCode'));
     }
 
     public function contacts(Request $request, WhatsAppService $whatsApp): JsonResponse
@@ -74,6 +92,7 @@ class BulkWhatsAppController extends Controller
         return response()->json([
             'message' => 'Antrean bulk WhatsApp berhasil dibuat.',
             'status_url' => route('bookings.whatsapp-bulk.show', $batch),
+            'queue_url' => route('bookings.whatsapp-bulk.index', ['batch' => $batch->id]),
             'total_messages' => $batch->total_messages,
             'next_request_id' => (string) Str::uuid(),
         ], 202);

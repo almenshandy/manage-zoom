@@ -127,13 +127,15 @@ class SendBulkWhatsAppMessageTest extends TestCase
         Http::assertNothingSent();
     }
 
-    #[TestWith([false])]
-    #[TestWith([true])]
-    public function test_actual_database_queue_processes_the_committed_outbox(bool $includeCredentials): void
+    #[TestWith([false, 'active'])]
+    #[TestWith([true, 'active'])]
+    #[TestWith([true, 'inactive'])]
+    #[TestWith([true, 'maintenance'])]
+    public function test_actual_database_queue_processes_the_committed_outbox(bool $includeCredentials, string $status): void
     {
         $this->fakeGateway();
         $user = User::factory()->create(['is_active' => true]);
-        $account = ZoomAccount::create(['name' => 'Host Zoom', 'email' => 'host@example.test', 'password' => 'host-password', 'password_hotmail' => 'mail-password', 'client_secret' => 'api-secret']);
+        $account = ZoomAccount::create(['name' => 'Host Zoom', 'email' => 'host@example.test', 'password' => 'host-password', 'password_hotmail' => 'mail-password', 'client_secret' => 'api-secret', 'status' => $status]);
         $booking = ZoomBooking::factory()->create(['user_id' => $user->id, 'zoom_account_id' => $account->id]);
         $batch = app(BulkWhatsAppService::class)->enqueue($user, ['request_id' => (string) Str::uuid(), 'booking_ids' => [$booking->id], 'recipients' => '081234567890', 'interval_seconds' => 10, 'include_credentials' => $includeCredentials]);
         $this->assertDatabaseCount('jobs', 1);
@@ -150,7 +152,6 @@ class SendBulkWhatsAppMessageTest extends TestCase
     #[TestWith(['password'])]
     #[TestWith(['assignment'])]
     #[TestWith(['deleted'])]
-    #[TestWith(['inactive'])]
     public function test_account_changes_while_queued_block_stale_credentials(string $change): void
     {
         $this->fakeGateway();
@@ -163,7 +164,6 @@ class SendBulkWhatsAppMessageTest extends TestCase
             'password' => $account->update(['password' => 'new-password']),
             'assignment' => $booking->update(['zoom_account_id' => null]),
             'deleted' => $account->delete(),
-            'inactive' => $account->update(['status' => 'inactive']),
         };
         $message = $batch->messages()->firstOrFail();
         $this->runMessage($message);

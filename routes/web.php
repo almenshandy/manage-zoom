@@ -35,6 +35,7 @@ Route::middleware('auth')->group(function () {
 
     // Zoom Bookings (User & Admin)
     Route::get('bookings/whatsapp-bulk', [BulkWhatsAppController::class, 'create'])->name('bookings.whatsapp-bulk.create');
+    Route::get('bookings/whatsapp-bulk/queues', [BulkWhatsAppController::class, 'index'])->name('bookings.whatsapp-bulk.index');
     Route::get('bookings/whatsapp-bulk/contacts', [BulkWhatsAppController::class, 'contacts'])->name('bookings.whatsapp-bulk.contacts');
     Route::post('bookings/whatsapp-bulk', [BulkWhatsAppController::class, 'store'])->name('bookings.whatsapp-bulk.store');
     Route::get('bookings/whatsapp-bulk/{batch}', [BulkWhatsAppController::class, 'show'])->name('bookings.whatsapp-bulk.show');

@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\SystemSetting;
+use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
@@ -202,6 +203,9 @@ class WhatsAppService
                     }
                     $errors[] = $msg ?: ('Gagal mengirim ke '.$recipient);
                 }
+            } catch (ConnectionException $e) {
+                $errors[] = 'Koneksi ke server FlowKirim gagal. Periksa jaringan server dan status pesan di gateway sebelum mengirim ulang.';
+                Log::error('FlowKirim Send Connection Exception: '.$e->getMessage());
             } catch (\Throwable $e) {
                 $errors[] = $e->getMessage();
                 Log::error('FlowKirim Send Exception: '.$e->getMessage());

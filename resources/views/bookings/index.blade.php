@@ -48,7 +48,7 @@
         <label class="inline-flex items-center gap-2 cursor-pointer py-1.5"><input type="checkbox" id="bulkSelectAll" aria-label="Pilih semua meeting yang dapat dikirim pada halaman ini"> Pilih semua di halaman ini</label>
         <span id="bulkSelectedCount" class="font-semibold text-gray-900" aria-live="polite">0 meeting dipilih</span>
         <span>Hanya booking Disetujui / Link Aktif.</span>
-        <a href="{{ route('bookings.whatsapp-bulk.create') }}" class="font-medium text-emerald-800 underline underline-offset-4 md:ml-auto">Riwayat antrean bulk</a>
+        <a href="{{ route('bookings.whatsapp-bulk.index') }}" class="font-medium text-emerald-800 underline underline-offset-4 md:ml-auto">Antrean Bulk WhatsApp</a>
     </div>
     <div class="mobile-data-container bg-white rounded border border-gray-200 overflow-hidden">
         @include('bookings.mobile-list')
