@@ -96,7 +96,9 @@ Route::middleware('auth')->group(function () {
         // Database Backup & Export
         Route::get('backup', [DatabaseBackupController::class, 'index'])->name('backup.index');
         Route::get('backup/table/{table}', [DatabaseBackupController::class, 'downloadTable'])->name('backup.download-table');
+        Route::get('backup/table/{table}/sql', [DatabaseBackupController::class, 'downloadTableSql'])->name('backup.download-table-sql');
         Route::get('backup/download-all', [DatabaseBackupController::class, 'downloadAll'])->name('backup.download-all');
+        Route::get('backup/download-sql', [DatabaseBackupController::class, 'downloadSql'])->name('backup.download-sql');
 
         // Activity Logs
         Route::get('activity-logs', [ActivityLogController::class, 'index'])->name('activity-logs.index');
