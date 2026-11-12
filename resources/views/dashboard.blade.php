@@ -9,63 +9,63 @@
     <!-- Stat Cards (5 Kolom: Total Meeting, Akun Aktif, Menunggu ACC, Disetujui, Meeting Hari Ini) -->
     <div class="mobile-dashboard-stats grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
         <!-- Card 1: Total Pengajuan Meeting -->
-        <div class="bg-white p-4 rounded border border-gray-200 flex items-center justify-between">
+        <div class="bg-white p-4 rounded-sm border border-gray-200 flex items-center justify-between">
             <div>
                 <p class="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">Total Meeting</p>
                 <h3 class="text-xl font-bold text-gray-900 mt-1">{{ $stats['total_bookings'] }} <span class="text-xs text-gray-400 font-normal">kegiatan</span></h3>
             </div>
-            <div class="w-10 h-10 rounded bg-gray-50 border border-gray-200 text-gray-700 flex items-center justify-center">
+            <div class="w-10 h-10 rounded-sm bg-gray-50 border border-gray-200 text-gray-700 flex items-center justify-center">
                 <i class="fa-solid fa-calendar-days text-sm"></i>
             </div>
         </div>
 
         <!-- Card 2: Akun Zoom Aktif -->
-        <div class="bg-white p-4 rounded border border-gray-200 flex items-center justify-between">
+        <div class="bg-white p-4 rounded-sm border border-gray-200 flex items-center justify-between">
             <div>
                 <p class="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">Akun Zoom Aktif</p>
                 <h3 class="text-xl font-bold text-gray-900 mt-1">{{ $stats['active_accounts'] }} <span class="text-xs text-gray-400 font-normal">/ {{ $stats['total_accounts'] }} akun</span></h3>
             </div>
-            <div class="w-10 h-10 rounded bg-indigo-50 border border-indigo-200 text-indigo-700 flex items-center justify-center">
+            <div class="w-10 h-10 rounded-sm bg-indigo-50 border border-indigo-200 text-indigo-700 flex items-center justify-center">
                 <i class="fa-solid fa-server text-sm"></i>
             </div>
         </div>
 
         <!-- Card 3: Menunggu ACC -->
-        <div class="bg-white p-4 rounded border border-gray-200 flex items-center justify-between">
+        <div class="bg-white p-4 rounded-sm border border-gray-200 flex items-center justify-between">
             <div>
                 <p class="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">Menunggu ACC</p>
                 <h3 class="text-xl font-bold text-amber-700 mt-1">{{ $stats['pending_bookings'] }}</h3>
             </div>
-            <div class="w-10 h-10 rounded bg-amber-50 border border-amber-200 text-amber-700 flex items-center justify-center">
+            <div class="w-10 h-10 rounded-sm bg-amber-50 border border-amber-200 text-amber-700 flex items-center justify-center">
                 <i class="fa-regular fa-clock text-sm"></i>
             </div>
         </div>
 
         <!-- Card 4: Disetujui (ACC) -->
-        <div class="bg-white p-4 rounded border border-gray-200 flex items-center justify-between">
+        <div class="bg-white p-4 rounded-sm border border-gray-200 flex items-center justify-between">
             <div>
                 <p class="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">Disetujui (ACC)</p>
                 <h3 class="text-xl font-bold text-blue-700 mt-1">{{ $stats['approved_bookings'] }}</h3>
             </div>
-            <div class="w-10 h-10 rounded bg-blue-50 border border-blue-200 text-blue-700 flex items-center justify-center">
+            <div class="w-10 h-10 rounded-sm bg-blue-50 border border-blue-200 text-blue-700 flex items-center justify-center">
                 <i class="fa-solid fa-clipboard-check text-sm"></i>
             </div>
         </div>
 
         <!-- Card 5: Meeting Hari Ini -->
-        <div class="bg-white p-4 rounded border border-gray-200 flex items-center justify-between sm:col-span-2 lg:col-span-1">
+        <div class="bg-white p-4 rounded-sm border border-gray-200 flex items-center justify-between sm:col-span-2 lg:col-span-1">
             <div>
                 <p class="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">Meeting Hari Ini</p>
                 <h3 class="text-xl font-bold text-emerald-700 mt-1">{{ $stats['today_meetings'] }}</h3>
             </div>
-            <div class="w-10 h-10 rounded bg-emerald-50 border border-emerald-200 text-emerald-700 flex items-center justify-center">
+            <div class="w-10 h-10 rounded-sm bg-emerald-50 border border-emerald-200 text-emerald-700 flex items-center justify-center">
                 <i class="fa-solid fa-video text-sm"></i>
             </div>
         </div>
     </div>
 
     <!-- Chart Perbandingan Pengajuan Meeting per Departemen -->
-    <div class="bg-white p-5 rounded border border-gray-200">
+    <div class="bg-white p-5 rounded-sm border border-gray-200">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-3 mb-4 border-b border-gray-100 gap-2">
             <div>
                 <h3 class="text-xs font-bold text-gray-900 uppercase tracking-wider flex items-center gap-2">
@@ -74,7 +74,7 @@
                 <p class="text-[11px] text-gray-500 mt-0.5">Distribusi frekuensi aktivitas meeting berdasarkan unit kerja/departemen pemohon</p>
             </div>
             <div class="flex items-center gap-2 self-start sm:self-auto">
-                <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold bg-gray-100 text-gray-700 border border-gray-200">
+                <span class="inline-flex items-center px-2 py-0.5 rounded-sm text-[10px] font-semibold bg-gray-100 text-gray-700 border border-gray-200">
                     <i class="fa-solid fa-sitemap mr-1 text-[9px] text-gray-400"></i> {{ count($chartLabels) }} Departemen Aktif
                 </span>
             </div>
@@ -100,13 +100,13 @@
                             @php
                                 $percent = $stats['total_bookings'] > 0 ? round(($total / $stats['total_bookings']) * 100, 1) : 0;
                             @endphp
-                            <div class="p-2 rounded bg-gray-50/70 border border-gray-100 hover:bg-gray-100/70 transition">
+                            <div class="p-2 rounded-sm bg-gray-50/70 border border-gray-100 hover:bg-gray-100/70 transition">
                                 <div class="flex items-center justify-between text-xs mb-1">
                                     <span class="font-semibold text-gray-800 truncate mr-2" title="{{ $dept }}">{{ $dept }}</span>
                                     <span class="font-mono text-gray-900 font-bold shrink-0">{{ $total }} <span class="text-[10px] text-gray-500 font-normal">({{ $percent }}%)</span></span>
                                 </div>
                                 <div class="w-full bg-gray-200 rounded-full h-1.5 overflow-hidden">
-                                    <div class="bg-blue-600 h-1.5 rounded-full" style="width: {{ $percent }}%"></div>
+                                    <div class="bg-brand-700 h-1.5 rounded-full" style="width: {{ $percent }}%"></div>
                                 </div>
                             </div>
                         @endforeach
@@ -119,7 +119,7 @@
     <!-- 2 Kolom: Meeting Mendatang & Pengajuan Perlu Ditinjau -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <!-- Upcoming Approved Meetings -->
-        <div class="bg-white p-5 rounded border border-gray-200">
+        <div class="bg-white p-5 rounded-sm border border-gray-200">
             <div class="flex flex-wrap items-center justify-between gap-2 pb-3 mb-4 border-b border-gray-100">
                 <h3 class="text-xs font-semibold text-gray-900 uppercase tracking-wider flex items-center gap-2">
                     <i class="fa-solid fa-calendar-check text-gray-400"></i> Meeting Mendatang (Telah Disetujui)
@@ -149,7 +149,7 @@
                                 </div>
                             </div>
                             <div class="shrink-0 text-right">
-                                <span class="inline-block text-[10px] font-semibold px-2 py-0.5 rounded border 
+                                <span class="inline-block text-[10px] font-semibold px-2 py-0.5 rounded-sm border
                                     @if($booking->status === 3) bg-emerald-50 text-emerald-700 border-emerald-200
                                     @else bg-blue-50 text-blue-700 border-blue-200 @endif">
                                     {{ $booking->status_label }}
@@ -162,7 +162,7 @@
         </div>
 
         <!-- Latest Bookings Waiting for Review -->
-        <div class="bg-white p-5 rounded border border-gray-200">
+        <div class="bg-white p-5 rounded-sm border border-gray-200">
             <div class="flex flex-wrap items-center justify-between gap-2 pb-3 mb-4 border-b border-gray-100">
                 <h3 class="text-xs font-semibold text-gray-900 uppercase tracking-wider flex items-center gap-2">
                     <i class="fa-regular fa-hourglass-half text-gray-400"></i> Pengajuan Perlu Ditinjau
@@ -190,7 +190,7 @@
                                 </div>
                             </div>
                             <div class="shrink-0">
-                                <a href="{{ route('bookings.show', $booking) }}" class="text-[11px] text-gray-700 hover:text-black font-semibold border border-gray-300 px-2.5 py-1 rounded bg-white hover:bg-gray-50 transition">
+                                <a href="{{ route('bookings.show', $booking) }}" class="text-[11px] text-gray-700 hover:text-black font-semibold border border-gray-300 px-2.5 py-1 rounded-sm bg-white hover:bg-gray-50 transition">
                                     Periksa
                                 </a>
                             </div>
@@ -220,7 +220,7 @@
                 datasets: [{
                     label: 'Jumlah Meeting Diajukan',
                     data: dataValues,
-                    backgroundColor: 'rgba(37, 99, 235, 0.85)', // Tailwind blue-600
+                    backgroundColor: getComputedStyle(document.documentElement).getPropertyValue('--color-brand-700').trim(),
                     hoverBackgroundColor: 'rgba(29, 78, 216, 1)', // Tailwind blue-700
                     borderRadius: 4,
                     borderSkipped: false,
@@ -236,7 +236,7 @@
                         display: false
                     },
                     tooltip: {
-                        backgroundColor: '#111827',
+                        backgroundColor: getComputedStyle(document.documentElement).getPropertyValue('--color-brand-950').trim(),
                         titleFont: { size: 12, family: 'Inter' },
                         bodyFont: { size: 11, family: 'Inter' },
                         padding: 10,

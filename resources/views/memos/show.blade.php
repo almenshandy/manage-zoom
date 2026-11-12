@@ -28,7 +28,7 @@
             </div>
 
             @if($memo->booking)
-                <div class="p-3 bg-gray-50 border border-gray-200 rounded flex items-center justify-between">
+                <div class="p-3 bg-gray-50 border border-gray-200 rounded-sm flex items-center justify-between">
                     <div>
                         <span class="text-[10px] text-gray-400 uppercase tracking-wider block">Terkait Agenda Booking</span>
                         <a href="{{ route('bookings.show', $memo->booking->id) }}" class="font-semibold text-gray-900 hover:text-blue-600">
@@ -41,7 +41,7 @@
 
             <div>
                 <span class="text-[11px] text-gray-400 uppercase tracking-wider block mb-1.5">Isi Memo / Keterangan</span>
-                <div class="p-4 bg-gray-50 border border-gray-200 rounded leading-relaxed text-gray-800 whitespace-pre-line">
+                <div class="p-4 bg-gray-50 border border-gray-200 rounded-sm leading-relaxed text-gray-800 whitespace-pre-line">
                     {{ $memo->content }}
                 </div>
             </div>

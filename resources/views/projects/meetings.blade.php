@@ -48,7 +48,7 @@
                         @endif
                     </td>
                     <td data-label="Status" class="px-4 py-3 whitespace-nowrap">
-                        <span class="inline-block px-2 py-0.5 text-[10px] font-semibold rounded border {{ $booking->status_badge }}">{{ $booking->status_label }}</span>
+                        <span class="inline-block px-2 py-0.5 text-[10px] font-semibold rounded-sm border {{ $booking->status_badge }}">{{ $booking->status_label }}</span>
                     </td>
                     <td data-label="Detail" class="px-4 py-3 whitespace-nowrap">
                         <a href="{{ route('bookings.show', $booking) }}" class="text-blue-700 hover:text-blue-900 font-medium">Lihat Detail</a>

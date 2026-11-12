@@ -42,7 +42,7 @@
                                 <span class="text-gray-400 text-[11px]">baris</span>
                             </td>
                             <td data-label="Aksi Ekspor" class="px-4 py-3 text-right whitespace-nowrap">
-                                <a href="{{ route('backup.download-table', $table) }}" class="inline-flex items-center gap-1.5 px-3 py-1 bg-white hover:bg-gray-50 text-gray-700 border border-gray-300 rounded text-[11px] font-medium transition">
+                                <a href="{{ route('backup.download-table', $table) }}" class="inline-flex items-center gap-1.5 px-3 py-1 bg-white hover:bg-gray-50 text-gray-700 border border-gray-300 rounded-sm text-[11px] font-medium transition">
                                     <i class="fa-solid fa-file-csv text-emerald-600"></i> Ekspor CSV
                                 </a>
                             </td>

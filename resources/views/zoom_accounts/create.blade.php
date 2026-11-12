@@ -11,7 +11,7 @@
     <x-card>
         <div class="p-6">
             @if($errors->any())
-                <div class="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 text-xs rounded">
+                <div class="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 text-xs rounded-sm">
                     <ul class="list-disc list-inside space-y-0.5">
                         @foreach($errors->all() as $err)
                             <li>{{ $err }}</li>
@@ -26,7 +26,7 @@
                 <div>
                     <label class="block font-medium text-gray-700 mb-1">Nama Ruang / Label Akun *</label>
                     <input type="text" name="name" value="{{ old('name') }}" required
-                        class="w-full px-3 py-1.5 bg-white border border-gray-300 rounded focus:outline-none focus:border-gray-500"
+                        class="w-full px-3 py-1.5 bg-white border border-gray-300 rounded-sm focus:outline-none focus:border-brand-600"
                         placeholder="Contoh: Zoom Pro Ruang A (300 Peserta)">
                 </div>
 
@@ -34,13 +34,13 @@
                     <div>
                         <label class="block font-medium text-gray-700 mb-1">Email Akun Zoom *</label>
                         <input type="email" name="email" value="{{ old('email') }}" required
-                            class="w-full px-3 py-1.5 bg-white border border-gray-300 rounded focus:outline-none focus:border-gray-500 font-mono"
+                            class="w-full px-3 py-1.5 bg-white border border-gray-300 rounded-sm focus:outline-none focus:border-brand-600 font-mono"
                             placeholder="nama@institusi.ac.id">
                     </div>
                     <div>
                         <label class="block font-medium text-gray-700 mb-1">Kapasitas Maksimal (Peserta) *</label>
                         <input type="number" name="capacity" value="{{ old('capacity', 300) }}" required min="1"
-                            class="w-full px-3 py-1.5 bg-white border border-gray-300 rounded focus:outline-none focus:border-gray-500">
+                            class="w-full px-3 py-1.5 bg-white border border-gray-300 rounded-sm focus:outline-none focus:border-brand-600">
                     </div>
                 </div>
 
@@ -48,11 +48,11 @@
                     <div>
                         <label class="block font-medium text-gray-700 mb-1">Masa Berlaku Lisensi</label>
                         <input type="date" name="expired_date" value="{{ old('expired_date') }}"
-                            class="w-full px-3 py-1.5 bg-white border border-gray-300 rounded focus:outline-none focus:border-gray-500">
+                            class="w-full px-3 py-1.5 bg-white border border-gray-300 rounded-sm focus:outline-none focus:border-brand-600">
                     </div>
                     <div>
                         <label class="block font-medium text-gray-700 mb-1">Status Akun *</label>
-                        <select name="status" required class="w-full px-3 py-1.5 bg-white border border-gray-300 rounded focus:outline-none focus:border-gray-500">
+                        <select name="status" required class="w-full px-3 py-1.5 bg-white border border-gray-300 rounded-sm focus:outline-none focus:border-brand-600">
                             <option value="active" {{ old('status') === 'active' ? 'selected' : '' }}>Aktif</option>
                             <option value="inactive" {{ old('status') === 'inactive' ? 'selected' : '' }}>Nonaktif</option>
                             <option value="maintenance" {{ old('status') === 'maintenance' ? 'selected' : '' }}>Perbaikan (Maintenance)</option>
@@ -61,26 +61,26 @@
                 </div>
 
                 <!-- API Credentials Accordion / Fieldset -->
-                <div class="p-4 bg-gray-50 border border-gray-200 rounded space-y-3">
+                <div class="p-4 bg-gray-50 border border-gray-200 rounded-sm space-y-3">
                     <p class="font-semibold text-gray-900 text-[11px] uppercase tracking-wider">Kredensial Zoom Server-to-Server OAuth (Opsional)</p>
                     <p class="text-[11px] text-gray-500">Kosongkan jika akun ini menggunakan kredensial global dari file .env.</p>
 
                     <div>
                         <label class="block font-medium text-gray-700 mb-1">Zoom Account ID</label>
                         <input type="text" name="account_id" value="{{ old('account_id') }}"
-                            class="w-full px-3 py-1.5 bg-white border border-gray-300 rounded font-mono text-xs">
+                            class="w-full px-3 py-1.5 bg-white border border-gray-300 rounded-sm font-mono text-xs">
                     </div>
 
                     <div>
                         <label class="block font-medium text-gray-700 mb-1">Zoom Client ID</label>
                         <input type="text" name="client_id" value="{{ old('client_id') }}"
-                            class="w-full px-3 py-1.5 bg-white border border-gray-300 rounded font-mono text-xs">
+                            class="w-full px-3 py-1.5 bg-white border border-gray-300 rounded-sm font-mono text-xs">
                     </div>
 
                     <div>
                         <label class="block font-medium text-gray-700 mb-1">Zoom Client Secret</label>
                         <input type="password" name="client_secret"
-                            class="w-full px-3 py-1.5 bg-white border border-gray-300 rounded font-mono text-xs">
+                            class="w-full px-3 py-1.5 bg-white border border-gray-300 rounded-sm font-mono text-xs">
                     </div>
                 </div>
 

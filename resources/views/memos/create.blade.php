@@ -11,7 +11,7 @@
     <x-card>
         <div class="p-6">
             @if($errors->any())
-                <div class="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 text-xs rounded">
+                <div class="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 text-xs rounded-sm">
                     <ul class="list-disc list-inside space-y-0.5">
                         @foreach($errors->all() as $err)
                             <li>{{ $err }}</li>
@@ -25,7 +25,7 @@
 
                 <div>
                     <label class="block font-medium text-gray-700 mb-1">Pilih Booking Terkait (Opsional)</label>
-                    <select name="zoom_booking_id" class="w-full px-3 py-1.5 bg-white border border-gray-300 rounded focus:outline-none focus:border-gray-500">
+                    <select name="zoom_booking_id" class="w-full px-3 py-1.5 bg-white border border-gray-300 rounded-sm focus:outline-none focus:border-brand-600">
                         <option value="">-- Memo Umum (Tanpa Tautan Booking) --</option>
                         @foreach($bookings as $b)
                             <option value="{{ $b->id }}" {{ (old('zoom_booking_id', $booking->id ?? '') == $b->id) ? 'selected' : '' }}>
@@ -39,26 +39,26 @@
                     <div>
                         <label class="block font-medium text-gray-700 mb-1">Nomor Memo / Surat *</label>
                         <input type="text" name="memo_number" value="{{ old('memo_number', 'MEMO/' . date('Y/m') . '/' . rand(100, 999)) }}" required
-                            class="w-full px-3 py-1.5 bg-white border border-gray-300 rounded focus:outline-none focus:border-gray-500 font-mono">
+                            class="w-full px-3 py-1.5 bg-white border border-gray-300 rounded-sm focus:outline-none focus:border-brand-600 font-mono">
                     </div>
                     <div>
                         <label class="block font-medium text-gray-700 mb-1">Tanggal Surat *</label>
                         <input type="date" name="memo_date" value="{{ old('memo_date', date('Y-m-d')) }}" required
-                            class="w-full px-3 py-1.5 bg-white border border-gray-300 rounded focus:outline-none focus:border-gray-500">
+                            class="w-full px-3 py-1.5 bg-white border border-gray-300 rounded-sm focus:outline-none focus:border-brand-600">
                     </div>
                 </div>
 
                 <div>
                     <label class="block font-medium text-gray-700 mb-1">Isi / Keterangan Memo *</label>
                     <textarea name="content" rows="5" required
-                        class="w-full px-3 py-2 bg-white border border-gray-300 rounded focus:outline-none focus:border-gray-500 leading-relaxed"
+                        class="w-full px-3 py-2 bg-white border border-gray-300 rounded-sm focus:outline-none focus:border-brand-600 leading-relaxed"
                         placeholder="Tuliskan isi memo persetujuan atau catatan dinas...">{{ old('content', $booking ? "Sehubungan dengan permohonan penggunaan fasilitas Zoom Meeting untuk agenda '{$booking->topic}', dengan ini permohonan disetujui dengan rincian jadwal yang terlampir." : '') }}</textarea>
                 </div>
 
                 <div>
                     <label class="flex items-center gap-2 cursor-pointer font-medium text-gray-700">
                         <input type="checkbox" name="has_signature" value="1" {{ old('has_signature', true) ? 'checked' : '' }}
-                            class="rounded border-gray-300 text-gray-900 focus:ring-0">
+                            class="rounded-sm border-gray-300 text-gray-900 focus:ring-0">
                         <span>Sertakan kolom tanda tangan pejabat yang berwenang</span>
                     </label>
                 </div>

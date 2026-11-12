@@ -8,26 +8,28 @@
 <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/main.min.css" rel="stylesheet" />
 <style>
     .fc { font-size: 0.8rem; }
-    .fc-theme-standard td, .fc-theme-standard th { border-color: #e5e7eb; }
-    .fc-toolbar-title { font-size: 1rem !important; font-weight: 600; color: #111827; }
+    .fc-theme-standard td, .fc-theme-standard th { border-color: var(--color-gray-200); }
+    .fc-toolbar-title { font-size: 1rem !important; font-weight: 600; color: var(--color-gray-900); }
     .fc-button-primary {
         background-color: #ffffff !important;
-        border-color: #d1d5db !important;
-        color: #374151 !important;
+        border-color: var(--color-gray-300) !important;
+        color: var(--color-gray-700) !important;
+        border-radius: var(--radius-sm) !important;
+        min-height: 32px;
         box-shadow: none !important;
         font-size: 0.75rem !important;
         padding: 0.25rem 0.6rem !important;
         text-transform: capitalize !important;
     }
-    .fc-button-primary:hover { background-color: #f3f4f6 !important; }
+    .fc-button-primary:hover { background-color: var(--color-brand-50) !important; }
     .fc-button-primary.fc-button-active {
-        background-color: #111827 !important;
-        border-color: #111827 !important;
+        background-color: var(--color-brand-900) !important;
+        border-color: var(--color-brand-900) !important;
         color: #ffffff !important;
     }
     .fc-event {
         cursor: pointer;
-        border-radius: 3px;
+        border-radius: var(--radius-sm);
         padding: 1px 3px;
         font-size: 0.7rem;
         border: none !important;
@@ -38,7 +40,7 @@
 @section('content')
 <div class="space-y-4">
     <!-- Header Indicator (Flat) -->
-    <div class="bg-white p-4 rounded border border-gray-200 flex flex-wrap items-center justify-between gap-3">
+    <div class="bg-white p-4 rounded-sm border border-gray-200 flex flex-wrap items-center justify-between gap-3">
         <div>
             <h3 class="text-xs font-semibold text-gray-900 uppercase tracking-wider">Ketersediaan & Jadwal Penggunaan Zoom</h3>
             <p class="text-xs text-gray-500 mt-0.5">Semua agenda terdaftar dapat dipantau di kalender berikut.</p>
@@ -52,7 +54,7 @@
     </div>
 
     <!-- Calendar Container (Flat Bordered) -->
-    <div class="bg-white p-5 rounded border border-gray-200">
+    <div class="bg-white p-5 rounded-sm border border-gray-200">
         <div id="calendar"></div>
     </div>
 </div>

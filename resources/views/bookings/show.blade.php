@@ -53,12 +53,12 @@
 
             <!-- Zoom Link Active Box (Flat) -->
             @if($booking->status === 3 && $booking->join_url)
-                <div class="p-4 bg-gray-50 border border-gray-200 rounded space-y-3.5">
+                <div class="p-4 bg-gray-50 border border-gray-200 rounded-sm space-y-3.5">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center gap-2 text-gray-900 font-semibold text-xs">
                             <i class="fa-solid fa-circle-check text-emerald-600"></i> Link Pertemuan Zoom Telah Siap
                         </div>
-                        <a href="{{ $booking->join_url }}" target="_blank" class="text-xs font-medium bg-gray-900 hover:bg-black text-white px-3 py-1 rounded transition inline-flex items-center gap-1.5">
+                        <a href="{{ $booking->join_url }}" target="_blank" class="text-xs font-medium bg-brand-900 hover:bg-brand-950 text-white px-3 py-1 rounded-sm transition inline-flex items-center gap-1.5">
                             Buka Ruang Zoom <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
                         </a>
                     </div>
@@ -79,9 +79,9 @@
                         <span class="text-gray-400 block text-[11px] uppercase tracking-wider mb-1">Tautan Lengkap Pertemuan (Join URL):</span>
                         <div class="flex items-center gap-1.5">
                             <input type="text" id="joinUrlInput" value="{{ $booking->join_url }}" readonly
-                                class="w-full px-3 py-1.5 bg-white border border-gray-300 rounded font-mono text-xs text-gray-700 select-all focus:outline-none focus:border-gray-500">
+                                class="w-full px-3 py-1.5 bg-white border border-gray-300 rounded-sm font-mono text-xs text-gray-700 select-all focus:outline-none focus:border-brand-600">
                             <button type="button" onclick="copyJoinUrl()" id="copyBtn"
-                                class="px-3 py-1.5 bg-white hover:bg-gray-100 text-gray-700 border border-gray-300 rounded text-xs font-medium transition shrink-0 inline-flex items-center gap-1.5">
+                                class="px-3 py-1.5 bg-white hover:bg-gray-100 text-gray-700 border border-gray-300 rounded-sm text-xs font-medium transition shrink-0 inline-flex items-center gap-1.5">
                                 <i class="fa-regular fa-copy text-xs" id="copyIcon"></i>
                                 <span id="copyText">Salin Tautan</span>
                             </button>
@@ -103,7 +103,7 @@
                             </div>
                         </div>
                         <textarea id="invitationTemplate" rows="5" readonly
-                            class="w-full p-2.5 bg-white border border-gray-300 rounded text-[11px] font-mono text-gray-700 select-all leading-relaxed focus:outline-none">Agenda: {{ $booking->topic }}
+                            class="w-full p-2.5 bg-white border border-gray-300 rounded-sm text-[11px] font-mono text-gray-700 select-all leading-relaxed focus:outline-none">Agenda: {{ $booking->topic }}
 Hari/Tanggal: {{ $booking->date_range_formatted }}
 Waktu: {{ substr($booking->start_time, 0, 5) }} - {{ substr($booking->end_time, 0, 5) }} WIB
 
@@ -119,7 +119,7 @@ Passcode: {{ $booking->passcode ?? '-' }}</textarea>
                                 Kirim teks undangan lengkap langsung ke WhatsApp pemohon atau nomor tujuan lain.
                             </span>
                             <button type="button" onclick="openWaModal()" 
-                                class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-xs font-medium transition shadow-xs">
+                                class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-sm text-xs font-medium transition shadow-xs">
                                 <i class="fa-brands fa-whatsapp text-sm"></i> Kirim Undangan via WhatsApp
                             </button>
                         </div>
@@ -136,7 +136,7 @@ Passcode: {{ $booking->passcode ?? '-' }}</textarea>
                         Pukul {{ substr($booking->start_time, 0, 5) }} - {{ substr($booking->end_time, 0, 5) }} WIB ({{ $booking->duration_minutes }} Menit)
                     </p>
                     @if($booking->project_name)
-                        <div class="mt-2 inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-200 text-[11px]">
+                        <div class="mt-2 inline-flex items-center gap-1.5 px-2 py-0.5 rounded-sm bg-blue-50 text-blue-700 border border-blue-200 text-[11px]">
                             <i class="fa-solid fa-briefcase text-[10px]"></i>
                             <span>Proyek: <strong>{{ $booking->project_name }}</strong></span>
                         </div>
@@ -155,7 +155,7 @@ Passcode: {{ $booking->passcode ?? '-' }}</textarea>
 
                 <div class="sm:col-span-2">
                     <span class="text-gray-400 block mb-1 text-[11px] uppercase tracking-wider">Deskripsi / Agenda Kegiatan</span>
-                    <div class="bg-gray-50 p-3 rounded border border-gray-200 text-gray-700 leading-relaxed">
+                    <div class="bg-gray-50 p-3 rounded-sm border border-gray-200 text-gray-700 leading-relaxed">
                         {{ $booking->description ?: 'Tidak ada deskripsi agenda.' }}
                     </div>
                 </div>
@@ -163,7 +163,7 @@ Passcode: {{ $booking->passcode ?? '-' }}</textarea>
                 @if($booking->user_note)
                     <div class="sm:col-span-2">
                         <span class="text-gray-400 block mb-1 text-[11px] uppercase tracking-wider">Catatan Tambahan Pemohon</span>
-                        <div class="bg-gray-50 p-3 rounded border border-gray-200 text-gray-600">
+                        <div class="bg-gray-50 p-3 rounded-sm border border-gray-200 text-gray-600">
                             {{ $booking->user_note }}
                         </div>
                     </div>
@@ -172,7 +172,7 @@ Passcode: {{ $booking->passcode ?? '-' }}</textarea>
                 @if($booking->admin_note)
                     <div class="sm:col-span-2">
                         <span class="text-gray-400 block mb-1 text-[11px] uppercase tracking-wider">Catatan Administrator</span>
-                        <div class="bg-blue-50/50 p-3 rounded border border-blue-200 text-blue-950 font-medium">
+                        <div class="bg-blue-50/50 p-3 rounded-sm border border-blue-200 text-blue-950 font-medium">
                             {{ $booking->admin_note }}
                         </div>
                     </div>
@@ -197,7 +197,7 @@ Passcode: {{ $booking->passcode ?? '-' }}</textarea>
 <!-- Modal ACC (Flat) -->
 @if(auth()->user() && auth()->user()->isAdmin())
     <div id="accModal" class="fixed inset-0 z-50 hidden bg-gray-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-        <div class="bg-white rounded border border-gray-300 max-w-md w-full shadow-lg p-5">
+        <div class="bg-white rounded-sm border border-gray-300 max-w-md w-full shadow-lg p-5">
             <h4 class="text-sm font-semibold text-gray-900 uppercase tracking-wider mb-2">Setujui Permohonan Booking</h4>
             <p class="text-xs text-gray-500 mb-4">Pilih akun Zoom yang akan ditugaskan untuk kegiatan ini.</p>
 
@@ -205,7 +205,7 @@ Passcode: {{ $booking->passcode ?? '-' }}</textarea>
                 @csrf
                 <div>
                     <label class="block font-medium text-gray-700 mb-1">Tugaskan Akun Zoom *</label>
-                    <select name="zoom_account_id" required class="w-full px-3 py-1.5 bg-white border border-gray-300 rounded focus:outline-none focus:border-gray-500 font-mono text-xs">
+                    <select name="zoom_account_id" required class="w-full px-3 py-1.5 bg-white border border-gray-300 rounded-sm focus:outline-none focus:border-brand-600 font-mono text-xs">
                         <option value="">-- Pilih Akun Zoom --</option>
                         @foreach(\App\Models\ZoomAccount::whereDate('expired_date', '>=', now()->toDateString())->orderBy('expired_date', 'asc')->get() as $acc)
                             <option value="{{ $acc->id }}" {{ $booking->zoom_account_id == $acc->id ? 'selected' : '' }}>
@@ -217,12 +217,12 @@ Passcode: {{ $booking->passcode ?? '-' }}</textarea>
 
                 <div>
                     <label class="block font-medium text-gray-700 mb-1">Catatan Admin (Opsional)</label>
-                    <input type="text" name="admin_note" class="w-full px-3 py-1.5 bg-white border border-gray-300 rounded focus:outline-none focus:border-gray-500" placeholder="Contoh: Disetujui, gunakan ruang A...">
+                    <input type="text" name="admin_note" class="w-full px-3 py-1.5 bg-white border border-gray-300 rounded-sm focus:outline-none focus:border-brand-600" placeholder="Contoh: Disetujui, gunakan ruang A...">
                 </div>
 
                 <div class="pt-3 border-t border-gray-200 flex items-center justify-end gap-2">
-                    <button type="button" onclick="document.getElementById('accModal').classList.add('hidden')" class="px-3 py-1.5 bg-white border border-gray-300 rounded text-gray-700 hover:bg-gray-50">Batal</button>
-                    <button type="submit" class="px-4 py-1.5 bg-gray-900 hover:bg-black text-white rounded">Simpan & ACC</button>
+                    <button type="button" onclick="document.getElementById('accModal').classList.add('hidden')" class="px-3 py-1.5 bg-white border border-gray-300 rounded-sm text-gray-700 hover:bg-gray-50">Batal</button>
+                    <button type="submit" class="px-4 py-1.5 bg-brand-900 hover:bg-brand-950 text-white rounded-sm">Simpan & ACC</button>
                 </div>
             </form>
         </div>
@@ -230,7 +230,7 @@ Passcode: {{ $booking->passcode ?? '-' }}</textarea>
 
     <!-- Modal Reject (Flat) -->
     <div id="rejectModal" class="fixed inset-0 z-50 hidden bg-gray-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-        <div class="bg-white rounded border border-gray-300 max-w-md w-full shadow-lg p-5">
+        <div class="bg-white rounded-sm border border-gray-300 max-w-md w-full shadow-lg p-5">
             <h4 class="text-sm font-semibold text-gray-900 uppercase tracking-wider mb-2">Tolak Permohonan Booking</h4>
             <p class="text-xs text-gray-500 mb-4">Berikan alasan penolakan agar pemohon dapat mengetahuinya.</p>
 
@@ -238,12 +238,12 @@ Passcode: {{ $booking->passcode ?? '-' }}</textarea>
                 @csrf
                 <div>
                     <label class="block font-medium text-gray-700 mb-1">Alasan Penolakan *</label>
-                    <textarea name="admin_note" required rows="3" class="w-full px-3 py-1.5 bg-white border border-gray-300 rounded focus:outline-none focus:border-gray-500" placeholder="Tulis alasan penolakan..."></textarea>
+                    <textarea name="admin_note" required rows="3" class="w-full px-3 py-1.5 bg-white border border-gray-300 rounded-sm focus:outline-none focus:border-brand-600" placeholder="Tulis alasan penolakan..."></textarea>
                 </div>
 
                 <div class="pt-3 border-t border-gray-200 flex items-center justify-end gap-2">
-                    <button type="button" onclick="document.getElementById('rejectModal').classList.add('hidden')" class="px-3 py-1.5 bg-white border border-gray-300 rounded text-gray-700 hover:bg-gray-50">Batal</button>
-                    <button type="submit" class="px-4 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded">Tolak Permohonan</button>
+                    <button type="button" onclick="document.getElementById('rejectModal').classList.add('hidden')" class="px-3 py-1.5 bg-white border border-gray-300 rounded-sm text-gray-700 hover:bg-gray-50">Batal</button>
+                    <button type="submit" class="px-4 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded-sm">Tolak Permohonan</button>
                 </div>
             </form>
         </div>
@@ -252,7 +252,7 @@ Passcode: {{ $booking->passcode ?? '-' }}</textarea>
     <!-- Modal Generate Meeting (Flat) -->
     @if($booking->status === 1)
         <div id="genModal" class="fixed inset-0 z-50 hidden bg-gray-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-            <div class="bg-white rounded border border-gray-300 max-w-md w-full shadow-lg p-5">
+            <div class="bg-white rounded-sm border border-gray-300 max-w-md w-full shadow-lg p-5">
                 <h4 class="text-sm font-semibold text-gray-900 uppercase tracking-wider mb-2">Generate Link Zoom Meeting</h4>
                 <p class="text-xs text-gray-500 mb-4">Sistem akan memanggil Zoom API untuk membuat ruang pertemuan secara otomatis.</p>
 
@@ -260,17 +260,17 @@ Passcode: {{ $booking->passcode ?? '-' }}</textarea>
                     @csrf
                     <div>
                         <label class="block font-medium text-gray-700 mb-1">Topik Meeting</label>
-                        <input type="text" name="topic" value="{{ $booking->topic }}" required class="w-full px-3 py-1.5 bg-white border border-gray-300 rounded">
+                        <input type="text" name="topic" value="{{ $booking->topic }}" required class="w-full px-3 py-1.5 bg-white border border-gray-300 rounded-sm">
                     </div>
 
                     <div class="grid grid-cols-2 gap-2">
                         <div>
                             <label class="block font-medium text-gray-700 mb-1">Waktu Mulai</label>
-                            <input type="datetime-local" name="start_time" value="{{ $booking->start_date->format('Y-m-d') }}T{{ substr($booking->start_time, 0, 5) }}" required class="w-full px-3 py-1.5 bg-white border border-gray-300 rounded">
+                            <input type="datetime-local" name="start_time" value="{{ $booking->start_date->format('Y-m-d') }}T{{ substr($booking->start_time, 0, 5) }}" required class="w-full px-3 py-1.5 bg-white border border-gray-300 rounded-sm">
                         </div>
                         <div>
                             <label class="block font-medium text-gray-700 mb-1">Durasi (Menit)</label>
-                            <input type="number" name="duration" value="{{ $booking->duration_minutes }}" required class="w-full px-3 py-1.5 bg-white border border-gray-300 rounded">
+                            <input type="number" name="duration" value="{{ $booking->duration_minutes }}" required class="w-full px-3 py-1.5 bg-white border border-gray-300 rounded-sm">
                         </div>
                     </div>
 
@@ -282,37 +282,37 @@ Passcode: {{ $booking->passcode ?? '-' }}</textarea>
                             </button>
                         </div>
                         <div class="relative flex items-center">
-                            <input type="text" name="passcode" id="modal_passcode" value="123456" class="w-full px-3 py-1.5 pr-20 bg-white border border-gray-300 rounded font-mono focus:outline-none focus:border-gray-500">
-                            <button type="button" onclick="generateRandomPasscode()" class="absolute right-1 px-2.5 py-1 bg-gray-100 hover:bg-gray-200 text-gray-700 text-[10px] font-medium rounded border border-gray-200 transition">
+                            <input type="text" name="passcode" id="modal_passcode" value="123456" class="w-full px-3 py-1.5 pr-20 bg-white border border-gray-300 rounded-sm font-mono focus:outline-none focus:border-brand-600">
+                            <button type="button" onclick="generateRandomPasscode()" class="absolute right-1 px-2.5 py-1 bg-gray-100 hover:bg-gray-200 text-gray-700 text-[10px] font-medium rounded-sm border border-gray-200 transition">
                                 Random
                             </button>
                         </div>
                     </div>
 
                     <!-- Custom Meeting Overrides (From SystemSettings) -->
-                    <div class="p-3 bg-gray-50 border border-gray-200 rounded space-y-2">
+                    <div class="p-3 bg-gray-50 border border-gray-200 rounded-sm space-y-2">
                         <span class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block">Pengaturan Tambahan Room</span>
 
                         <div class="grid grid-cols-2 gap-2">
                             <label class="flex items-center gap-1.5 text-gray-700 cursor-pointer">
-                                <input type="checkbox" name="waiting_room" value="1" {{ \App\Models\SystemSetting::get('zoom_waiting_room', 1) ? 'checked' : '' }} class="rounded border-gray-300 text-gray-900 focus:ring-0">
+                                <input type="checkbox" name="waiting_room" value="1" {{ \App\Models\SystemSetting::get('zoom_waiting_room', 1) ? 'checked' : '' }} class="rounded-sm border-gray-300 text-gray-900 focus:ring-0">
                                 <span>Waiting Room</span>
                             </label>
 
                             <label class="flex items-center gap-1.5 text-gray-700 cursor-pointer">
-                                <input type="checkbox" name="mute_upon_entry" value="1" {{ \App\Models\SystemSetting::get('zoom_mute_upon_entry', 1) ? 'checked' : '' }} class="rounded border-gray-300 text-gray-900 focus:ring-0">
+                                <input type="checkbox" name="mute_upon_entry" value="1" {{ \App\Models\SystemSetting::get('zoom_mute_upon_entry', 1) ? 'checked' : '' }} class="rounded-sm border-gray-300 text-gray-900 focus:ring-0">
                                 <span>Mute Saat Masuk</span>
                             </label>
 
                             <label class="flex items-center gap-1.5 text-gray-700 cursor-pointer">
-                                <input type="checkbox" name="join_before_host" value="1" {{ \App\Models\SystemSetting::get('zoom_join_before_host', 0) ? 'checked' : '' }} class="rounded border-gray-300 text-gray-900 focus:ring-0">
+                                <input type="checkbox" name="join_before_host" value="1" {{ \App\Models\SystemSetting::get('zoom_join_before_host', 0) ? 'checked' : '' }} class="rounded-sm border-gray-300 text-gray-900 focus:ring-0">
                                 <span>Join Sebelum Host</span>
                             </label>
                         </div>
 
                         <div class="pt-1.5">
                             <label class="block font-medium text-gray-600 mb-0.5 text-[11px]">Auto Recording</label>
-                            <select name="auto_recording" class="w-full px-2 py-1 bg-white border border-gray-300 rounded text-[11px]">
+                            <select name="auto_recording" class="w-full px-2 py-1 bg-white border border-gray-300 rounded-sm text-[11px]">
                                 <option value="none" {{ \App\Models\SystemSetting::get('zoom_auto_recording', 'none') === 'none' ? 'selected' : '' }}>None (Tanpa Rekam)</option>
                                 <option value="cloud" {{ \App\Models\SystemSetting::get('zoom_auto_recording', 'none') === 'cloud' ? 'selected' : '' }}>Cloud Recording</option>
                                 <option value="local" {{ \App\Models\SystemSetting::get('zoom_auto_recording', 'none') === 'local' ? 'selected' : '' }}>Local Recording</option>
@@ -321,8 +321,8 @@ Passcode: {{ $booking->passcode ?? '-' }}</textarea>
                     </div>
 
                     <div class="pt-3 border-t border-gray-200 flex items-center justify-end gap-2">
-                        <button type="button" onclick="document.getElementById('genModal').classList.add('hidden')" class="px-3 py-1.5 bg-white border border-gray-300 rounded text-gray-700 hover:bg-gray-50">Batal</button>
-                        <button type="submit" class="px-4 py-1.5 bg-gray-900 hover:bg-black text-white rounded">Eksekusi API</button>
+                        <button type="button" onclick="document.getElementById('genModal').classList.add('hidden')" class="px-3 py-1.5 bg-white border border-gray-300 rounded-sm text-gray-700 hover:bg-gray-50">Batal</button>
+                        <button type="submit" class="px-4 py-1.5 bg-brand-900 hover:bg-brand-950 text-white rounded-sm">Eksekusi API</button>
                     </div>
                 </form>
             </div>
@@ -332,10 +332,10 @@ Passcode: {{ $booking->passcode ?? '-' }}</textarea>
 
 <!-- Modal Kirim WhatsApp (Multi-Gateway: FlowKirim / Fonnte & Fallback WA Web) -->
 <div id="waModal" class="fixed inset-0 z-50 hidden bg-gray-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-    <div class="bg-white rounded border border-gray-300 max-w-md w-full shadow-lg overflow-hidden animate-fadeIn">
+    <div class="bg-white rounded-sm border border-gray-300 max-w-md w-full shadow-lg overflow-hidden animate-fadeIn">
         <div class="px-5 py-3.5 border-b border-gray-200 flex items-center justify-between bg-white">
             <div class="flex items-center gap-2.5">
-                <div class="w-7 h-7 rounded bg-emerald-100 text-emerald-700 flex items-center justify-center text-sm">
+                <div class="w-7 h-7 rounded-sm bg-emerald-100 text-emerald-700 flex items-center justify-center text-sm">
                     <i class="fa-brands fa-whatsapp"></i>
                 </div>
                 <div>
@@ -343,7 +343,7 @@ Passcode: {{ $booking->passcode ?? '-' }}</textarea>
                     <p class="text-[11px] text-gray-500">Kirim tautan Zoom otomatis ke kontak peserta/pemohon</p>
                 </div>
             </div>
-            <button type="button" onclick="closeWaModal()" class="w-6 h-6 rounded flex items-center justify-center text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition">
+            <button type="button" onclick="closeWaModal()" class="w-6 h-6 rounded-sm flex items-center justify-center text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition">
                 <i class="fa-solid fa-xmark text-sm"></i>
             </button>
         </div>
@@ -355,7 +355,7 @@ Passcode: {{ $booking->passcode ?? '-' }}</textarea>
                 $activeGateway = $waService->getActiveProvider();
                 $isGatewayReady = $waService->isEnabled();
             @endphp
-            <div class="p-2.5 rounded border {{ $isGatewayReady ? 'bg-emerald-50/60 border-emerald-200 text-emerald-900' : 'bg-amber-50/70 border-amber-200 text-amber-900' }} flex items-center justify-between gap-2">
+            <div class="p-2.5 rounded-sm border {{ $isGatewayReady ? 'bg-emerald-50/60 border-emerald-200 text-emerald-900' : 'bg-amber-50/70 border-amber-200 text-amber-900' }} flex items-center justify-between gap-2">
                 <div class="flex items-center gap-2">
                     <i class="fa-solid {{ $isGatewayReady ? 'fa-circle-check text-emerald-600' : 'fa-circle-exclamation text-amber-600' }} text-sm"></i>
                     <span class="text-[11px]">
@@ -373,11 +373,11 @@ Passcode: {{ $booking->passcode ?? '-' }}</textarea>
                     <input type="text" id="waRecipientNumber" 
                         value="{{ $booking->user->no_hp ?? '' }}" 
                         placeholder="Contoh: 08123456789 atau 628123456789"
-                        class="w-full pl-3 pr-28 py-1.5 bg-white border border-gray-300 rounded focus:outline-none focus:border-gray-500 font-mono text-xs">
+                        class="w-full pl-3 pr-28 py-1.5 bg-white border border-gray-300 rounded-sm focus:outline-none focus:border-brand-600 font-mono text-xs">
                     
                     @if(!empty($booking->user->no_hp))
                         <button type="button" onclick="resetWaNumber('{{ $booking->user->no_hp }}')" 
-                            class="absolute right-1 top-1/2 -translate-y-1/2 px-2 py-0.5 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded text-[10px] font-medium border border-gray-200 transition"
+                            class="absolute right-1 top-1/2 -translate-y-1/2 px-2 py-0.5 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-sm text-[10px] font-medium border border-gray-200 transition"
                             title="Kembalikan ke nomor pemohon di profil">
                             No. Pemohon
                         </button>
@@ -391,15 +391,15 @@ Passcode: {{ $booking->passcode ?? '-' }}</textarea>
             <div>
                 <label class="block font-medium text-gray-700 mb-1">Pratinjau Pesan yang Dikirim</label>
                 <textarea id="waMessagePreview" rows="6"
-                    class="w-full p-2.5 bg-gray-50 border border-gray-300 rounded font-mono text-[11px] text-gray-700 leading-relaxed focus:outline-none focus:border-gray-500"></textarea>
+                    class="w-full p-2.5 bg-gray-50 border border-gray-300 rounded-sm font-mono text-[11px] text-gray-700 leading-relaxed focus:outline-none focus:border-brand-600"></textarea>
             </div>
 
             <!-- Opsi Tambahan: Sertakan Akun Host (Email & Password) -->
             @if(!empty($booking->account))
-                <div class="p-2.5 bg-gray-50 border border-gray-200 rounded flex items-center justify-between gap-3">
+                <div class="p-2.5 bg-gray-50 border border-gray-200 rounded-sm flex items-center justify-between gap-3">
                     <div class="flex items-center gap-2">
                         <input type="checkbox" id="checkIncludeCredentials" onchange="toggleCredentialsInMessage(this.checked)"
-                            class="rounded border-gray-300 text-gray-900 focus:ring-0 cursor-pointer">
+                            class="rounded-sm border-gray-300 text-gray-900 focus:ring-0 cursor-pointer">
                         <label for="checkIncludeCredentials" class="font-medium text-gray-800 cursor-pointer text-xs select-none">
                             Sertakan Email & Password Akun Zoom (Host)
                         </label>
@@ -410,17 +410,17 @@ Passcode: {{ $booking->passcode ?? '-' }}</textarea>
                 </div>
             @endif
 
-            <div id="waStatusAlert" class="hidden p-3 rounded text-xs border"></div>
+            <div id="waStatusAlert" class="hidden p-3 rounded-sm text-xs border"></div>
 
             <div class="pt-3 border-t border-gray-200 flex flex-col sm:flex-row items-center justify-between gap-2">
                 <button type="button" onclick="openFallbackWhatsAppWeb()" class="text-gray-500 hover:text-gray-800 text-[11px] underline self-start sm:self-auto" title="Buka via tautan manual wa.me">
                     Buka WhatsApp Web
                 </button>
                 <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
-                    <button type="button" onclick="closeWaModal()" class="px-3.5 py-1.5 bg-white border border-gray-300 rounded text-gray-700 hover:bg-gray-50 font-medium transition">
+                    <button type="button" onclick="closeWaModal()" class="px-3.5 py-1.5 bg-white border border-gray-300 rounded-sm text-gray-700 hover:bg-gray-50 font-medium transition">
                         Tutup
                     </button>
-                    <button type="button" id="btnSendGateway" onclick="sendViaGateway()" class="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded font-medium transition inline-flex items-center gap-1.5 shadow-xs">
+                    <button type="button" id="btnSendGateway" onclick="sendViaGateway()" class="px-4 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-sm font-medium transition inline-flex items-center gap-1.5 shadow-xs">
                         <i class="fa-solid fa-paper-plane text-xs" id="iconSendGateway"></i>
                         <span id="textSendGateway">Kirim via {{ strtoupper($activeGateway) }}</span>
                     </button>
@@ -586,10 +586,10 @@ Password: {{ $booking->account->password ?? '-' }}`;
             if (waStatusAlert) {
                 waStatusAlert.classList.remove('hidden');
                 if (data.success) {
-                    waStatusAlert.className = 'p-3 rounded text-xs border bg-emerald-50 border-emerald-200 text-emerald-800';
+                    waStatusAlert.className = 'p-3 rounded-sm text-xs border bg-emerald-50 border-emerald-200 text-emerald-800';
                     waStatusAlert.innerHTML = `<div class="flex items-center gap-2"><i class="fa-solid fa-circle-check text-emerald-600"></i><span><strong>Berhasil!</strong> ${data.message}</span></div>`;
                 } else {
-                    waStatusAlert.className = 'p-3 rounded text-xs border bg-rose-50 border-rose-200 text-rose-800';
+                    waStatusAlert.className = 'p-3 rounded-sm text-xs border bg-rose-50 border-rose-200 text-rose-800';
                     waStatusAlert.innerHTML = `<div class="flex items-start gap-2"><i class="fa-solid fa-circle-xmark text-rose-600 mt-0.5"></i><div><strong>Gagal mengirim [${(data.provider || 'Gateway').toUpperCase()}]:</strong><p class="mt-0.5 text-[11px]">${data.message}</p></div></div>`;
                 }
             }
@@ -597,7 +597,7 @@ Password: {{ $booking->account->password ?? '-' }}`;
         .catch(err => {
             if (waStatusAlert) {
                 waStatusAlert.classList.remove('hidden');
-                waStatusAlert.className = 'p-3 rounded text-xs border bg-rose-50 border-rose-200 text-rose-800';
+                waStatusAlert.className = 'p-3 rounded-sm text-xs border bg-rose-50 border-rose-200 text-rose-800';
                 waStatusAlert.innerHTML = `<div class="flex items-center gap-2"><i class="fa-solid fa-triangle-exclamation text-rose-600"></i><span><strong>Koneksi Error:</strong> ${err.message}</span></div>`;
             }
         })

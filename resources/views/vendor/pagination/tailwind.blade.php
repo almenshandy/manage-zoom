@@ -19,7 +19,7 @@
 
         {{-- Navigasi Tombol Angka --}}
         <div>
-            <ul class="inline-flex items-center -space-x-px rounded border border-gray-300 bg-white shadow-sm overflow-hidden text-xs">
+            <ul class="inline-flex items-center -space-x-px rounded-sm border border-gray-300 bg-white shadow-sm overflow-hidden text-xs">
                 {{-- Tombol Sebelumnya --}}
                 @if ($paginator->onFirstPage())
                     <li>
@@ -51,7 +51,7 @@
                         @foreach ($element as $page => $url)
                             @if ($page == $paginator->currentPage())
                                 <li>
-                                    <span aria-current="page" class="inline-flex items-center px-3 py-1.5 font-semibold text-white bg-gray-900">
+                                    <span aria-current="page" class="inline-flex items-center px-3 py-1.5 font-semibold text-white bg-brand-900">
                                         {{ $page }}
                                     </span>
                                 </li>

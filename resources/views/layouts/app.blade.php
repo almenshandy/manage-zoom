@@ -14,81 +14,10 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        /* Flat UI Reset for professional minimalism */
-        body {
-            font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
-        }
-
-        .border-subtle {
-            border-color: #e5e7eb;
-        }
-
-        /* Custom Sleek & Thin Scrollbar (WebKit: Chrome, Edge, Safari) */
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: #d1d5db;
-            border-radius: 9999px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: #9ca3af;
-        }
-
-        /* Firefox Support */
-        * {
-            scrollbar-width: thin;
-            scrollbar-color: #d1d5db transparent;
-        }
-
-        /* Sidebar Mini Collapsed Styles (Smooth Minimize / Maximize) */
-        #mainSidebar {
-            transition: width 0.2s ease-in-out;
-        }
-
-        @media (min-width: 768px) {
-        body.sidebar-mini #mainSidebar {
-            width: 4.25rem !important;
-        }
-
-        body.sidebar-mini .sidebar-text,
-        body.sidebar-mini .sidebar-heading,
-        body.sidebar-mini .sidebar-user-info,
-        body.sidebar-mini .sidebar-brand-text,
-        body.sidebar-mini .sidebar-logout-btn {
-            display: none !important;
-        }
-
-        body.sidebar-mini .sidebar-nav-item {
-            justify-content: center !important;
-            padding-left: 0.5rem !important;
-            padding-right: 0.5rem !important;
-        }
-
-        body.sidebar-mini .sidebar-brand-container {
-            justify-content: center !important;
-            padding-left: 0 !important;
-            padding-right: 0 !important;
-        }
-
-        body.sidebar-mini .sidebar-footer-container {
-            justify-content: center !important;
-            padding: 0.5rem !important;
-        }
-        }
-    </style>
     @stack('styles')
 </head>
 
-<body class="bg-gray-50 text-gray-800 antialiased font-sans text-sm selection:bg-gray-200">
+<body class="app-page bg-gray-50 text-gray-800 antialiased font-sans text-sm selection:bg-brand-100">
     <button id="sidebarBackdrop" type="button" onclick="closeSidebar()" tabindex="-1" aria-label="Tutup menu"
         class="hidden fixed inset-0 z-40 bg-gray-900/60 md:hidden"></button>
     <div class="min-h-screen flex flex-col md:flex-row">
@@ -99,14 +28,14 @@
                 <!-- Brand Header -->
                 <div
                     class="h-14 px-5 flex items-center gap-3 border-b border-gray-200 bg-white sidebar-brand-container">
-                    <img src="{{ asset('icon.svg') }}" alt="Logo ManageZoom" class="w-7 h-7 rounded shadow-xs shrink-0">
+                    <img src="{{ asset('icon.svg') }}" alt="Logo ManageZoom" class="w-7 h-7 rounded-sm shadow-xs shrink-0">
                     <div class="flex items-center gap-2 sidebar-brand-text">
-                        <span class="font-semibold text-gray-900 tracking-tight">ManageZoom</span>
+                        <span class="font-semibold text-brand-900 tracking-tight">ManageZoom</span>
                         <span
-                            class="text-[10px] font-medium bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded border border-gray-200">v2.0</span>
+                            class="text-[10px] font-medium bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded-sm border border-gray-200">v2.0</span>
                     </div>
                     <button id="sidebarCloseBtn" type="button" onclick="closeSidebar()" aria-label="Tutup menu"
-                        class="ml-auto w-11 h-11 rounded hover:bg-gray-100 md:hidden">
+                        class="ml-auto w-11 h-11 rounded-sm hover:bg-gray-100 md:hidden">
                         <i class="fa-solid fa-xmark" aria-hidden="true"></i>
                     </button>
                 </div>
@@ -114,34 +43,34 @@
                 <!-- Nav links -->
                 <nav class="p-3 space-y-1 text-xs font-medium">
                     <a href="{{ route('dashboard') }}"
-                        class="sidebar-nav-item flex items-center gap-3 px-3 py-2 rounded border {{ request()->routeIs('dashboard') ? 'bg-gray-100 text-gray-900 border-gray-300 font-semibold' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50 border-transparent' }} transition-colors"
+                        class="sidebar-nav-item flex items-center gap-3 px-3 py-2 rounded-sm border {{ request()->routeIs('dashboard') ? 'bg-brand-50 text-brand-900 border-brand-200 font-semibold' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50 border-transparent' }} transition-colors" @if(request()->routeIs('dashboard')) aria-current="page" @endif
                         title="Dashboard">
                         <i
-                            class="fa-solid fa-chart-pie w-4 text-center shrink-0 {{ request()->routeIs('dashboard') ? 'text-gray-900' : 'text-gray-400' }}"></i>
+                            class="fa-solid fa-chart-pie w-4 text-center shrink-0 {{ request()->routeIs('dashboard') ? 'text-brand-900' : 'text-gray-400' }}"></i>
                         <span class="sidebar-text">Dashboard</span>
                     </a>
 
                     <a href="{{ route('bookings.index') }}"
-                        class="sidebar-nav-item flex items-center gap-3 px-3 py-2 rounded border {{ request()->routeIs('bookings.*') ? 'bg-gray-100 text-gray-900 border-gray-300 font-semibold' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50 border-transparent' }} transition-colors"
+                        class="sidebar-nav-item flex items-center gap-3 px-3 py-2 rounded-sm border {{ request()->routeIs('bookings.*') ? 'bg-brand-50 text-brand-900 border-brand-200 font-semibold' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50 border-transparent' }} transition-colors" @if(request()->routeIs('bookings.*')) aria-current="page" @endif
                         title="Peminjaman Zoom">
                         <i
-                            class="fa-solid fa-calendar-check w-4 text-center shrink-0 {{ request()->routeIs('bookings.*') ? 'text-gray-900' : 'text-gray-400' }}"></i>
+                            class="fa-solid fa-calendar-check w-4 text-center shrink-0 {{ request()->routeIs('bookings.*') ? 'text-brand-900' : 'text-gray-400' }}"></i>
                         <span class="sidebar-text">Peminjaman Zoom</span>
                     </a>
 
                     <a href="{{ route('calendar.index') }}"
-                        class="sidebar-nav-item flex items-center gap-3 px-3 py-2 rounded border {{ request()->routeIs('calendar.*') ? 'bg-gray-100 text-gray-900 border-gray-300 font-semibold' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50 border-transparent' }} transition-colors"
+                        class="sidebar-nav-item flex items-center gap-3 px-3 py-2 rounded-sm border {{ request()->routeIs('calendar.*') ? 'bg-brand-50 text-brand-900 border-brand-200 font-semibold' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50 border-transparent' }} transition-colors" @if(request()->routeIs('calendar.*')) aria-current="page" @endif
                         title="Kalender Rapat">
                         <i
-                            class="fa-solid fa-calendar-days w-4 text-center shrink-0 {{ request()->routeIs('calendar.*') ? 'text-gray-900' : 'text-gray-400' }}"></i>
+                            class="fa-solid fa-calendar-days w-4 text-center shrink-0 {{ request()->routeIs('calendar.*') ? 'text-brand-900' : 'text-gray-400' }}"></i>
                         <span class="sidebar-text">Kalender Rapat</span>
                     </a>
 
                     <a href="{{ route('memos.index') }}"
-                        class="sidebar-nav-item flex items-center gap-3 px-3 py-2 rounded border {{ request()->routeIs('memos.*') ? 'bg-gray-100 text-gray-900 border-gray-300 font-semibold' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50 border-transparent' }} transition-colors"
+                        class="sidebar-nav-item flex items-center gap-3 px-3 py-2 rounded-sm border {{ request()->routeIs('memos.*') ? 'bg-brand-50 text-brand-900 border-brand-200 font-semibold' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50 border-transparent' }} transition-colors" @if(request()->routeIs('memos.*')) aria-current="page" @endif
                         title="Memo & Persetujuan">
                         <i
-                            class="fa-solid fa-file-lines w-4 text-center shrink-0 {{ request()->routeIs('memos.*') ? 'text-gray-900' : 'text-gray-400' }}"></i>
+                            class="fa-solid fa-file-lines w-4 text-center shrink-0 {{ request()->routeIs('memos.*') ? 'text-brand-900' : 'text-gray-400' }}"></i>
                         <span class="sidebar-text">Memo & Persetujuan</span>
                     </a>
 
@@ -152,58 +81,58 @@
                         </div>
 
                         <a href="{{ route('zoom-accounts.index') }}"
-                            class="sidebar-nav-item flex items-center gap-3 px-3 py-2 rounded border {{ request()->routeIs('zoom-accounts.*') ? 'bg-gray-100 text-gray-900 border-gray-300 font-semibold' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50 border-transparent' }} transition-colors"
-                            title="Master Akun Zoom">
+                            class="sidebar-nav-item flex items-center gap-3 px-3 py-2 rounded-sm border {{ request()->routeIs('zoom-accounts.*') ? 'bg-brand-50 text-brand-900 border-brand-200 font-semibold' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50 border-transparent' }} transition-colors" @if(request()->routeIs('zoom-accounts.*')) aria-current="page" @endif
+                        title="Master Akun Zoom">
                             <i
-                                class="fa-solid fa-server w-4 text-center shrink-0 {{ request()->routeIs('zoom-accounts.*') ? 'text-gray-900' : 'text-gray-400' }}"></i>
+                                class="fa-solid fa-server w-4 text-center shrink-0 {{ request()->routeIs('zoom-accounts.*') ? 'text-brand-900' : 'text-gray-400' }}"></i>
                             <span class="sidebar-text">Master Akun Zoom</span>
                         </a>
 
                         <a href="{{ route('users.index') }}"
-                            class="sidebar-nav-item flex items-center gap-3 px-3 py-2 rounded border {{ request()->routeIs('users.*') ? 'bg-gray-100 text-gray-900 border-gray-300 font-semibold' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50 border-transparent' }} transition-colors"
-                            title="Manajemen Pengguna">
+                            class="sidebar-nav-item flex items-center gap-3 px-3 py-2 rounded-sm border {{ request()->routeIs('users.*') ? 'bg-brand-50 text-brand-900 border-brand-200 font-semibold' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50 border-transparent' }} transition-colors" @if(request()->routeIs('users.*')) aria-current="page" @endif
+                        title="Manajemen Pengguna">
                             <i
-                                class="fa-solid fa-users-gear w-4 text-center shrink-0 {{ request()->routeIs('users.*') ? 'text-gray-900' : 'text-gray-400' }}"></i>
+                                class="fa-solid fa-users-gear w-4 text-center shrink-0 {{ request()->routeIs('users.*') ? 'text-brand-900' : 'text-gray-400' }}"></i>
                             <span class="sidebar-text">Manajemen Pengguna</span>
                         </a>
 
                         <a href="{{ route('departments-positions.index') }}"
-                            class="sidebar-nav-item flex items-center gap-3 px-3 py-2 rounded border {{ request()->routeIs('departments-positions.*') ? 'bg-gray-100 text-gray-900 border-gray-300 font-semibold' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50 border-transparent' }} transition-colors"
-                            title="Departemen & Jabatan">
+                            class="sidebar-nav-item flex items-center gap-3 px-3 py-2 rounded-sm border {{ request()->routeIs('departments-positions.*') ? 'bg-brand-50 text-brand-900 border-brand-200 font-semibold' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50 border-transparent' }} transition-colors" @if(request()->routeIs('departments-positions.*')) aria-current="page" @endif
+                        title="Departemen & Jabatan">
                             <i
-                                class="fa-solid fa-sitemap w-4 text-center shrink-0 {{ request()->routeIs('departments-positions.*') ? 'text-gray-900' : 'text-gray-400' }}"></i>
+                                class="fa-solid fa-sitemap w-4 text-center shrink-0 {{ request()->routeIs('departments-positions.*') ? 'text-brand-900' : 'text-gray-400' }}"></i>
                             <span class="sidebar-text">Departemen & Jabatan</span>
                         </a>
 
                         <a href="{{ route('projects.index') }}"
-                            class="sidebar-nav-item flex items-center gap-3 px-3 py-2 rounded border {{ request()->routeIs('projects.*') ? 'bg-gray-100 text-gray-900 border-gray-300 font-semibold' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50 border-transparent' }} transition-colors"
-                            title="Master Proyek">
+                            class="sidebar-nav-item flex items-center gap-3 px-3 py-2 rounded-sm border {{ request()->routeIs('projects.*') ? 'bg-brand-50 text-brand-900 border-brand-200 font-semibold' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50 border-transparent' }} transition-colors" @if(request()->routeIs('projects.*')) aria-current="page" @endif
+                        title="Master Proyek">
                             <i
-                                class="fa-solid fa-briefcase w-4 text-center shrink-0 {{ request()->routeIs('projects.*') ? 'text-gray-900' : 'text-gray-400' }}"></i>
+                                class="fa-solid fa-briefcase w-4 text-center shrink-0 {{ request()->routeIs('projects.*') ? 'text-brand-900' : 'text-gray-400' }}"></i>
                             <span class="sidebar-text">Master Proyek</span>
                         </a>
 
                         <a href="{{ route('backup.index') }}"
-                            class="sidebar-nav-item flex items-center gap-3 px-3 py-2 rounded border {{ request()->routeIs('backup.*') ? 'bg-gray-100 text-gray-900 border-gray-300 font-semibold' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50 border-transparent' }} transition-colors"
-                            title="Backup & Ekspor DB">
+                            class="sidebar-nav-item flex items-center gap-3 px-3 py-2 rounded-sm border {{ request()->routeIs('backup.*') ? 'bg-brand-50 text-brand-900 border-brand-200 font-semibold' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50 border-transparent' }} transition-colors" @if(request()->routeIs('backup.*')) aria-current="page" @endif
+                        title="Backup & Ekspor DB">
                             <i
-                                class="fa-solid fa-database w-4 text-center shrink-0 {{ request()->routeIs('backup.*') ? 'text-gray-900' : 'text-gray-400' }}"></i>
+                                class="fa-solid fa-database w-4 text-center shrink-0 {{ request()->routeIs('backup.*') ? 'text-brand-900' : 'text-gray-400' }}"></i>
                             <span class="sidebar-text">Backup & Ekspor DB</span>
                         </a>
 
                         <a href="{{ route('settings.index') }}"
-                            class="sidebar-nav-item flex items-center gap-3 px-3 py-2 rounded border {{ request()->routeIs('settings.*') ? 'bg-gray-100 text-gray-900 border-gray-300 font-semibold' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50 border-transparent' }} transition-colors"
-                            title="Pengaturan Sistem & WhatsApp">
+                            class="sidebar-nav-item flex items-center gap-3 px-3 py-2 rounded-sm border {{ request()->routeIs('settings.*') ? 'bg-brand-50 text-brand-900 border-brand-200 font-semibold' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50 border-transparent' }} transition-colors" @if(request()->routeIs('settings.*')) aria-current="page" @endif
+                        title="Pengaturan Sistem & WhatsApp">
                             <i
-                                class="fa-solid fa-sliders w-4 text-center shrink-0 {{ request()->routeIs('settings.*') ? 'text-gray-900' : 'text-gray-400' }}"></i>
+                                class="fa-solid fa-sliders w-4 text-center shrink-0 {{ request()->routeIs('settings.*') ? 'text-brand-900' : 'text-gray-400' }}"></i>
                             <span class="sidebar-text">Pengaturan Sistem</span>
                         </a>
 
                         <a href="{{ route('activity-logs.index') }}"
-                            class="sidebar-nav-item flex items-center gap-3 px-3 py-2 rounded border {{ request()->routeIs('activity-logs.*') ? 'bg-gray-100 text-gray-900 border-gray-300 font-semibold' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50 border-transparent' }} transition-colors"
-                            title="Audit & Log Aktivitas">
+                            class="sidebar-nav-item flex items-center gap-3 px-3 py-2 rounded-sm border {{ request()->routeIs('activity-logs.*') ? 'bg-brand-50 text-brand-900 border-brand-200 font-semibold' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50 border-transparent' }} transition-colors" @if(request()->routeIs('activity-logs.*')) aria-current="page" @endif
+                        title="Audit & Log Aktivitas">
                             <i
-                                class="fa-solid fa-clock-rotate-left w-4 text-center shrink-0 {{ request()->routeIs('activity-logs.*') ? 'text-gray-900' : 'text-gray-400' }}"></i>
+                                class="fa-solid fa-clock-rotate-left w-4 text-center shrink-0 {{ request()->routeIs('activity-logs.*') ? 'text-brand-900' : 'text-gray-400' }}"></i>
                             <span class="sidebar-text">Audit & Log Aktivitas</span>
                         </a>
                     @endif
@@ -214,7 +143,7 @@
             <div class="p-3 border-t border-gray-200 bg-gray-50 sidebar-footer-container">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-2.5">
-                        <div class="w-8 h-8 rounded bg-gray-200 border border-gray-300 flex items-center justify-center font-semibold text-gray-700 text-xs shrink-0"
+                        <div class="w-8 h-8 rounded-sm bg-gray-200 border border-gray-300 flex items-center justify-center font-semibold text-gray-700 text-xs shrink-0"
                             title="{{ auth()->user()->name ?? 'User' }}">
                             {{ substr(auth()->user()->name ?? 'U', 0, 2) }}
                         </div>
@@ -229,7 +158,7 @@
                     <form method="POST" action="{{ route('logout') }}" class="sidebar-logout-btn">
                         @csrf
                         <button type="submit" title="Keluar"
-                            class="p-1.5 text-gray-400 hover:text-red-600 hover:bg-white rounded border border-transparent hover:border-gray-200 transition">
+                            class="p-1.5 text-gray-400 hover:text-red-600 hover:bg-white rounded-sm border border-transparent hover:border-gray-200 transition">
                             <i class="fa-solid fa-arrow-right-from-bracket text-xs"></i>
                         </button>
                     </form>
@@ -244,7 +173,7 @@
                 <div class="min-w-0 flex items-center gap-2 md:gap-3">
                     <!-- Toggle Minimize / Maximize Sidebar Button -->
                     <button type="button" id="sidebarToggleBtn" onclick="toggleSidebar()" aria-controls="mainSidebar" aria-expanded="false" aria-label="Buka menu"
-                        class="w-11 h-11 md:w-8 md:h-8 shrink-0 rounded hidden md:flex items-center justify-center text-gray-500 hover:text-gray-900 hover:bg-gray-100 transition border border-gray-200"
+                        class="w-11 h-11 md:w-8 md:h-8 shrink-0 rounded-sm hidden md:flex items-center justify-center text-gray-500 hover:text-gray-900 hover:bg-gray-100 transition border border-gray-200"
                         title="Buka menu">
                         <i class="fa-solid fa-bars-staggered text-xs"></i>
                     </button>
@@ -257,7 +186,7 @@
                         <i class="fa-regular fa-clock mr-1 text-gray-400"></i> {{ now()->format('d M Y, H:i') }} WIB
                     </span>
                     <a href="{{ route('bookings.create') }}"
-                        class="{{ request()->routeIs('bookings.index') ? 'inline-flex' : 'hidden md:inline-flex' }} items-center gap-1.5 bg-gray-900 hover:bg-black text-white text-xs font-medium px-3 py-1.5 rounded transition">
+                        class="{{ request()->routeIs('bookings.index') ? 'inline-flex' : 'hidden md:inline-flex' }} items-center gap-1.5 bg-brand-900 hover:bg-brand-950 text-white text-xs font-medium px-3 py-1.5 rounded-sm transition">
                         <i class="fa-solid fa-plus text-[10px]"></i> <span>Booking<span class="hidden sm:inline"> Baru</span></span>
                     </a>
                     <span class="mobile-user-avatar md:hidden" role="img" aria-label="Masuk sebagai {{ auth()->user()?->name ?? 'Pengguna' }}">{{ strtoupper(substr(auth()->user()?->name ?? 'U', 0, 1)) }}</span>
@@ -269,7 +198,7 @@
                 class="fixed top-4 right-4 z-50 flex flex-col gap-2 max-w-sm w-full pointer-events-none">
                 @if (session('success'))
                     <div
-                        class="toast-item pointer-events-auto flex items-start gap-3 p-3.5 bg-white border border-gray-300 rounded shadow-sm text-xs transition-all duration-200 transform translate-y-0 opacity-100">
+                        class="toast-item pointer-events-auto flex items-start gap-3 p-3.5 bg-white border border-gray-300 rounded-sm shadow-sm text-xs transition-all duration-200 transform translate-y-0 opacity-100">
                         <i class="fa-solid fa-check text-emerald-600 mt-0.5 text-sm"></i>
                         <div class="flex-1">
                             <p class="font-semibold text-gray-900">Sukses</p>
@@ -284,7 +213,7 @@
 
                 @if (session('error'))
                     <div
-                        class="toast-item pointer-events-auto flex items-start gap-3 p-3.5 bg-white border border-red-300 rounded shadow-sm text-xs transition-all duration-200 transform translate-y-0 opacity-100">
+                        class="toast-item pointer-events-auto flex items-start gap-3 p-3.5 bg-white border border-red-300 rounded-sm shadow-sm text-xs transition-all duration-200 transform translate-y-0 opacity-100">
                         <i class="fa-solid fa-exclamation text-red-600 mt-0.5 text-sm"></i>
                         <div class="flex-1">
                             <p class="font-semibold text-red-900">Perhatian</p>
@@ -299,7 +228,7 @@
 
                 @if (session('info'))
                     <div
-                        class="toast-item pointer-events-auto flex items-start gap-3 p-3.5 bg-white border border-gray-300 rounded shadow-sm text-xs transition-all duration-200 transform translate-y-0 opacity-100">
+                        class="toast-item pointer-events-auto flex items-start gap-3 p-3.5 bg-white border border-gray-300 rounded-sm shadow-sm text-xs transition-all duration-200 transform translate-y-0 opacity-100">
                         <i class="fa-solid fa-info text-blue-600 mt-0.5 text-sm"></i>
                         <div class="flex-1">
                             <p class="font-semibold text-gray-900">Informasi</p>

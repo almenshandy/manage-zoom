@@ -9,7 +9,7 @@
     <!-- Header Halaman & Aksi Pembersihan -->
     <x-page-header title="Audit Trail & Riwayat Aktivitas Sistem" description="Catatan otomatis seluruh aktivitas pengajuan permohonan booking, perubahan status, dan penghapusan jadwal.">
         <x-slot:actions>
-            <button type="button" onclick="openClearModal()" class="px-3 py-1.5 bg-white hover:bg-rose-50 text-rose-700 border border-rose-300 rounded text-xs font-medium transition inline-flex items-center gap-1.5 shadow-xs">
+            <button type="button" onclick="openClearModal()" class="px-3 py-1.5 bg-white hover:bg-rose-50 text-rose-700 border border-rose-300 rounded-sm text-xs font-medium transition inline-flex items-center gap-1.5 shadow-xs">
                 <i class="fa-solid fa-trash-can text-xs text-rose-600"></i>
                 <span>Bersihkan Riwayat Log</span>
             </button>
@@ -27,14 +27,14 @@
                         <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
                         <input type="text" name="search" value="{{ request('search') }}"
                             placeholder="Cari topik, nama pemohon, atau ID..."
-                            class="w-full pl-8 pr-3 py-1.5 bg-white border border-gray-300 rounded text-xs focus:outline-none focus:border-gray-500">
+                            class="w-full pl-8 pr-3 py-1.5 bg-white border border-gray-300 rounded-sm text-xs focus:outline-none focus:border-brand-600">
                     </div>
                 </div>
 
                 <!-- Filter Aksi -->
                 <div>
                     <label class="block text-[11px] font-semibold text-gray-700 uppercase tracking-wider mb-1">Tipe Aksi / Event</label>
-                    <select name="action" class="w-full px-3 py-1.5 bg-white border border-gray-300 rounded text-xs focus:outline-none focus:border-gray-500">
+                    <select name="action" class="w-full px-3 py-1.5 bg-white border border-gray-300 rounded-sm text-xs focus:outline-none focus:border-brand-600">
                         <option value="">-- Semua Jenis Aksi --</option>
                         @foreach($availableActions as $key => $label)
                             <option value="{{ $key }}" {{ request('action') === $key ? 'selected' : '' }}>
@@ -48,14 +48,14 @@
                 <div>
                     <label class="block text-[11px] font-semibold text-gray-700 uppercase tracking-wider mb-1">Dari Tanggal</label>
                     <input type="date" name="start_date" value="{{ request('start_date') }}"
-                        class="w-full px-3 py-1.5 bg-white border border-gray-300 rounded text-xs focus:outline-none focus:border-gray-500">
+                        class="w-full px-3 py-1.5 bg-white border border-gray-300 rounded-sm text-xs focus:outline-none focus:border-brand-600">
                 </div>
 
                 <!-- Filter Tanggal Selesai -->
                 <div>
                     <label class="block text-[11px] font-semibold text-gray-700 uppercase tracking-wider mb-1">Sampai Tanggal</label>
                     <input type="date" name="end_date" value="{{ request('end_date') }}"
-                        class="w-full px-3 py-1.5 bg-white border border-gray-300 rounded text-xs focus:outline-none focus:border-gray-500">
+                        class="w-full px-3 py-1.5 bg-white border border-gray-300 rounded-sm text-xs focus:outline-none focus:border-brand-600">
                 </div>
             </div>
 
@@ -67,11 +67,11 @@
                 </div>
                 <div class="flex items-center gap-2">
                     @if(request()->hasAny(['search', 'action', 'start_date', 'end_date']))
-                        <a href="{{ route('activity-logs.index') }}" class="px-3 py-1 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded text-xs font-medium transition inline-flex items-center gap-1">
+                        <a href="{{ route('activity-logs.index') }}" class="px-3 py-1 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-sm text-xs font-medium transition inline-flex items-center gap-1">
                             <i class="fa-solid fa-rotate-left text-[10px]"></i> Reset Filter
                         </a>
                     @endif
-                    <button type="submit" class="px-4 py-1.5 bg-gray-900 hover:bg-black text-white rounded text-xs font-medium transition inline-flex items-center gap-1.5 shadow-xs">
+                    <button type="submit" class="px-4 py-1.5 bg-brand-900 hover:bg-brand-950 text-white rounded-sm text-xs font-medium transition inline-flex items-center gap-1.5 shadow-xs">
                         <i class="fa-solid fa-filter text-[10px]"></i>
                         <span>Terapkan Filter</span>
                     </button>
@@ -106,19 +106,19 @@
                             </td>
                             <td data-label="Aksi" class="px-4 py-2.5 whitespace-nowrap">
                                 @if($log->action === 'create_booking')
-                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-semibold bg-blue-50 text-blue-700 border border-blue-200">
+                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-sm text-[10px] font-semibold bg-blue-50 text-blue-700 border border-blue-200">
                                         <i class="fa-solid fa-plus-circle text-[9px]"></i> Pengajuan Baru
                                     </span>
                                 @elseif($log->action === 'update_status')
-                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-sm text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
                                         <i class="fa-solid fa-pen-to-square text-[9px]"></i> Update Status
                                     </span>
                                 @elseif($log->action === 'delete_booking')
-                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-semibold bg-rose-50 text-rose-700 border border-rose-200">
+                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-sm text-[10px] font-semibold bg-rose-50 text-rose-700 border border-rose-200">
                                         <i class="fa-solid fa-trash text-[9px]"></i> Hapus Booking
                                     </span>
                                 @else
-                                    <span class="px-2 py-0.5 rounded text-[10px] font-mono border bg-gray-50 text-gray-700 border-gray-200">
+                                    <span class="px-2 py-0.5 rounded-sm text-[10px] font-mono border bg-gray-50 text-gray-700 border-gray-200">
                                         {{ $log->action }}
                                     </span>
                                 @endif
@@ -153,10 +153,10 @@
 
 <!-- Modal Bersihkan Riwayat Log -->
 <div id="clearLogsModal" class="fixed inset-0 z-50 hidden bg-gray-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-    <div class="bg-white rounded border border-gray-300 max-w-md w-full shadow-lg overflow-hidden animate-fadeIn">
+    <div class="bg-white rounded-sm border border-gray-300 max-w-md w-full shadow-lg overflow-hidden animate-fadeIn">
         <div class="px-5 py-3.5 border-b border-gray-200 flex items-center justify-between bg-white">
             <div class="flex items-center gap-2.5">
-                <div class="w-7 h-7 rounded bg-rose-100 text-rose-700 flex items-center justify-center text-sm">
+                <div class="w-7 h-7 rounded-sm bg-rose-100 text-rose-700 flex items-center justify-center text-sm">
                     <i class="fa-solid fa-triangle-exclamation"></i>
                 </div>
                 <div>
@@ -164,7 +164,7 @@
                     <p class="text-[11px] text-gray-500">Pangkas rekaman riwayat audit trail lama</p>
                 </div>
             </div>
-            <button type="button" onclick="closeClearModal()" class="w-6 h-6 rounded flex items-center justify-center text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition">
+            <button type="button" onclick="closeClearModal()" class="w-6 h-6 rounded-sm flex items-center justify-center text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition">
                 <i class="fa-solid fa-xmark text-sm"></i>
             </button>
         </div>
@@ -174,7 +174,7 @@
             <div>
                 <label class="block font-medium text-gray-700 mb-1.5">Pilih Batas Pembersihan Log:</label>
                 <div class="space-y-2">
-                    <label class="flex items-center gap-2 p-2.5 rounded border border-gray-200 hover:bg-gray-50 cursor-pointer">
+                    <label class="flex items-center gap-2 p-2.5 rounded-sm border border-gray-200 hover:bg-gray-50 cursor-pointer">
                         <input type="radio" name="retention" value="30_days" checked class="text-gray-900 focus:ring-0">
                         <div>
                             <span class="font-semibold text-gray-900 block">Hapus log lebih dari 30 hari yang lalu</span>
@@ -182,7 +182,7 @@
                         </div>
                     </label>
 
-                    <label class="flex items-center gap-2 p-2.5 rounded border border-gray-200 hover:bg-gray-50 cursor-pointer">
+                    <label class="flex items-center gap-2 p-2.5 rounded-sm border border-gray-200 hover:bg-gray-50 cursor-pointer">
                         <input type="radio" name="retention" value="60_days" class="text-gray-900 focus:ring-0">
                         <div>
                             <span class="font-semibold text-gray-900 block">Hapus log lebih dari 60 hari yang lalu</span>
@@ -190,7 +190,7 @@
                         </div>
                     </label>
 
-                    <label class="flex items-center gap-2 p-2.5 rounded border border-gray-200 hover:bg-gray-50 cursor-pointer">
+                    <label class="flex items-center gap-2 p-2.5 rounded-sm border border-gray-200 hover:bg-gray-50 cursor-pointer">
                         <input type="radio" name="retention" value="90_days" class="text-gray-900 focus:ring-0">
                         <div>
                             <span class="font-semibold text-gray-900 block">Hapus log lebih dari 90 hari yang lalu</span>
@@ -198,7 +198,7 @@
                         </div>
                     </label>
 
-                    <label class="flex items-center gap-2 p-2.5 rounded border border-rose-200 bg-rose-50/40 hover:bg-rose-50 cursor-pointer">
+                    <label class="flex items-center gap-2 p-2.5 rounded-sm border border-rose-200 bg-rose-50/40 hover:bg-rose-50 cursor-pointer">
                         <input type="radio" name="retention" value="all" class="text-rose-600 focus:ring-0">
                         <div>
                             <span class="font-semibold text-rose-900 block">Hapus SEMUA riwayat log tanpa kecuali</span>
@@ -208,16 +208,16 @@
                 </div>
             </div>
 
-            <p class="text-[11px] text-gray-500 leading-relaxed bg-amber-50 p-2.5 rounded border border-amber-200 text-amber-900">
+            <p class="text-[11px] text-gray-500 leading-relaxed bg-amber-50 p-2.5 rounded-sm border border-amber-200 text-amber-900">
                 <i class="fa-solid fa-circle-info mr-1"></i> Tindakan pembersihan bersifat permanen dan data log yang terhapus tidak dapat dikembalikan.
             </p>
 
             <div class="pt-3 border-t border-gray-200 flex items-center justify-end gap-2">
-                <button type="button" onclick="closeClearModal()" class="px-3.5 py-1.5 bg-white border border-gray-300 rounded text-gray-700 hover:bg-gray-50 font-medium transition">
+                <button type="button" onclick="closeClearModal()" class="px-3.5 py-1.5 bg-white border border-gray-300 rounded-sm text-gray-700 hover:bg-gray-50 font-medium transition">
                     Batal
                 </button>
                 <button type="submit" onclick="return confirm('Apakah Anda yakin ingin menjalankan pembersihan riwayat log ini?')"
-                    class="px-4 py-1.5 bg-rose-600 hover:bg-rose-700 text-white rounded font-medium transition inline-flex items-center gap-1.5 shadow-xs">
+                    class="px-4 py-1.5 bg-rose-600 hover:bg-rose-700 text-white rounded-sm font-medium transition inline-flex items-center gap-1.5 shadow-xs">
                     <i class="fa-solid fa-trash-can text-xs"></i>
                     <span>Eksekusi Pembersihan</span>
                 </button>

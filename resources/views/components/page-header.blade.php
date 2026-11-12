@@ -5,7 +5,7 @@
     'backText' => 'Kembali',
 ])
 
-<div class="mobile-section-header bg-white p-4 rounded border border-gray-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+<div class="mobile-section-header bg-white p-4 rounded-sm border border-gray-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
     <div>
         @if($backUrl)
             <div class="mb-1">
@@ -15,7 +15,7 @@
             </div>
         @endif
         @if($title)
-            <h3 class="text-xs font-semibold text-gray-900 uppercase tracking-wider">{{ $title }}</h3>
+            <h3 class="text-sm font-semibold text-gray-900">{{ $title }}</h3>
         @endif
         @if($description)
             <p class="text-xs text-gray-500 mt-0.5">{{ $description }}</p>

@@ -8,19 +8,19 @@
 <div class="space-y-4">
     <!-- Top Action Bar (Flat Minimalis) -->
     <div class="flex flex-wrap items-center justify-between gap-3">
-        <a href="{{ route('bookings.index') }}" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 text-xs font-medium rounded transition">
+        <a href="{{ route('bookings.index') }}" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 text-xs font-medium rounded-sm transition">
             <i class="fa-solid fa-arrow-left text-[10px]"></i> <span>Kembali<span class="hidden md:inline"> ke Daftar Booking</span></span>
         </a>
 
-        <div class="hidden md:flex items-center gap-2.5 text-[11px] text-gray-600 bg-white px-3 py-1.5 rounded border border-gray-200">
-            <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded bg-blue-100 border border-blue-400"></span> Terisi</span>
-            <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded bg-white border border-gray-300 text-gray-400 flex items-center justify-center text-[9px]">+</span> Kosong</span>
-            <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded bg-gray-100 border border-gray-300"></span> Expired</span>
+        <div class="hidden md:flex items-center gap-2.5 text-[11px] text-gray-600 bg-white px-3 py-1.5 rounded-sm border border-gray-200">
+            <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-sm bg-blue-100 border border-blue-400"></span> Terisi</span>
+            <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-sm bg-white border border-gray-300 text-gray-400 flex items-center justify-center text-[9px]">+</span> Kosong</span>
+            <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-sm bg-gray-100 border border-gray-300"></span> Expired</span>
         </div>
     </div>
 
     <!-- Header Indicator & Search Card -->
-    <div class="mobile-availability-header bg-white p-4 rounded border border-gray-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div class="mobile-availability-header bg-white p-4 rounded-sm border border-gray-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
             <h3 class="text-xs font-semibold text-gray-900 uppercase tracking-wider">Ketersediaan Akun Zoom (30 Hari Ke Depan)</h3>
             <p class="text-xs text-gray-500 mt-0.5 md:hidden">Pilih tanggal, periksa jadwal akun, lalu pilih jam peminjaman.</p>
@@ -29,12 +29,12 @@
 
         <div class="hidden md:block relative shrink-0">
             <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
-            <input type="text" id="searchAccount" placeholder="Filter email akun..." class="pl-8 pr-3 py-1.5 bg-white border border-gray-300 rounded text-xs focus:outline-none focus:border-gray-500 w-full sm:w-56">
+            <input type="text" id="searchAccount" placeholder="Filter email akun..." class="pl-8 pr-3 py-1.5 bg-white border border-gray-300 rounded-sm text-xs focus:outline-none focus:border-brand-600 w-full sm:w-56">
         </div>
     </div>
 
     @if($errors->any())
-        <div class="p-3 bg-red-50 border border-red-200 rounded text-xs text-red-700">
+        <div class="p-3 bg-red-50 border border-red-200 rounded-sm text-xs text-red-700">
             <ul class="list-disc list-inside space-y-0.5">
                 @foreach($errors->all() as $err)
                     <li>{{ $err }}</li>
@@ -45,9 +45,9 @@
 
     <!-- Timeline Grid Matrix Card -->
     <div class="md:hidden space-y-3">
-        <div class="mobile-date-picker bg-white p-4 rounded border border-gray-200">
+        <div class="mobile-date-picker bg-white p-4 rounded-sm border border-gray-200">
             <label for="mobileBookingDate" class="block text-sm font-medium text-gray-700 mb-2">Tanggal peminjaman</label>
-            <select id="mobileBookingDate" class="w-full px-3 py-2 border border-gray-300 rounded">
+            <select id="mobileBookingDate" class="w-full px-3 py-2 border border-gray-300 rounded-sm">
                 @foreach($dates as $date)
                     <option value="{{ $date['date_string'] }}">{{ \Carbon\Carbon::parse($date['date_string'])->locale('id')->isoFormat('dddd, D MMMM Y') }}</option>
                 @endforeach
@@ -60,7 +60,7 @@
         </div>
         <div id="mobileAccountSchedules" class="space-y-3">
             @forelse($accounts as $account)
-                <article class="mobile-record mobile-availability-card account-row bg-white p-4 rounded border border-gray-200 space-y-3" data-mobile-account="{{ $account->id }}">
+                <article class="mobile-record mobile-availability-card account-row bg-white p-4 rounded-sm border border-gray-200 space-y-3" data-mobile-account="{{ $account->id }}">
                     <div>
                         <h4 class="font-semibold text-gray-900 break-words">{{ $account->name }}</h4>
                         <p class="account-email text-sm text-gray-600 break-all">{{ $account->email }}</p>
@@ -68,7 +68,7 @@
                     </div>
                     <div data-mobile-schedule class="space-y-2" aria-live="polite"></div>
                     <p data-mobile-expired class="hidden text-sm text-red-700">Akun sudah kedaluwarsa pada tanggal ini.</p>
-                    <button type="button" class="mobile-slot-action btn-book-slot w-full px-3 py-2 rounded bg-gray-900 text-white font-medium disabled:bg-gray-200 disabled:text-gray-500"
+                    <button type="button" class="mobile-slot-action btn-book-slot w-full px-3 py-2 rounded-sm bg-brand-900 text-white font-medium disabled:bg-gray-200 disabled:text-gray-500"
                         data-account-id="{{ $account->id }}" data-account-email="{{ $account->email }}"
                         data-date="{{ $dates[0]['date_string'] }}" data-date-display=""
                         data-max-date="{{ $account->expired_date?->format('Y-m-d') ?? '' }}">
@@ -76,12 +76,12 @@
                     </button>
                 </article>
             @empty
-                <p class="p-4 bg-white rounded border border-gray-200 text-sm text-gray-500">Tidak ada akun Zoom aktif yang tersedia saat ini.</p>
+                <p class="p-4 bg-white rounded-sm border border-gray-200 text-sm text-gray-500">Tidak ada akun Zoom aktif yang tersedia saat ini.</p>
             @endforelse
         </div>
         <p id="mobileAccountEmpty" class="hidden p-4 text-sm text-gray-500">Tidak ada akun yang sesuai pencarian.</p>
     </div>
-    <div class="hidden md:block bg-white rounded border border-gray-200 overflow-hidden">
+    <div class="hidden md:block bg-white rounded-sm border border-gray-200 overflow-hidden">
         <div class="overflow-x-auto custom-scrollbar">
             <table class="w-full text-left border-collapse whitespace-nowrap text-xs">
                 <thead>
@@ -116,7 +116,7 @@
                             </td>
                             <td class="px-3 py-2.5 border-r border-gray-200 sticky left-[40px] z-10 bg-white min-w-[230px] border-r-2 border-r-gray-300">
                                 <div class="flex items-center gap-2.5">
-                                    <div class="w-7 h-7 rounded bg-gray-100 flex items-center justify-center text-gray-600 shrink-0">
+                                    <div class="w-7 h-7 rounded-sm bg-gray-100 flex items-center justify-center text-gray-600 shrink-0">
                                         <i class="fa-solid fa-video text-xs"></i>
                                     </div>
                                     <div class="overflow-hidden">
@@ -152,7 +152,7 @@
                                         <div class="space-y-1">
                                             @foreach($dayBookings as $b)
                                                 <a href="{{ route('bookings.show', $b['slug'] ?? $b['id']) }}" 
-                                                   class="block w-full py-1 px-1.5 rounded bg-blue-50 border border-blue-200 text-blue-900 hover:bg-blue-100 transition text-[10px] text-left leading-tight"
+                                                   class="block w-full py-1 px-1.5 rounded-sm bg-blue-50 border border-blue-200 text-blue-900 hover:bg-blue-100 transition text-[10px] text-left leading-tight"
                                                    title="{{ $b['display_title'] ?? $b['topic'] }} ({{ $b['user_name'] }}) - {{ $b['start_time'] }} s/d {{ $b['end_time'] }} WIB">
                                                     <span class="font-semibold block truncate">{{ $b['start_time'] }}-{{ $b['end_time'] }}</span>
                                                     <span class="text-[9px] text-blue-700 block truncate font-medium">
@@ -161,7 +161,7 @@
                                                 </a>
                                             @endforeach
                                             <button type="button" 
-                                                class="btn-book-slot w-full py-0.5 rounded border border-dashed border-gray-300 text-gray-400 hover:text-gray-700 hover:border-gray-400 text-[9px] transition"
+                                                class="btn-book-slot w-full py-0.5 rounded-sm border border-dashed border-gray-300 text-gray-400 hover:text-gray-700 hover:border-gray-400 text-[9px] transition"
                                                 data-account-id="{{ $acc->id }}"
                                                 data-account-email="{{ $acc->email }}"
                                                 data-date="{{ $d['date_string'] }}"
@@ -175,7 +175,7 @@
                                 @else
                                     <td class="border-r border-gray-200 p-1 text-center align-middle">
                                         <button type="button" 
-                                            class="btn-book-slot w-full h-9 rounded flex items-center justify-center text-gray-300 hover:text-gray-900 hover:bg-gray-100 transition group"
+                                            class="btn-book-slot w-full h-9 rounded-sm flex items-center justify-center text-gray-300 hover:text-gray-900 hover:bg-gray-100 transition group"
                                             data-account-id="{{ $acc->id }}"
                                             data-account-email="{{ $acc->email }}"
                                             data-date="{{ $d['date_string'] }}"
@@ -204,11 +204,11 @@
 
 <!-- Modal Form Booking Zoom (Flat Minimalis, Responsif & Scrollable) -->
 <div id="bookingModal" role="dialog" aria-modal="true" aria-labelledby="bookingModalTitle" class="hidden fixed inset-0 bg-gray-900/50 z-50 flex items-center justify-center p-3 sm:p-4 backdrop-blur-xs overflow-y-auto">
-    <div class="bg-white rounded-lg border border-gray-200 w-full max-w-xl max-h-[92vh] flex flex-col overflow-hidden shadow-xl animate-fadeIn my-auto">
+    <div class="bg-white rounded-sm border border-gray-200 w-full max-w-xl max-h-[92vh] flex flex-col overflow-hidden shadow-xl animate-fadeIn my-auto">
         <!-- Modal Header (Fixed Top) -->
         <div class="px-5 py-3 border-b border-gray-200 flex items-center justify-between bg-white shrink-0">
             <div class="flex items-center gap-2.5">
-                <div class="w-7 h-7 rounded bg-gray-900 text-white flex items-center justify-center text-xs">
+                <div class="w-7 h-7 rounded-sm bg-brand-900 text-white flex items-center justify-center text-xs">
                     <i class="fa-solid fa-calendar-plus"></i>
                 </div>
                 <div>
@@ -216,7 +216,7 @@
                     <p class="text-[10px] text-gray-500">Lengkapi formulir untuk slot waktu yang dipilih</p>
                 </div>
             </div>
-            <button type="button" onclick="closeModal()" aria-label="Tutup form booking" class="w-7 h-7 rounded flex items-center justify-center text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition">
+            <button type="button" onclick="closeModal()" aria-label="Tutup form booking" class="w-7 h-7 rounded-sm flex items-center justify-center text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition">
                 <i class="fa-solid fa-xmark text-sm"></i>
             </button>
         </div>
@@ -228,7 +228,7 @@
 
             <div class="p-5 space-y-3.5 overflow-y-auto custom-scrollbar flex-1">
                 <!-- Detail Akun & Tanggal Info Pill -->
-                <div class="p-2.5 bg-gray-50 rounded border border-gray-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-[11px]">
+                <div class="p-2.5 bg-gray-50 rounded-sm border border-gray-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-[11px]">
                     <div class="flex items-center gap-2">
                         <i class="fa-solid fa-video text-blue-600"></i>
                         <span class="text-gray-500">Akun:</span>
@@ -255,14 +255,14 @@
                                     value="{{ auth()->user()->name }} ({{ auth()->user()->email }})"
                                     placeholder="Ketik untuk mencari nama karyawan / email..." 
                                     autocomplete="off"
-                                    class="w-full pl-8 pr-8 py-1.5 bg-white border border-gray-300 rounded focus:outline-none focus:border-gray-500 text-xs cursor-pointer">
+                                    class="w-full pl-8 pr-8 py-1.5 bg-white border border-gray-300 rounded-sm focus:outline-none focus:border-brand-600 text-xs cursor-pointer">
                                 <button type="button" onclick="toggleUserDropdown()" class="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
                                     <i class="fa-solid fa-chevron-down text-[10px]" id="userDropdownArrow"></i>
                                 </button>
                             </div>
 
                             <!-- Dropdown List Hasil Pencarian -->
-                            <div id="userDropdownList" class="hidden absolute left-0 right-0 top-full mt-1 bg-white border border-gray-300 rounded shadow-md max-h-48 overflow-y-auto z-30 divide-y divide-gray-100 text-xs custom-scrollbar">
+                            <div id="userDropdownList" class="hidden absolute left-0 right-0 top-full mt-1 bg-white border border-gray-300 rounded-sm shadow-md max-h-48 overflow-y-auto z-30 divide-y divide-gray-100 text-xs custom-scrollbar">
                                 @foreach($users as $u)
                                     <div class="user-option-item px-3 py-2 hover:bg-gray-50 cursor-pointer flex items-center justify-between"
                                         data-id="{{ $u->id }}"
@@ -288,13 +288,13 @@
                     <div>
                         <label class="block font-medium text-gray-700 mb-1">Topik / Nama Kegiatan <span class="text-red-500">*</span></label>
                         <input type="text" name="topic" required placeholder="Contoh: Rapat Koordinasi PMB 2026..."
-                            class="w-full px-3 py-1.5 bg-white border border-gray-300 rounded focus:outline-none focus:border-gray-500 text-xs">
+                            class="w-full px-3 py-1.5 bg-white border border-gray-300 rounded-sm focus:outline-none focus:border-brand-600 text-xs">
                     </div>
                     <div>
                         <label class="block font-medium text-gray-700 mb-1">
                             Pilih Proyek / Pelaksanaan <span class="text-gray-400 font-normal">(Opsional)</span>
                         </label>
-                        <select name="project_name" class="w-full px-3 py-1.5 bg-white border border-gray-300 rounded focus:outline-none focus:border-gray-500 text-xs">
+                        <select name="project_name" class="w-full px-3 py-1.5 bg-white border border-gray-300 rounded-sm focus:outline-none focus:border-brand-600 text-xs">
                             <option value="">-- Tanpa Proyek (Rapat Internal Biasa) --</option>
                             @foreach($projects as $prj)
                                 <option value="{{ $prj->name }}">
@@ -309,12 +309,12 @@
                     <div>
                         <label class="block font-medium text-gray-700 mb-1">Tanggal Mulai <span class="text-red-500">*</span></label>
                         <input type="date" name="start_date" id="modal_start_date" required readonly
-                            class="w-full px-3 py-1.5 bg-gray-50 border border-gray-300 rounded text-gray-700 font-medium cursor-not-allowed">
+                            class="w-full px-3 py-1.5 bg-gray-50 border border-gray-300 rounded-sm text-gray-700 font-medium cursor-not-allowed">
                     </div>
                     <div>
                         <label class="block font-medium text-gray-700 mb-1">Tanggal Selesai <span class="text-red-500">*</span></label>
                         <input type="date" name="end_date" id="modal_end_date" required
-                            class="w-full px-3 py-1.5 bg-white border border-gray-300 rounded focus:outline-none focus:border-gray-500">
+                            class="w-full px-3 py-1.5 bg-white border border-gray-300 rounded-sm focus:outline-none focus:border-brand-600">
                     </div>
                 </div>
 
@@ -322,34 +322,34 @@
                     <div>
                         <label class="block font-medium text-gray-700 mb-1">Jam Mulai <span class="text-red-500">*</span></label>
                         <input type="time" name="start_time" id="modal_start_time" value="09:00" required
-                            class="w-full px-3 py-1.5 bg-white border border-gray-300 rounded focus:outline-none focus:border-gray-500">
+                            class="w-full px-3 py-1.5 bg-white border border-gray-300 rounded-sm focus:outline-none focus:border-brand-600">
                     </div>
                     <div>
                         <label class="block font-medium text-gray-700 mb-1">Jam Selesai <span class="text-red-500">*</span></label>
                         <input type="time" name="end_time" id="modal_end_time" value="11:00" required
-                            class="w-full px-3 py-1.5 bg-white border border-gray-300 rounded focus:outline-none focus:border-gray-500">
+                            class="w-full px-3 py-1.5 bg-white border border-gray-300 rounded-sm focus:outline-none focus:border-brand-600">
                     </div>
                     <div>
                         <label class="block font-medium text-gray-700 mb-1">Durasi (Menit)</label>
                         <input type="number" name="duration_minutes" id="modal_duration" value="120" readonly required
-                            class="w-full px-3 py-1.5 bg-gray-50 border border-gray-300 rounded focus:outline-none font-mono text-gray-700 cursor-not-allowed">
+                            class="w-full px-3 py-1.5 bg-gray-50 border border-gray-300 rounded-sm focus:outline-none font-mono text-gray-700 cursor-not-allowed">
                     </div>
                 </div>
 
                 <div>
                     <label class="block font-medium text-gray-700 mb-1">Deskripsi / Agenda (Opsional)</label>
                     <textarea name="description" rows="2" placeholder="Catatan ringkas agenda..."
-                        class="w-full px-3 py-1.5 bg-white border border-gray-300 rounded focus:outline-none focus:border-gray-500 text-xs"></textarea>
+                        class="w-full px-3 py-1.5 bg-white border border-gray-300 rounded-sm focus:outline-none focus:border-brand-600 text-xs"></textarea>
                 </div>
 
                 <div>
                     <label class="block font-medium text-gray-700 mb-1">Catatan Pemohon (Opsional)</label>
                     <input type="text" name="user_note" placeholder="Contoh: Butuh breakout room 3 grup..."
-                        class="w-full px-3 py-1.5 bg-white border border-gray-300 rounded focus:outline-none focus:border-gray-500 text-xs">
+                        class="w-full px-3 py-1.5 bg-white border border-gray-300 rounded-sm focus:outline-none focus:border-brand-600 text-xs">
                 </div>
 
                 @if(auth()->user() && auth()->user()->isAdmin())
-                    <div class="p-2.5 bg-blue-50/70 border border-blue-200 rounded text-[11px] text-blue-800 flex items-start gap-2">
+                    <div class="p-2.5 bg-blue-50/70 border border-blue-200 rounded-sm text-[11px] text-blue-800 flex items-start gap-2">
                         <i class="fa-solid fa-circle-check text-blue-600 mt-0.5 shrink-0"></i>
                         <span>Sebagai Administrator, pengajuan ini akan <strong>langsung disetujui (ACC)</strong> dan siap digenerate link Zoom.</span>
                     </div>
@@ -358,10 +358,10 @@
 
             <!-- Modal Footer (Fixed Bottom) -->
             <div class="px-5 py-3 border-t border-gray-200 bg-gray-50 flex items-center justify-end gap-2 shrink-0">
-                <button type="button" onclick="closeModal()" class="px-4 py-1.5 bg-white border border-gray-300 text-gray-700 font-medium rounded hover:bg-gray-100 transition">
+                <button type="button" onclick="closeModal()" class="px-4 py-1.5 bg-white border border-gray-300 text-gray-700 font-medium rounded-sm hover:bg-gray-100 transition">
                     Batal
                 </button>
-                <button type="submit" class="px-4 py-1.5 bg-gray-900 hover:bg-black text-white font-medium rounded transition flex items-center gap-1.5">
+                <button type="submit" class="px-4 py-1.5 bg-brand-900 hover:bg-brand-950 text-white font-medium rounded-sm transition flex items-center gap-1.5">
                     <i class="fa-solid fa-paper-plane text-[10px]"></i> Kirim Pengajuan
                 </button>
             </div>

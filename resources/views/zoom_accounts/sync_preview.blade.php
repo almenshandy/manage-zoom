@@ -7,7 +7,7 @@
 @section('content')
 <div class="space-y-4">
     <!-- Back & Title (Flat) -->
-    <div class="bg-white p-4 rounded border border-gray-200 flex flex-col md:flex-row md:items-center justify-between gap-3">
+    <div class="bg-white p-4 rounded-sm border border-gray-200 flex flex-col md:flex-row md:items-center justify-between gap-3">
         <div>
             <div class="flex items-center gap-2 mb-1">
                 <a href="{{ route('zoom-accounts.index') }}" class="text-xs text-gray-500 hover:text-gray-800">
@@ -19,10 +19,10 @@
         </div>
 
         <div class="flex items-center gap-2 text-xs">
-            <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded border border-emerald-200 bg-emerald-50 text-emerald-800">
+            <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-sm border border-emerald-200 bg-emerald-50 text-emerald-800">
                 <i class="fa-solid fa-plus text-[10px]"></i> Siap Tambah: {{ collect($previewData)->where('is_existing', false)->count() }}
             </span>
-            <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded border border-amber-200 bg-amber-50 text-amber-800">
+            <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-sm border border-amber-200 bg-amber-50 text-amber-800">
                 <i class="fa-solid fa-arrows-rotate text-[10px]"></i> Sudah Ada: {{ collect($previewData)->where('is_existing', true)->count() }}
             </span>
         </div>
@@ -32,10 +32,10 @@
         @csrf
 
         <!-- Options Bar -->
-        <div class="bg-gray-50 p-3.5 rounded border border-gray-200 mb-3 flex flex-wrap items-center justify-between gap-3 text-xs">
+        <div class="bg-gray-50 p-3.5 rounded-sm border border-gray-200 mb-3 flex flex-wrap items-center justify-between gap-3 text-xs">
             <div class="flex items-center gap-4">
                 <label class="flex items-center gap-2 font-medium text-gray-700 cursor-pointer">
-                    <input type="checkbox" id="checkAll" class="rounded border-gray-300 text-gray-900 focus:ring-0" checked>
+                    <input type="checkbox" id="checkAll" class="rounded-sm border-gray-300 text-gray-900 focus:ring-0" checked>
                     <span>Pilih Semua Akun</span>
                 </label>
                 <div class="h-4 w-px bg-gray-300"></div>
@@ -52,13 +52,13 @@
                 </div>
             </div>
 
-            <button type="submit" class="px-4 py-1.5 bg-gray-900 hover:bg-black text-white font-medium rounded transition flex items-center gap-1.5">
+            <button type="submit" class="px-4 py-1.5 bg-brand-900 hover:bg-brand-950 text-white font-medium rounded-sm transition flex items-center gap-1.5">
                 <i class="fa-solid fa-download text-[11px]"></i> Proses Sinkronisasi Terpilih
             </button>
         </div>
 
         <!-- Preview Table (Flat) -->
-        <div class="bg-white rounded border border-gray-200 overflow-hidden">
+        <div class="bg-white rounded-sm border border-gray-200 overflow-hidden">
             <div class="overflow-x-auto">
                 <table class="w-full text-left text-xs">
                     <thead class="bg-gray-50 text-gray-600 font-semibold border-b border-gray-200 uppercase tracking-wider text-[11px]">
@@ -80,7 +80,7 @@
                             <tr class="hover:bg-gray-50/75 transition-colors {{ $item['is_existing'] ? 'bg-amber-50/20' : '' }}">
                                 <td class="p-3 text-center">
                                     <input type="checkbox" name="selected_ids[]" value="{{ $item['source_id'] }}"
-                                        class="item-checkbox rounded border-gray-300 text-gray-900 focus:ring-0" checked>
+                                        class="item-checkbox rounded-sm border-gray-300 text-gray-900 focus:ring-0" checked>
                                 </td>
                                 <td class="px-4 py-2.5 font-mono text-gray-500">
                                     #{{ $item['source_id'] }}
@@ -97,7 +97,7 @@
                                 </td>
                                 <td class="px-4 py-2.5">
                                     @if($item['account_id'] && $item['client_id'])
-                                        <span class="inline-flex items-center gap-1 text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200 text-[10px] font-mono font-medium">
+                                        <span class="inline-flex items-center gap-1 text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-sm border border-emerald-200 text-[10px] font-mono font-medium">
                                             <i class="fa-solid fa-key text-[9px]"></i> Kredensial Ada
                                         </span>
                                     @else
@@ -105,7 +105,7 @@
                                     @endif
                                 </td>
                                 <td class="px-4 py-2.5 text-center">
-                                    <span class="inline-block px-1.5 py-0.5 rounded text-[10px] font-mono border
+                                    <span class="inline-block px-1.5 py-0.5 rounded-sm text-[10px] font-mono border
                                         @if($item['status'] === 'active') bg-emerald-50 text-emerald-700 border-emerald-200
                                         @elseif($item['status'] === 'maintenance') bg-amber-50 text-amber-700 border-amber-200
                                         @else bg-gray-100 text-gray-600 border-gray-200 @endif">
@@ -114,11 +114,11 @@
                                 </td>
                                 <td class="px-4 py-2.5 text-center">
                                     @if($item['is_existing'])
-                                        <span class="inline-block px-2 py-0.5 rounded text-[10px] font-semibold bg-amber-50 text-amber-700 border border-amber-200">
+                                        <span class="inline-block px-2 py-0.5 rounded-sm text-[10px] font-semibold bg-amber-50 text-amber-700 border border-amber-200">
                                             Sudah Ada
                                         </span>
                                     @else
-                                        <span class="inline-block px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                        <span class="inline-block px-2 py-0.5 rounded-sm text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
                                             Baru
                                         </span>
                                     @endif

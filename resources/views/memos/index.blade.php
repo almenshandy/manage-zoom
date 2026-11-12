@@ -52,10 +52,10 @@
                             </td>
                             <td data-label="Aksi" class="px-4 py-3 text-right whitespace-nowrap">
                                 <div class="flex items-center justify-end gap-1">
-                                    <a href="{{ route('memos.show', $m->id) }}" class="p-1.5 text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded border border-transparent hover:border-gray-200 transition" title="Lihat">
+                                    <a href="{{ route('memos.show', $m->id) }}" class="p-1.5 text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded-sm border border-transparent hover:border-gray-200 transition" title="Lihat">
                                         <i class="fa-regular fa-eye"></i>
                                     </a>
-                                    <a href="{{ route('memos.pdf', $m->id) }}" target="_blank" class="px-2.5 py-1 bg-white hover:bg-gray-50 text-red-700 border border-gray-300 font-semibold rounded text-[11px] inline-flex items-center gap-1 transition">
+                                    <a href="{{ route('memos.pdf', $m->id) }}" target="_blank" class="px-2.5 py-1 bg-white hover:bg-gray-50 text-red-700 border border-gray-300 font-semibold rounded-sm text-[11px] inline-flex items-center gap-1 transition">
                                         <i class="fa-solid fa-file-pdf text-red-600"></i> PDF
                                     </a>
                                 </div>

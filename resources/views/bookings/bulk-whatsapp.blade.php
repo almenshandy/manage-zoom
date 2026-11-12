@@ -6,7 +6,7 @@
     <div id="bulkHistoryList" class="divide-y divide-gray-200">
         @forelse($bulkBatches as $batch)
             <details data-bulk-batch-id="{{ $batch->id }}" data-bulk-status-url="{{ route('bookings.whatsapp-bulk.show', $batch) }}" class="group">
-                <summary class="block p-4 list-none cursor-pointer select-none hover:bg-gray-50 focus-visible:outline-2 focus-visible:outline-emerald-700 [&::-webkit-details-marker]:hidden">
+                <summary class="block p-4 list-none cursor-pointer select-none hover:bg-gray-50 focus-visible:outline-2 focus-visible:outline-brand-600 [&::-webkit-details-marker]:hidden">
                     <span class="flex items-center justify-between gap-3 text-xs">
                         <span data-bulk-title class="font-medium text-gray-900">Antrean #{{ $batch->id }} &bull; {{ $batch->total_messages }} pesan &bull; {{ $batch->include_credentials ? 'Undangan + akun Zoom' : 'Undangan meeting' }}</span>
                         <i class="fa-solid fa-chevron-down text-gray-500 shrink-0 transition-transform group-open:rotate-180" aria-hidden="true"></i>

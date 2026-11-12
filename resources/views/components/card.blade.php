@@ -3,12 +3,12 @@
     'description' => null,
 ])
 
-<div {{ $attributes->merge(['class' => 'bg-white rounded border border-gray-200 overflow-hidden']) }}>
+<div {{ $attributes->merge(['class' => 'bg-white rounded-sm border border-gray-200 overflow-hidden']) }}>
     @if($title || isset($headerActions))
         <div class="px-4 py-3 border-b border-gray-200 flex items-center justify-between bg-white">
             <div>
                 @if($title)
-                    <h4 class="text-xs font-semibold text-gray-900 uppercase tracking-wider">{{ $title }}</h4>
+                    <h4 class="text-sm font-semibold text-gray-900">{{ $title }}</h4>
                 @endif
                 @if($description)
                     <p class="text-xs text-gray-500 mt-0.5">{{ $description }}</p>

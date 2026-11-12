@@ -7,17 +7,17 @@
 @section('content')
 <div class="space-y-4">
     <!-- Filter & Action Header (Flat Minimalist) -->
-    <div class="mobile-list-toolbar bg-white p-4 rounded border border-gray-200 flex flex-col md:flex-row md:items-center justify-between gap-3">
+    <div class="mobile-list-toolbar bg-white p-4 rounded-sm border border-gray-200 flex flex-col md:flex-row md:items-center justify-between gap-3">
         <form method="GET" action="{{ route('bookings.index') }}" class="mobile-filter-form flex flex-wrap items-center gap-2 flex-1">
             <div class="relative flex-1 min-w-[220px]">
                 <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
                     <i class="fa-solid fa-magnifying-glass text-xs"></i>
                 </span>
                 <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari topik atau agenda..."
-                    class="w-full pl-8 pr-3 py-1.5 text-xs bg-white border border-gray-300 rounded focus:outline-none focus:border-gray-500">
+                    class="w-full pl-8 pr-3 py-1.5 text-xs bg-white border border-gray-300 rounded-sm focus:outline-none focus:border-brand-600">
             </div>
 
-            <select name="status" onchange="this.form.submit()" class="py-1.5 px-3 text-xs bg-white border border-gray-300 rounded focus:outline-none focus:border-gray-500">
+            <select name="status" onchange="this.form.submit()" class="py-1.5 px-3 text-xs bg-white border border-gray-300 rounded-sm focus:outline-none focus:border-brand-600">
                 <option value="">Semua Status</option>
                 <option value="0" {{ request('status') === '0' ? 'selected' : '' }}>Menunggu Persetujuan</option>
                 <option value="1" {{ request('status') === '1' ? 'selected' : '' }}>Disetujui (ACC)</option>
@@ -25,7 +25,7 @@
                 <option value="2" {{ request('status') === '2' ? 'selected' : '' }}>Ditolak</option>
             </select>
 
-            <button type="submit" class="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-800 text-xs font-semibold rounded border border-gray-300 transition">
+            <button type="submit" class="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-800 text-xs font-semibold rounded-sm border border-gray-300 transition">
                 Filter
             </button>
             @if(request()->hasAny(['search', 'status']))
@@ -37,7 +37,7 @@
             <button type="button" id="openBulkWhatsApp" class="mobile-primary-action inline-flex items-center gap-1.5 bg-emerald-700 text-white text-xs font-medium px-3 py-1.5 border border-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
                 <i class="fa-brands fa-whatsapp" aria-hidden="true"></i> Kirim Bulk WhatsApp
             </button>
-            <a href="{{ route('bookings.print-all', request()->query()) }}" target="_blank" class="mobile-utility-action inline-flex items-center gap-1.5 bg-white hover:bg-gray-50 text-gray-700 text-xs font-medium px-3 py-1.5 rounded border border-gray-300 transition" aria-label="Cetak Rekap PDF" title="Cetak Rekap PDF">
+            <a href="{{ route('bookings.print-all', request()->query()) }}" target="_blank" class="mobile-utility-action inline-flex items-center gap-1.5 bg-white hover:bg-gray-50 text-gray-700 text-xs font-medium px-3 py-1.5 rounded-sm border border-gray-300 transition" aria-label="Cetak Rekap PDF" title="Cetak Rekap PDF">
                 <i class="fa-solid fa-print text-gray-500 text-[11px]"></i> <span class="hidden md:inline">Cetak Rekap PDF</span>
             </a>
         </div>
@@ -50,7 +50,7 @@
         <span>Hanya booking Disetujui / Link Aktif.</span>
         <a href="{{ route('bookings.whatsapp-bulk.index') }}" class="font-medium text-emerald-800 underline underline-offset-4 md:ml-auto">Antrean Bulk WhatsApp</a>
     </div>
-    <div class="mobile-data-container bg-white rounded border border-gray-200 overflow-hidden">
+    <div class="mobile-data-container bg-white rounded-sm border border-gray-200 overflow-hidden">
         @include('bookings.mobile-list')
         <div class="hidden md:block overflow-x-auto">
             <table class="mobile-card-table w-full text-left text-xs">
@@ -79,7 +79,7 @@
                                         {{ $item->topic }}
                                     </a>
                                     @if($item->project_name)
-                                        <span class="inline-block px-1.5 py-0.5 rounded text-[10px] bg-slate-100 text-slate-700 border border-slate-200 font-medium">
+                                        <span class="inline-block px-1.5 py-0.5 rounded-sm text-[10px] bg-slate-100 text-slate-700 border border-slate-200 font-medium">
                                             {{ $item->project_name }}
                                         </span>
                                     @endif
@@ -107,7 +107,7 @@
                                 @endif
                             </td>
                             <td data-label="Status" class="px-4 py-3 text-center whitespace-nowrap">
-                                <span class="inline-block px-2 py-0.5 text-[10px] font-semibold rounded border
+                                <span class="inline-block px-2 py-0.5 text-[10px] font-semibold rounded-sm border
                                     @if($item->status === 0) bg-amber-50 text-amber-700 border-amber-200
                                     @elseif($item->status === 1) bg-blue-50 text-blue-700 border-blue-200
                                     @elseif($item->status === 3) bg-emerald-50 text-emerald-700 border-emerald-200
@@ -119,14 +119,14 @@
                                 <div class="relative inline-block text-left">
                                     <button type="button" 
                                         onclick="toggleActionDropdown('dropdown-{{ $item->id }}', this, event)"
-                                        class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-white hover:bg-gray-100 text-gray-700 border border-gray-300 rounded text-xs font-medium transition shadow-2xs">
+                                        class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-white hover:bg-gray-100 text-gray-700 border border-gray-300 rounded-sm text-xs font-medium transition shadow-2xs">
                                         <span>Aksi</span>
                                         <i class="fa-solid fa-chevron-down text-[9px] text-gray-400"></i>
                                     </button>
 
                                     <!-- Dropdown Menu (Fixed Overlay on top of everything) -->
                                     <div id="dropdown-{{ $item->id }}" 
-                                        class="action-dropdown hidden fixed bg-white border border-gray-200 rounded shadow-xl z-50 py-1 text-xs divide-y divide-gray-100 text-left w-44">
+                                        class="action-dropdown hidden fixed bg-white border border-gray-200 rounded-sm shadow-xl z-50 py-1 text-xs divide-y divide-gray-100 text-left w-44">
                                         <div class="py-1">
                                             <a href="{{ route('bookings.show', $item) }}" class="flex items-center gap-2 px-3 py-1.5 text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition">
                                                 <i class="fa-regular fa-eye w-4 text-center text-gray-400"></i>

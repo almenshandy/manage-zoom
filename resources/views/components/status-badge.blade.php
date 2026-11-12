@@ -19,6 +19,6 @@
     };
 @endphp
 
-<span {{ $attributes->merge(['class' => 'inline-block px-2 py-0.5 rounded text-[10px] font-semibold border ' . $class]) }}>
+<span {{ $attributes->merge(['class' => 'inline-block px-2 py-0.5 rounded-sm text-[10px] font-semibold border ' . $class]) }}>
     {{ $label ?? $defaultLabel }}
 </span>

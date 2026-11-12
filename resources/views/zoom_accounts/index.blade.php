@@ -7,26 +7,26 @@
 @section('content')
 <div class="space-y-4">
     <!-- Header & Action Buttons (Flat Minimalist) -->
-    <div class="mobile-list-toolbar bg-white p-4 rounded border border-gray-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+    <div class="mobile-list-toolbar bg-white p-4 rounded-sm border border-gray-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
             <h3 class="text-xs font-semibold text-gray-900 uppercase tracking-wider">Inventaris Akun Zoom</h3>
             <p class="text-xs text-gray-500 mt-0.5">Kelola akun Zoom, kredensial Server-to-Server OAuth, dan masa aktif lisensi.</p>
         </div>
         <div class="mobile-toolbar flex items-center gap-2">
-            <a href="{{ route('zoom-accounts.export-pdf') }}" target="_blank" class="mobile-utility-action inline-flex items-center gap-1.5 bg-white hover:bg-gray-50 text-gray-700 text-xs font-medium px-3 py-1.5 rounded border border-gray-300 transition" aria-label="Export PDF" title="Export Rekap Akun ke PDF">
+            <a href="{{ route('zoom-accounts.export-pdf') }}" target="_blank" class="mobile-utility-action inline-flex items-center gap-1.5 bg-white hover:bg-gray-50 text-gray-700 text-xs font-medium px-3 py-1.5 rounded-sm border border-gray-300 transition" aria-label="Export PDF" title="Export Rekap Akun ke PDF">
                 <i class="fa-solid fa-file-pdf text-red-600 text-[11px]"></i> <span class="hidden md:inline">Export PDF</span>
             </a>
-            <button type="button" onclick="openSyncModal()" class="mobile-utility-action inline-flex items-center gap-1.5 bg-white hover:bg-gray-50 text-gray-700 text-xs font-medium px-3 py-1.5 rounded border border-gray-300 transition" aria-label="Sinkron akun Zoom" title="Sinkron akun Zoom">
+            <button type="button" onclick="openSyncModal()" class="mobile-utility-action inline-flex items-center gap-1.5 bg-white hover:bg-gray-50 text-gray-700 text-xs font-medium px-3 py-1.5 rounded-sm border border-gray-300 transition" aria-label="Sinkron akun Zoom" title="Sinkron akun Zoom">
                 <i class="fa-solid fa-arrows-rotate text-gray-500 text-[11px]"></i> <span class="hidden md:inline">Sinkron dari DB `zoom`</span>
             </button>
-            <a href="{{ route('zoom-accounts.create') }}" class="mobile-primary-action inline-flex items-center gap-1.5 bg-gray-900 hover:bg-black text-white text-xs font-medium px-3.5 py-1.5 rounded transition">
+            <a href="{{ route('zoom-accounts.create') }}" class="mobile-primary-action inline-flex items-center gap-1.5 bg-brand-900 hover:bg-brand-950 text-white text-xs font-medium px-3.5 py-1.5 rounded-sm transition">
                 <i class="fa-solid fa-plus text-[10px]"></i> Tambah Akun Baru
             </a>
         </div>
     </div>
 
     <!-- Table Container (Flat) -->
-    <div class="mobile-data-container bg-white rounded border border-gray-200 overflow-hidden">
+    <div class="mobile-data-container bg-white rounded-sm border border-gray-200 overflow-hidden">
         @include('zoom_accounts.mobile-list')
         <div class="hidden md:block overflow-x-auto">
             <table class="mobile-card-table w-full text-left text-xs">
@@ -63,7 +63,7 @@
                                     <div class="flex items-center gap-2">
                                         <span id="account-password-{{ $acc->id }}" class="account-password font-mono text-gray-700">********</span>
                                         <button type="button" onclick="toggleAccountPassword(this)"
-                                            class="p-1.5 text-gray-500 hover:text-gray-900 hover:bg-white rounded border border-transparent hover:border-gray-200 transition"
+                                            class="p-1.5 text-gray-500 hover:text-gray-900 hover:bg-white rounded-sm border border-transparent hover:border-gray-200 transition"
                                             aria-controls="account-password-{{ $acc->id }}" aria-pressed="false"
                                             aria-label="Tampilkan password" title="Tampilkan password">
                                             <i class="fa-regular fa-eye" aria-hidden="true"></i>
@@ -79,11 +79,11 @@
                             </td>
                             <td data-label="Status API S2S" class="px-4 py-3 whitespace-nowrap">
                                 @if($acc->account_id && $acc->client_id)
-                                    <span class="inline-flex items-center gap-1.5 text-emerald-700 bg-white px-2 py-0.5 rounded border border-emerald-300 text-[10px] font-medium">
+                                    <span class="inline-flex items-center gap-1.5 text-emerald-700 bg-white px-2 py-0.5 rounded-sm border border-emerald-300 text-[10px] font-medium">
                                         <i class="fa-solid fa-check text-[9px]"></i> S2S Siap
                                     </span>
                                 @else
-                                    <span class="inline-flex items-center gap-1.5 text-gray-500 bg-white px-2 py-0.5 rounded border border-gray-300 text-[10px]">
+                                    <span class="inline-flex items-center gap-1.5 text-gray-500 bg-white px-2 py-0.5 rounded-sm border border-gray-300 text-[10px]">
                                         Default Env
                                     </span>
                                 @endif
@@ -95,11 +95,11 @@
                                             {{ $acc->expired_date->format('d M Y') }}
                                         </span>
                                         @if($isValid)
-                                            <span class="inline-block px-1.5 py-0.2 rounded text-[10px] font-semibold bg-emerald-100 text-emerald-800 border border-emerald-300">
+                                            <span class="inline-block px-1.5 py-0.2 rounded-sm text-[10px] font-semibold bg-emerald-100 text-emerald-800 border border-emerald-300">
                                                 Aktif
                                             </span>
                                         @else
-                                            <span class="inline-block px-1.5 py-0.2 rounded text-[10px] font-semibold bg-red-100 text-red-800 border border-red-300">
+                                            <span class="inline-block px-1.5 py-0.2 rounded-sm text-[10px] font-semibold bg-red-100 text-red-800 border border-red-300">
                                                 Kedaluwarsa
                                             </span>
                                         @endif
@@ -111,25 +111,25 @@
                             <td data-label="Aksi" class="px-4 py-3 text-right whitespace-nowrap">
                                 <div class="mobile-actions flex items-center justify-end gap-1">
                                     <button type="button" onclick="copyZoomAccount(this)"
-                                        class="p-1.5 text-gray-500 hover:text-gray-900 hover:bg-white rounded border border-transparent hover:border-gray-200 transition"
+                                        class="p-1.5 text-gray-500 hover:text-gray-900 hover:bg-white rounded-sm border border-transparent hover:border-gray-200 transition"
                                         aria-label="Salin Akun" title="Salin Akun (email dan password)">
                                         <i class="fa-regular fa-copy" aria-hidden="true"></i>
                                         <span class="md:sr-only">Salin Akun</span>
                                     </button>
                                     <button type="button" onclick="testConnection({{ $acc->id }}, '{{ addslashes($acc->name) }}', this)"
-                                        class="p-1.5 text-gray-500 hover:text-emerald-700 hover:bg-white rounded border border-transparent hover:border-gray-200 transition"
+                                        class="p-1.5 text-gray-500 hover:text-emerald-700 hover:bg-white rounded-sm border border-transparent hover:border-gray-200 transition"
                                         title="Uji Koneksi API Zoom">
                                         <i class="fa-solid fa-plug text-[11px]"></i>
                                         <span class="md:sr-only">Uji Koneksi</span>
                                     </button>
-                                    <a href="{{ route('zoom-accounts.edit', $acc->id) }}" class="p-1.5 text-gray-500 hover:text-gray-900 hover:bg-white rounded border border-transparent hover:border-gray-200 transition" title="Edit">
+                                    <a href="{{ route('zoom-accounts.edit', $acc->id) }}" class="p-1.5 text-gray-500 hover:text-gray-900 hover:bg-white rounded-sm border border-transparent hover:border-gray-200 transition" title="Edit">
                                         <i class="fa-regular fa-pen-to-square"></i>
                                         <span class="md:sr-only">Edit</span>
                                     </a>
                                     <form method="POST" action="{{ route('zoom-accounts.destroy', $acc->id) }}" class="inline" onsubmit="return confirm('Hapus akun Zoom ini?')">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="p-1.5 text-gray-500 hover:text-red-600 hover:bg-white rounded border border-transparent hover:border-red-200 transition" title="Hapus">
+                                        <button type="submit" class="p-1.5 text-gray-500 hover:text-red-600 hover:bg-white rounded-sm border border-transparent hover:border-red-200 transition" title="Hapus">
                                             <i class="fa-regular fa-trash-can"></i>
                                             <span class="md:sr-only">Hapus</span>
                                         </button>
@@ -159,11 +159,11 @@
 
 <!-- Modal Pop-Up Sinkronisasi (Flat Minimalist) -->
 <div id="syncModal" class="fixed inset-0 z-50 hidden overflow-y-auto bg-gray-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="bg-white rounded border border-gray-300 max-w-4xl w-full shadow-lg overflow-hidden flex flex-col max-h-[90vh]">
+    <div class="bg-white rounded-sm border border-gray-300 max-w-4xl w-full shadow-lg overflow-hidden flex flex-col max-h-[90vh]">
         <!-- Modal Header -->
         <div class="px-5 py-3.5 border-b border-gray-200 flex items-center justify-between bg-white">
             <div class="flex items-center gap-2.5">
-                <div class="w-7 h-7 rounded bg-gray-100 border border-gray-200 flex items-center justify-center text-gray-800">
+                <div class="w-7 h-7 rounded-sm bg-gray-100 border border-gray-200 flex items-center justify-center text-gray-800">
                     <i class="fa-solid fa-arrows-rotate text-xs"></i>
                 </div>
                 <div>
@@ -184,7 +184,7 @@
             <div class="p-3 bg-gray-50 border-b border-gray-200 flex flex-wrap items-center justify-between gap-3 text-xs">
                 <div class="flex items-center gap-4">
                     <label class="flex items-center gap-1.5 font-medium text-gray-700 cursor-pointer">
-                        <input type="checkbox" id="modalCheckAll" class="rounded border-gray-300 text-gray-900 focus:ring-0" checked>
+                        <input type="checkbox" id="modalCheckAll" class="rounded-sm border-gray-300 text-gray-900 focus:ring-0" checked>
                         <span>Pilih Semua</span>
                     </label>
                     <div class="h-3.5 w-px bg-gray-300"></div>
@@ -235,10 +235,10 @@
             <div class="px-5 py-3 border-t border-gray-200 bg-gray-50 flex items-center justify-between">
                 <span class="text-xs text-gray-500" id="selectedCountText">0 akun dipilih</span>
                 <div class="flex items-center gap-2">
-                    <button type="button" onclick="closeSyncModal()" class="px-3 py-1.5 bg-white border border-gray-300 text-gray-700 font-medium text-xs rounded hover:bg-gray-50 transition">
+                    <button type="button" onclick="closeSyncModal()" class="px-3 py-1.5 bg-white border border-gray-300 text-gray-700 font-medium text-xs rounded-sm hover:bg-gray-50 transition">
                         Batal
                     </button>
-                    <button type="submit" id="submitSyncBtn" class="px-4 py-1.5 bg-gray-900 hover:bg-black text-white font-medium text-xs rounded transition flex items-center gap-1.5">
+                    <button type="submit" id="submitSyncBtn" class="px-4 py-1.5 bg-brand-900 hover:bg-brand-950 text-white font-medium text-xs rounded-sm transition flex items-center gap-1.5">
                         <i class="fa-solid fa-download text-[10px]"></i> Impor Sekarang
                     </button>
                 </div>
@@ -345,8 +345,8 @@
             syncSummaryText.textContent = `Ditemukan ${res.summary.total} akun di database zoom`;
 
             badgeSummary.innerHTML = `
-                <span class="px-2 py-0.5 rounded border border-emerald-200 bg-emerald-50 text-emerald-800 font-medium">Baru: ${res.summary.new}</span>
-                <span class="px-2 py-0.5 rounded border border-amber-200 bg-amber-50 text-amber-800 font-medium">Sudah Ada: ${res.summary.existing}</span>
+                <span class="px-2 py-0.5 rounded-sm border border-emerald-200 bg-emerald-50 text-emerald-800 font-medium">Baru: ${res.summary.new}</span>
+                <span class="px-2 py-0.5 rounded-sm border border-amber-200 bg-amber-50 text-amber-800 font-medium">Sudah Ada: ${res.summary.existing}</span>
             `;
 
             renderTableRows(loadedAccounts);
@@ -374,7 +374,7 @@
                 <tr class="${rowClass} transition-colors">
                     <td class="p-2.5 text-center">
                         <input type="checkbox" name="selected_ids[]" value="${item.source_id}"
-                            class="modal-item-checkbox rounded border-gray-300 text-gray-900 focus:ring-0" checked>
+                            class="modal-item-checkbox rounded-sm border-gray-300 text-gray-900 focus:ring-0" checked>
                     </td>
                     <td class="px-3 py-2 font-mono text-gray-400 text-[11px]">#${item.source_id}</td>
                     <td class="px-3 py-2 font-mono font-medium text-gray-900">${item.email}</td>
@@ -382,18 +382,18 @@
                     <td class="px-3 py-2 whitespace-nowrap font-mono font-semibold ${isItemValid ? 'text-emerald-800' : 'text-red-700'}">
                         ${item.expired_date || '-'}
                         ${isItemValid 
-                            ? '<span class="ml-1.5 inline-block px-1 py-0.2 rounded text-[9px] bg-emerald-100 text-emerald-800 border border-emerald-300">Aktif</span>' 
-                            : '<span class="ml-1.5 inline-block px-1 py-0.2 rounded text-[9px] bg-red-100 text-red-800 border border-red-300">Kedaluwarsa</span>'}
+                            ? '<span class="ml-1.5 inline-block px-1 py-0.2 rounded-sm text-[9px] bg-emerald-100 text-emerald-800 border border-emerald-300">Aktif</span>'
+                            : '<span class="ml-1.5 inline-block px-1 py-0.2 rounded-sm text-[9px] bg-red-100 text-red-800 border border-red-300">Kedaluwarsa</span>'}
                     </td>
                     <td class="px-3 py-2">
                         ${item.has_credentials 
-                            ? `<span class="inline-flex items-center gap-1 text-emerald-700 bg-white px-1.5 py-0.5 rounded border border-emerald-300 text-[10px] font-mono">Ada</span>`
+                            ? `<span class="inline-flex items-center gap-1 text-emerald-700 bg-white px-1.5 py-0.5 rounded-sm border border-emerald-300 text-[10px] font-mono">Ada</span>`
                             : `<span class="text-gray-400 italic text-[10px]">Kosong</span>`}
                     </td>
                     <td class="px-3 py-2 text-center whitespace-nowrap">
                         ${item.is_existing 
-                            ? `<span class="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-white text-amber-700 border border-amber-300">Sudah Ada</span>`
-                            : `<span class="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-white text-emerald-700 border border-emerald-300">Baru</span>`}
+                            ? `<span class="px-1.5 py-0.5 rounded-sm text-[10px] font-semibold bg-white text-amber-700 border border-amber-300">Sudah Ada</span>`
+                            : `<span class="px-1.5 py-0.5 rounded-sm text-[10px] font-semibold bg-white text-emerald-700 border border-emerald-300">Baru</span>`}
                     </td>
                 </tr>
             `;
@@ -471,7 +471,7 @@
 
         const isSuccess = (type === 'success');
         const toast = document.createElement('div');
-        toast.className = `toast-item pointer-events-auto flex items-start gap-3 p-3.5 bg-white border ${isSuccess ? 'border-emerald-300' : 'border-red-300'} rounded shadow-sm text-xs transition-all duration-200 transform translate-y-0 opacity-100`;
+        toast.className = `toast-item pointer-events-auto flex items-start gap-3 p-3.5 bg-white border ${isSuccess ? 'border-emerald-300' : 'border-red-300'} rounded-sm shadow-sm text-xs transition-all duration-200 transform translate-y-0 opacity-100`;
 
         toast.innerHTML = `
             <i class="fa-solid ${isSuccess ? 'fa-check text-emerald-600' : 'fa-exclamation text-red-600'} mt-0.5 text-sm"></i>
