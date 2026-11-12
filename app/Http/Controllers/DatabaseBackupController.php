@@ -33,33 +33,33 @@ class DatabaseBackupController extends Controller
         // Validasi nama tabel agar aman dari injeksi
         $validTables = $this->tableNames();
 
-        if (!in_array($table, $validTables, true)) {
+        if (! in_array($table, $validTables, true)) {
             return back()->with('error', 'Tabel tidak ditemukan.');
         }
 
         $rows = DB::table($table)->get();
 
-        $response = new StreamedResponse(function () use ($rows, $table) {
+        $response = new StreamedResponse(function () use ($rows) {
             $handle = fopen('php://output', 'w');
-            
+
             // UTF-8 BOM untuk Excel
             fprintf($handle, chr(0xEF).chr(0xBB).chr(0xBF));
 
             if ($rows->isNotEmpty()) {
                 // Header CSV
-                fputcsv($handle, array_keys((array)$rows->first()), ';');
+                fputcsv($handle, array_keys((array) $rows->first()), ';', escape: '');
 
                 foreach ($rows as $row) {
-                    fputcsv($handle, (array)$row, ';');
+                    fputcsv($handle, (array) $row, ';', escape: '');
                 }
             } else {
-                fputcsv($handle, ['Tabel Kosong']);
+                fputcsv($handle, ['Tabel Kosong'], escape: '');
             }
 
             fclose($handle);
         });
 
-        $filename = "export_{$table}_" . date('Ymd_His') . ".csv";
+        $filename = "export_{$table}_".date('Ymd_His').'.csv';
 
         $response->headers->set('Content-Type', 'text/csv; charset=utf-8');
         $response->headers->set('Content-Disposition', "attachment; filename=\"{$filename}\"");
@@ -75,8 +75,8 @@ class DatabaseBackupController extends Controller
         $tables = $this->tableNames();
         $dbName = DB::connection()->getDatabaseName();
 
-        $zip = new ZipArchive();
-        $zipFilename = "backup_all_{$dbName}_" . date('Ymd_His') . ".zip";
+        $zip = new ZipArchive;
+        $zipFilename = "backup_all_{$dbName}_".date('Ymd_His').'.zip';
         $tempFile = tempnam(sys_get_temp_dir(), 'zip');
 
         if ($zip->open($tempFile, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== true) {
@@ -90,9 +90,9 @@ class DatabaseBackupController extends Controller
             fprintf($csvBuffer, chr(0xEF).chr(0xBB).chr(0xBF));
 
             if ($rows->isNotEmpty()) {
-                fputcsv($csvBuffer, array_keys((array)$rows->first()), ';');
+                fputcsv($csvBuffer, array_keys((array) $rows->first()), ';', escape: '');
                 foreach ($rows as $r) {
-                    fputcsv($csvBuffer, (array)$r, ';');
+                    fputcsv($csvBuffer, (array) $r, ';', escape: '');
                 }
             }
             rewind($csvBuffer);
@@ -122,7 +122,9 @@ class DatabaseBackupController extends Controller
     /** @return list<string> */
     private function tableNames(): array
     {
-        return DB::connection()->getSchemaBuilder()->getTableListing(schemaQualified: false);
+        $schema = DB::connection()->getSchemaBuilder();
+
+        return $schema->getTableListing($schema->getCurrentSchemaListing(), schemaQualified: false);
     }
 
     private function sqlResponse(SqlBackupService $backup, ?string $table = null): BinaryFileResponse|RedirectResponse

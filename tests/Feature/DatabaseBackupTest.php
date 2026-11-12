@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Process;
 use PHPUnit\Framework\Attributes\TestWith;
 use RuntimeException;
 use Tests\TestCase;
+use ZipArchive;
 
 class DatabaseBackupTest extends TestCase
 {
@@ -117,5 +118,23 @@ class DatabaseBackupTest extends TestCase
         $contents = $response->streamedContent();
         $this->assertStringStartsWith("\xEF\xBB\xBF", $contents);
         $this->assertStringContainsString('"Pengguna; ""CSV"""', $contents);
+    }
+
+    public function test_zip_export_still_contains_each_tables_csv(): void
+    {
+        $admin = User::factory()->create(['role' => 1, 'name' => 'Admin ZIP Export']);
+
+        $response = $this->actingAs($admin)->get(route('backup.download-all'))->assertOk()->assertDownload();
+
+        $path = $response->baseResponse->getFile()->getPathname();
+        $archive = new ZipArchive;
+        try {
+            $this->assertTrue($archive->open($path));
+            $this->assertStringContainsString('Admin ZIP Export', $archive->getFromName('users.csv'));
+            $this->assertNotFalse($archive->getFromName('zoom_bookings.csv'));
+        } finally {
+            $archive->close();
+            File::delete($path);
+        }
     }
 }

@@ -41,8 +41,8 @@
                                 <span class="font-semibold text-gray-800">{{ number_format($rowCounts[$table], 0, ',', '.') }}</span>
                                 <span class="text-gray-400 text-[11px]">baris</span>
                             </td>
-                            <td data-label="Aksi Ekspor" class="px-4 py-3 text-right whitespace-nowrap">
-                                <div class="flex flex-wrap items-center justify-end gap-2">
+                            <td data-label="Aksi" class="px-4 py-3 text-right whitespace-nowrap">
+                                <div class="flex flex-wrap items-center gap-2 md:justify-end">
                                     <a href="{{ route('backup.download-table-sql', $table) }}" class="inline-flex items-center gap-1.5 px-3 py-1 bg-white hover:bg-brand-50 text-brand-900 border border-brand-200 rounded-sm text-[11px] font-medium transition" aria-label="Backup SQL tabel {{ $table }}">
                                         <i class="fa-solid fa-database" aria-hidden="true"></i> Backup SQL
                                     </a>

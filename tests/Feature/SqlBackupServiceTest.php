@@ -15,14 +15,16 @@ class SqlBackupServiceTest extends TestCase
     #[TestWith([null, 'mysqldump Ver 8.0.30'])]
     #[TestWith(['odd table', 'mysqldump Ver 8.0.30'])]
     #[TestWith([null, 'mariadb-dump Ver 10.19 Distrib 10.11-MariaDB'])]
-    public function test_dump_uses_private_credentials_and_includes_structure_data_and_binary_support(?string $table, string $version): void
+    #[TestWith([null, 'mysqldump Ver 8.0.30', '/tmp/mysql.sock'])]
+    public function test_dump_uses_private_credentials_and_includes_structure_data_and_binary_support(?string $table, string $version, ?string $socket = null): void
     {
         config(['backup.dump_binary' => 'mysqldump']);
         $connection = $this->connection();
+        $connection['unix_socket'] = $socket;
         $optionsPath = null;
         $dumpCommand = [];
         Process::preventStrayProcesses();
-        Process::fake(function (PendingProcess $process) use ($table, $version, &$optionsPath, &$dumpCommand) {
+        Process::fake(function (PendingProcess $process) use ($version, $socket, &$optionsPath, &$dumpCommand) {
             if (in_array('--version', $process->command, true)) {
                 return Process::result(output: $version);
             }
@@ -32,6 +34,7 @@ class SqlBackupServiceTest extends TestCase
             $this->assertStringContainsString('password="p\\"a\\\\ss\\n[client]\\nuser=attacker"', $options);
             $this->assertStringContainsString('host="db.example.test"', $options);
             $this->assertStringContainsString('port="3307"', $options);
+            $this->assertStringContainsString($socket ? 'protocol="SOCKET"' : 'protocol="TCP"', $options);
             $this->assertStringNotContainsString("\nuser=attacker", $options);
             $path = substr(array_values(array_filter($dumpCommand, fn (string $argument): bool => str_starts_with($argument, '--result-file=')))[0], strlen('--result-file='));
             File::put($path, "CREATE TABLE sample (id INT);\nINSERT INTO sample VALUES (1);\n");
@@ -60,7 +63,7 @@ class SqlBackupServiceTest extends TestCase
                 $this->assertNotContains('--column-statistics=0', $dumpCommand);
                 $this->assertNotContains('--set-gtid-purged=OFF', $dumpCommand);
             }
-            Process::assertRanTimes('*', 2);
+            Process::assertRanTimes(fn (PendingProcess $process): bool => is_array($process->command), 2);
         } finally {
             File::delete($path);
         }
@@ -93,7 +96,7 @@ class SqlBackupServiceTest extends TestCase
 
         $this->assertFileDoesNotExist($optionsPath);
         $this->assertFileDoesNotExist($dumpPath);
-        Process::assertRanTimes('*', 2);
+        Process::assertRanTimes(fn (PendingProcess $process): bool => is_array($process->command), 2);
     }
 
     public function test_unavailable_binary_returns_an_actionable_error(): void
@@ -106,7 +109,7 @@ class SqlBackupServiceTest extends TestCase
         } catch (RuntimeException $exception) {
             $this->assertStringContainsString('DB_DUMP_BINARY', $exception->getMessage());
         }
-        Process::assertRanTimes('*', 1);
+        Process::assertRanTimes(fn (PendingProcess $process): bool => is_array($process->command), 1);
     }
 
     public function test_unsupported_database_driver_does_not_start_an_external_process(): void

@@ -12,7 +12,7 @@ use Throwable;
 class SqlBackupService
 {
     /**
-     * @param array{driver: string, database: string, host?: string, port?: int|string, username?: string, password?: string|null, unix_socket?: string, charset?: string, options?: array<int, mixed>} $connection
+     * @param  array{driver: string, database: string, host?: string, port?: int|string, username?: string, password?: string|null, unix_socket?: string, charset?: string, options?: array<int, mixed>}  $connection
      */
     public function create(array $connection, ?string $table = null): string
     {
@@ -105,6 +105,7 @@ class SqlBackupService
         ];
         if (! empty($connection['unix_socket'])) {
             $options['socket'] = $connection['unix_socket'];
+            $options['protocol'] = 'SOCKET';
         } else {
             $options['protocol'] = 'TCP';
         }
@@ -113,7 +114,7 @@ class SqlBackupService
         }
         $contents = "[client]\n";
         foreach ($options as $name => $value) {
-            $escaped = strtr((string) $value, ["\\" => "\\\\", '"' => '\\"', "\n" => '\\n', "\r" => '\\r', "\t" => '\\t']);
+            $escaped = strtr((string) $value, ['\\' => '\\\\', '"' => '\\"', "\n" => '\\n', "\r" => '\\r', "\t" => '\\t']);
             $contents .= $name.'="'.$escaped."\"\n";
         }
 
