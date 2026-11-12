@@ -1,0 +1,116 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="560" viewBox="0 0 800 560" fill="none">
+  <defs>
+    <pattern id="grid" width="28" height="28" patternUnits="userSpaceOnUse">
+      <path d="M28 0H0V28" stroke="#DCE6F1" stroke-width="1"/>
+    </pattern>
+    <clipPath id="screen"><path d="M208 130H526V325H208Z"/></clipPath>
+  </defs>
+  <path d="M100 60H700V480H100Z" fill="url(#grid)" opacity=".55"/>
+  <path d="M145 100H640V430H145Z" fill="#EAF1FA"/>
+  <path d="M100 480H720" stroke="#AABCD3" stroke-width="2"/>
+  <path d="M128 488H675" stroke="#DCE6F1" stroke-width="2"/>
+
+  <!-- Connections between the calendar, meeting and approved booking. -->
+  <path d="M124 232H86V382H204M592 158H680V346H610M318 86V54H566V104" stroke="#93B0D6" stroke-width="2" stroke-dasharray="5 6"/>
+  <path d="M81 232H91M86 227V237M675 158H685M680 153V163" stroke="#6587B8" stroke-width="2"/>
+
+  <!-- Meeting workstation. -->
+  <path d="M196 111H539V355H196Z" fill="#FFF" stroke="#829AB9" stroke-width="2"/>
+  <path d="M196 111H539V143H196Z" fill="#F8FAFD"/>
+  <path d="M196 143H539" stroke="#CCD9EA" stroke-width="2"/>
+  <path d="M210 127H219M225 127H234M240 127H249" stroke="#9CB0CC" stroke-width="3"/>
+  <path d="M491 123H505V131H491Z" fill="#2563EB"/>
+  <path d="M505 125L513 121V133L505 129Z" fill="#2563EB"/>
+  <g clip-path="url(#screen)">
+    <path d="M209 155H359V236H209Z" fill="#E2EBF8"/>
+    <path d="M372 155H526V236H372Z" fill="#D6E5FA"/>
+    <path d="M209 248H359V325H209Z" fill="#EEF2F7"/>
+    <path d="M372 248H526V325H372Z" fill="#E4ECF7"/>
+
+    <!-- Four participants, drawn with simple geometric silhouettes. -->
+    <path d="M243 236C245 210 259 201 282 201C305 201 320 210 322 236" fill="#446B9F"/>
+    <path d="M270 197H294V215H270Z" fill="#DDAA8E"/>
+    <ellipse cx="282" cy="185" rx="21" ry="25" fill="#EBC4A9"/>
+    <path d="M261 184V176C261 158 298 154 304 175L302 185L293 171L261 184Z" fill="#293E5B"/>
+    <path d="M408 236C408 211 423 202 448 202C473 202 486 214 488 236" fill="#87A2CA"/>
+    <path d="M437 195H458V215H437Z" fill="#C68F73"/>
+    <ellipse cx="448" cy="185" rx="20" ry="24" fill="#D5A182"/>
+    <path d="M427 184C420 153 465 149 470 177L465 188L458 170L427 184Z" fill="#25374E"/>
+    <path d="M245 325C248 301 259 293 283 293C307 293 321 303 323 325" fill="#647C9E"/>
+    <path d="M272 287H294V306H272Z" fill="#D8A48B"/>
+    <ellipse cx="283" cy="278" rx="20" ry="23" fill="#E8BBA0"/>
+    <path d="M261 285V272C261 244 307 246 306 273V293L297 279V268L271 271V289Z" fill="#35465D"/>
+    <path d="M408 325C409 303 425 294 449 294C473 294 486 304 490 325" fill="#315A94"/>
+    <path d="M438 287H460V306H438Z" fill="#AA745C"/>
+    <ellipse cx="449" cy="277" rx="20" ry="24" fill="#BB8A70"/>
+    <path d="M429 273V263C430 246 467 248 470 267L466 280L461 265L429 273Z" fill="#25374E"/>
+  </g>
+  <path d="M208 337H525" stroke="#E0E8F2"/>
+  <path d="M329 334V343M325 338H333M351 334V343M347 338H355M373 334V343M369 338H377" stroke="#9CB0CC" stroke-width="2"/>
+  <path d="M395 332H420V346H395Z" fill="#DC6D75"/>
+  <path d="M347 356H391V383H347Z" fill="#CCDAEC" stroke="#829AB9" stroke-width="2"/>
+  <path d="M321 384H418" stroke="#829AB9" stroke-width="3"/>
+  <path d="M178 400H559" stroke="#455F82" stroke-width="4"/>
+  <path d="M202 402V480M535 402V480" stroke="#829AB9" stroke-width="4"/>
+
+  <!-- Calendar: structured rows, selected date, confirmed schedule. -->
+  <path d="M106 164H251V308H106Z" fill="#FFF" stroke="#9CB0CC" stroke-width="2"/>
+  <path d="M106 164H251V201H106Z" fill="#305F9F"/>
+  <path d="M132 154V175M224 154V175" stroke="#193D70" stroke-width="5"/>
+  <path d="M123 186H159M170 186H192" stroke="#DBEAFE" stroke-width="3"/>
+  <path d="M120 216H237M120 242H237M120 268H237M145 210V294M175 210V294M205 210V294" stroke="#E4EBF4"/>
+  <path d="M151 248H169V262H151Z" fill="#2563EB"/>
+  <path d="M156 255L160 258L165 251" stroke="#FFF" stroke-width="2"/>
+  <path d="M124 221H135M155 221H165M185 221H195M215 221H225M124 247H135M185 247H195M215 247H225M124 275H135M155 275H165M185 275H195" stroke="#A0B3CE" stroke-width="2"/>
+
+  <!-- Account assignment and approval. -->
+  <path d="M519 242H687V374H519Z" fill="#FFF" stroke="#9CB0CC" stroke-width="2"/>
+  <path d="M533 258H558V281H533Z" fill="#EAF1FA"/>
+  <path d="M540 265H549V274H540Z" fill="#315F9D"/>
+  <path d="M549 268L553 265V274L549 272Z" fill="#315F9D"/>
+  <path d="M570 263H670M570 274H640" stroke="#8EA7C8" stroke-width="3"/>
+  <path d="M533 295H674" stroke="#E2E8F0"/>
+  <path d="M535 308H548V321H535Z" fill="#E4F1ED"/>
+  <path d="M538 314L542 318L547 311" stroke="#437B68" stroke-width="2"/>
+  <path d="M559 313H662M559 323H626" stroke="#BDCDDF" stroke-width="3"/>
+  <path d="M535 338H548V351H535Z" fill="#E4F1ED"/>
+  <path d="M538 344L542 348L547 341" stroke="#437B68" stroke-width="2"/>
+  <path d="M559 343H651M559 353H611" stroke="#BDCDDF" stroke-width="3"/>
+
+  <!-- Colleague managing the schedule. -->
+  <path d="M122 478L133 404H156L158 478" fill="#334D70"/>
+  <path d="M150 478L164 408L182 408L184 478" fill="#526F94"/>
+  <path d="M116 479H140M174 479H193" stroke="#233A57" stroke-width="6"/>
+  <path d="M126 326C127 309 144 302 159 306C181 311 183 330 185 361L180 412H126V326Z" fill="#8DA9CF"/>
+  <path d="M143 294H160V314H143Z" fill="#D5A58A"/>
+  <ellipse cx="152" cy="284" rx="18" ry="23" fill="#E7B99B"/>
+  <path d="M133 282V272C133 251 169 254 171 272L168 285L161 268L133 282Z" fill="#263C58"/>
+  <path d="M132 330L118 362L151 376" stroke="#8DA9CF" stroke-width="15"/>
+  <path d="M175 330L196 346L216 329" stroke="#8DA9CF" stroke-width="15"/>
+  <path d="M209 333L223 322" stroke="#E7B99B" stroke-width="9"/>
+  <path d="M142 354L174 363L164 401L132 392Z" fill="#FFF" stroke="#6F8DB5" stroke-width="2"/>
+  <path d="M145 366L164 371M142 375L159 380" stroke="#A7BBD4" stroke-width="2"/>
+
+  <!-- A second colleague with a laptop. -->
+  <path d="M587 407H655V452H587Z" fill="#D6E1EF" stroke="#829AB9" stroke-width="2"/>
+  <path d="M593 452V480M649 452V480" stroke="#829AB9" stroke-width="3"/>
+  <path d="M595 394L584 437L623 444L629 478" stroke="#314F78" stroke-width="16"/>
+  <path d="M624 392L639 434L661 439L670 478" stroke="#496B97" stroke-width="16"/>
+  <path d="M620 479H637M665 479H683" stroke="#233A57" stroke-width="6"/>
+  <path d="M591 358C593 335 609 330 624 334C639 338 644 354 646 393L587 396L591 358Z" fill="#5D83B6"/>
+  <path d="M608 321H624V341H608Z" fill="#C79074"/>
+  <ellipse cx="616" cy="311" rx="18" ry="22" fill="#D9A385"/>
+  <path d="M597 309V301C598 281 631 283 635 299L631 314L624 295L597 309Z" fill="#283D59"/>
+  <path d="M594 356L578 379H551M637 356L652 382H613" stroke="#5D83B6" stroke-width="12"/>
+  <path d="M548 382H622L610 348H537Z" fill="#E9EFF8" stroke="#829AB9" stroke-width="2"/>
+  <path d="M544 385H628" stroke="#455F82" stroke-width="3"/>
+  <path d="M575 361H585V369H575Z" fill="#9CB4D4"/>
+
+  <!-- Quiet workspace details. -->
+  <path d="M299 397H322V375H299Z" fill="#D2DFEF" stroke="#829AB9" stroke-width="2"/>
+  <path d="M322 379H329V390H322" stroke="#829AB9" stroke-width="2"/>
+  <path d="M456 397H493V386H456Z" fill="#C1D2E8"/>
+  <path d="M462 386H497V377H462Z" fill="#8DA9CF"/>
+  <path d="M73 478H100L105 436H68L73 478Z" fill="#B7CAE2"/>
+  <path d="M86 438V399M86 421C68 419 67 407 68 400C80 401 87 408 86 421ZM87 412C102 409 106 398 104 390C92 393 86 401 87 412Z" fill="#8FAEAC" stroke="#6D8C8A" stroke-width="2"/>
+</svg>

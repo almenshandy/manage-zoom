@@ -12,79 +12,95 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>body { font-family: 'Inter', sans-serif; }</style>
 </head>
-<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4 antialiased text-gray-800">
-    <div class="max-w-sm w-full">
-        <!-- Logo & Header -->
-        <div class="text-center mb-6">
-            <img src="{{ asset('icon.svg') }}" alt="Logo Manage Zoom" class="w-12 h-12 rounded-xl mx-auto mb-3 shadow-sm">
-            <h1 class="text-lg font-bold text-gray-900 tracking-tight">Manage Zoom</h1>
-            <p class="text-gray-500 text-xs mt-0.5">Sistem Peminjaman & Manajemen Akun</p>
-        </div>
+<body class="login-page antialiased" style="--login-illustration: url('{{ asset('login-meeting-illustration.svg') }}')">
+    <main class="login-shell">
+        <section class="login-visual" aria-labelledby="loginIntroTitle">
+            <div class="login-brand">
+                <img src="{{ asset('icon.svg') }}" alt="" width="34" height="34">
+                <span>ManageZoom</span>
+            </div>
+            <div class="login-intro">
+                <p class="login-eyebrow">Sistem manajemen meeting</p>
+                <h2 id="loginIntroTitle">Kelola meeting, jadwal,<br>dan akun Zoom.</h2>
+                <p>Ajukan peminjaman, pantau ketersediaan akun, dan siapkan meeting dalam satu sistem.</p>
+            </div>
+            <div class="login-illustration" aria-hidden="true"></div>
+            <p class="login-visual-footer">Penjadwalan <span aria-hidden="true">/</span> Peminjaman akun <span aria-hidden="true">/</span> Persetujuan meeting</p>
+        </section>
 
-        <!-- Form Card (Flat Minimalist) -->
-        <div class="bg-white rounded border border-gray-200 p-6 shadow-sm">
+        <section class="login-form-panel" aria-labelledby="loginTitle">
+            <div class="login-form">
+            <div class="login-mobile-brand login-brand">
+                <img src="{{ asset('icon.svg') }}" alt="" width="32" height="32">
+                <span>ManageZoom</span>
+            </div>
+            <header class="login-form-heading">
+                <p class="login-eyebrow">Selamat datang kembali</p>
+                <h1 id="loginTitle">Masuk ke akun Anda</h1>
+                <p>Gunakan akun yang terdaftar untuk melanjutkan.</p>
+            </header>
             @if ($errors->any())
-                <div class="mb-4 p-2.5 bg-red-50 border border-red-200 text-red-700 text-xs rounded flex items-center gap-2">
-                    <i class="fa-solid fa-circle-exclamation text-red-500"></i>
-                    <div>{{ $errors->first() }}</div>
+                <div class="login-error" role="alert">
+                    <i class="fa-solid fa-circle-exclamation" aria-hidden="true"></i>
+                    <span>{{ $errors->first() }}</span>
                 </div>
             @endif
 
-            <form method="POST" action="{{ route('login.post') }}" class="space-y-3.5">
+            <form method="POST" action="{{ route('login.post') }}" class="login-fields">
                 @csrf
-                <div>
-                    <label class="block text-xs font-medium text-gray-700 mb-1">Username atau Email</label>
-                    <input type="text" name="login" value="{{ old('login') }}" required autofocus
-                        class="w-full px-3 py-1.5 bg-white border border-gray-300 rounded text-xs focus:outline-none focus:border-gray-500 transition"
+                <div class="login-field">
+                    <label for="loginIdentity">Username atau Email</label>
+                    <input type="text" name="login" id="loginIdentity" value="{{ old('login') }}" required autofocus autocomplete="username"
                         placeholder="admin atau staf@institusi.ac.id">
                 </div>
 
-                <div>
-                    <label class="block text-xs font-medium text-gray-700 mb-1">Password</label>
-                    <div class="relative">
-                        <input type="password" name="password" id="loginPassword" required
-                            class="w-full pl-3 pr-9 py-1.5 bg-white border border-gray-300 rounded text-xs focus:outline-none focus:border-gray-500 transition"
+                <div class="login-field">
+                    <label for="loginPassword">Password</label>
+                    <div class="login-password-field">
+                        <input type="password" name="password" id="loginPassword" required autocomplete="current-password"
                             placeholder="••••••••">
-                        <button type="button" onclick="togglePasswordVisibility()" tabindex="-1"
-                            class="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none"
+                        <button type="button" onclick="togglePasswordVisibility()" class="login-password-toggle"
+                            aria-label="Tampilkan password" aria-controls="loginPassword" aria-pressed="false"
                             title="Tampilkan / Sembunyikan Password">
-                            <i class="fa-regular fa-eye text-xs" id="passwordEyeIcon"></i>
+                            <i class="fa-regular fa-eye" id="passwordEyeIcon" aria-hidden="true"></i>
                         </button>
                     </div>
                 </div>
 
-                <div class="flex items-center justify-between text-xs pt-1">
-                    <label class="flex items-center gap-2 text-gray-600 cursor-pointer">
-                        <input type="checkbox" name="remember" class="rounded border-gray-300 text-gray-900 focus:ring-0">
-                        <span>Ingat saya</span>
-                    </label>
-                </div>
+                <label class="login-remember">
+                    <input type="checkbox" name="remember" @checked(old('remember'))>
+                    <span>Ingat saya</span>
+                </label>
 
-                <button type="submit" class="w-full mt-2 py-2 bg-gray-900 hover:bg-black text-white text-xs font-medium rounded transition">
-                    Masuk ke Sistem
+                <button type="submit" class="login-submit">
+                    Masuk ke Sistem <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
                 </button>
             </form>
 
-            <div class="mt-5 pt-4 border-t border-gray-100 text-center">
-                <span class="text-[11px] text-gray-400">Default login: <span class="text-gray-600 font-mono">admin / password</span></span>
+            <p class="login-default-hint">Default login: <span>admin / password</span></p>
             </div>
-        </div>
-    </div>
+        </section>
+    </main>
 
     <script>
         function togglePasswordVisibility() {
             const passwordInput = document.getElementById('loginPassword');
             const eyeIcon = document.getElementById('passwordEyeIcon');
+            const toggle = document.querySelector('.login-password-toggle');
             if (!passwordInput || !eyeIcon) return;
 
             if (passwordInput.type === 'password') {
                 passwordInput.type = 'text';
-                eyeIcon.className = 'fa-regular fa-eye-slash text-xs text-gray-700';
+                eyeIcon.className = 'fa-regular fa-eye-slash';
             } else {
                 passwordInput.type = 'password';
-                eyeIcon.className = 'fa-regular fa-eye text-xs text-gray-400';
+                eyeIcon.className = 'fa-regular fa-eye';
+            }
+            if (toggle) {
+                const visible = passwordInput.type === 'text';
+                toggle.setAttribute('aria-pressed', String(visible));
+                toggle.setAttribute('aria-label', visible ? 'Samarkan password' : 'Tampilkan password');
             }
         }
     </script>
