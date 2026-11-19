@@ -57,7 +57,11 @@
     </div>
 
     <div class="recap-title">
-        REKAP JADWAL KEGIATAN ZOOM (PERIODE: {{ \Carbon\Carbon::parse($startDate)->format('d/m/Y') }} S/D {{ \Carbon\Carbon::parse($endDate)->format('d/m/Y') }})
+        @if(!empty($isCustomSelection))
+            REKAP JADWAL KEGIATAN ZOOM (DATA PILIHAN: {{ $bookings->count() }} KEGIATAN)
+        @else
+            REKAP JADWAL KEGIATAN ZOOM (PERIODE: {{ \Carbon\Carbon::parse($startDate)->format('d/m/Y') }} S/D {{ \Carbon\Carbon::parse($endDate)->format('d/m/Y') }})
+        @endif
     </div>
 
     <table class="grid">

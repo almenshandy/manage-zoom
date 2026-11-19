@@ -37,8 +37,8 @@
             <button type="button" id="openBulkWhatsApp" class="mobile-primary-action inline-flex items-center gap-1.5 bg-emerald-700 text-white text-xs font-medium px-3 py-1.5 border border-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
                 <i class="fa-brands fa-whatsapp" aria-hidden="true"></i> Kirim Bulk WhatsApp
             </button>
-            <a href="{{ route('bookings.print-all', request()->query()) }}" target="_blank" class="mobile-utility-action inline-flex items-center gap-1.5 bg-white hover:bg-gray-50 text-gray-700 text-xs font-medium px-3 py-1.5 rounded-sm border border-gray-300 transition" aria-label="Cetak Rekap PDF" title="Cetak Rekap PDF">
-                <i class="fa-solid fa-print text-gray-500 text-[11px]"></i> <span class="hidden md:inline">Cetak Rekap PDF</span>
+            <a href="{{ route('bookings.print-all', request()->query()) }}" id="btnPrintPdf" target="_blank" class="mobile-utility-action inline-flex items-center gap-1.5 bg-white hover:bg-gray-50 text-gray-700 text-xs font-medium px-3 py-1.5 rounded-sm border border-gray-300 transition" aria-label="Cetak Rekap PDF" title="Cetak Rekap PDF">
+                <i class="fa-solid fa-print text-gray-500 text-[11px]"></i> <span id="btnPrintPdfText" class="hidden md:inline">Cetak Rekap PDF</span>
             </a>
         </div>
     </div>
@@ -191,6 +191,10 @@
         const selected = new Set();
         const selectAll = document.getElementById('bulkSelectAll');
         const button = document.getElementById('openBulkWhatsApp');
+        const printPdfBtn = document.getElementById('btnPrintPdf');
+        const printPdfText = document.getElementById('btnPrintPdfText');
+        const defaultPrintPdfHref = printPdfBtn ? printPdfBtn.getAttribute('href') : '';
+
         function sync() {
             checkboxes.forEach(input => { input.checked = selected.has(input.value); });
             button.disabled = selected.size === 0;
@@ -198,6 +202,25 @@
             selectAll.checked = eligibleIds.length > 0 && selected.size === eligibleIds.length;
             selectAll.indeterminate = selected.size > 0 && selected.size < eligibleIds.length;
             selectAll.disabled = !eligibleIds.length;
+
+            if (printPdfBtn) {
+                if (selected.size > 0) {
+                    const printUrl = new URL(defaultPrintPdfHref, window.location.origin);
+                    printUrl.searchParams.delete('booking_ids[]');
+                    selected.forEach(id => printUrl.searchParams.append('booking_ids[]', id));
+                    printPdfBtn.href = printUrl.toString();
+                    if (printPdfText) {
+                        printPdfText.textContent = `Cetak Rekap (${selected.size} Dipilih)`;
+                    }
+                    printPdfBtn.title = `Cetak Rekap PDF untuk ${selected.size} meeting yang dicentang`;
+                } else {
+                    printPdfBtn.href = defaultPrintPdfHref;
+                    if (printPdfText) {
+                        printPdfText.textContent = 'Cetak Rekap PDF';
+                    }
+                    printPdfBtn.title = 'Cetak Rekap PDF';
+                }
+            }
         }
         checkboxes.forEach(input => input.addEventListener('change', () => {
             if (input.disabled) return;
