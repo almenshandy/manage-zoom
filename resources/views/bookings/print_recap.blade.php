@@ -68,13 +68,12 @@
         <thead>
             <tr>
                 <th style="width: 25px;" class="center">No</th>
-                <th style="width: 140px;">Topik Kegiatan</th>
-                <th style="width: 90px;">Pemohon & Unit</th>
-                <th style="width: 80px;">Tanggal</th>
-                <th style="width: 70px;">Waktu</th>
-                <th style="width: 90px;">Akun Zoom</th>
-                <th style="width: 100px;">Meeting ID & Passcode</th>
-                <th style="width: 60px;" class="center">Status</th>
+                <th style="width: 155px;">Topik Kegiatan</th>
+                <th style="width: 100px;">Pemohon & Unit</th>
+                <th style="width: 85px;">Tanggal</th>
+                <th style="width: 75px;">Waktu</th>
+                <th style="width: 120px;">Akun</th>
+                <th style="width: 110px;">Meeting ID & Passcode</th>
             </tr>
         </thead>
         <tbody>
@@ -93,18 +92,32 @@
                     </td>
                     <td>{{ $b->date_range_formatted }}</td>
                     <td>{{ substr($b->start_time, 0, 5) }} - {{ substr($b->end_time, 0, 5) }} WIB</td>
-                    <td>{{ $b->account->name ?? 'Belum Ditugaskan' }}</td>
+                    <td>
+                        @if($b->account)
+                            <div><strong>{{ $b->account->email ?? $b->account->name }}</strong></div>
+                            @if($b->account->email && $b->account->name && $b->account->name !== $b->account->email)
+                                <div style="font-size: 7pt; color: #4b5563;">({{ $b->account->name }})</div>
+                            @endif
+                            <div style="font-size: 7.5pt; font-family: monospace; color: #1f2937; margin-top: 2px;">
+                                Pass: <strong>{{ $b->account->password ?? '-' }}</strong>
+                            </div>
+                            <div style="font-size: 7pt; color: #1e40af; margin-top: 2px;">
+                                Kapasitas: <strong>{{ $b->account->capacity ? $b->account->capacity . ' Pax' : '-' }}</strong>
+                            </div>
+                        @else
+                            <span style="color: #9ca3af; font-style: italic;">Belum Ditugaskan</span>
+                        @endif
+                    </td>
                     <td style="font-family: monospace;">
                         {{ $b->zoom_meeting_id ?: '-' }}
                         @if($b->passcode)
-                            <div style="font-size: 7.5pt; color: #6b7280;">Pass: {{ $b->passcode }}</div>
+                            <div style="font-size: 7.5pt; color: #6b7280;">Passcode: {{ $b->passcode }}</div>
                         @endif
                     </td>
-                    <td class="center">{{ $b->status_label }}</td>
                 </tr>
             @empty
                 <tr>
-                    <td colspan="8" class="center" style="padding: 20px;">Tidak ada data kegiatan pada rentang tanggal ini.</td>
+                    <td colspan="7" class="center" style="padding: 20px;">Tidak ada data kegiatan pada rentang tanggal ini.</td>
                 </tr>
             @endforelse
         </tbody>
