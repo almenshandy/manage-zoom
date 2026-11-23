@@ -5,12 +5,18 @@
     </div>
     <div id="bulkHistoryList" class="divide-y divide-gray-200">
         @forelse($bulkBatches as $batch)
-            <details data-bulk-batch-id="{{ $batch->id }}" data-bulk-status-url="{{ route('bookings.whatsapp-bulk.show', $batch) }}" class="group">
+            <details data-bulk-batch-id="{{ $batch->id }}" data-bulk-status-url="{{ route('bookings.whatsapp-bulk.show', $batch) }}" data-bulk-delete-url="{{ route('bookings.whatsapp-bulk.destroy', $batch) }}" class="group">
                 <summary class="block p-4 list-none cursor-pointer select-none hover:bg-gray-50 focus-visible:outline-2 focus-visible:outline-brand-600 [&::-webkit-details-marker]:hidden">
-                    <span class="flex items-center justify-between gap-3 text-xs">
+                    <div class="flex items-center justify-between gap-3 text-xs">
                         <span data-bulk-title class="font-medium text-gray-900">Antrean #{{ $batch->id }} &bull; {{ $batch->total_messages }} pesan &bull; {{ $batch->include_credentials ? 'Undangan + akun Zoom' : 'Undangan meeting' }}</span>
-                        <i class="fa-solid fa-chevron-down text-gray-500 shrink-0 transition-transform group-open:rotate-180" aria-hidden="true"></i>
-                    </span>
+                        <div class="flex items-center gap-2">
+                            <span data-bulk-badge class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[11px] font-medium bg-gray-100 text-gray-700">
+                                <span class="w-1.5 h-1.5 rounded-full bg-gray-400"></span>
+                                Memuat...
+                            </span>
+                            <i class="fa-solid fa-chevron-down text-gray-500 shrink-0 transition-transform group-open:rotate-180" aria-hidden="true"></i>
+                        </div>
+                    </div>
                     <span class="block text-xs text-gray-500 mt-1">{{ $batch->created_at->format('d/m/Y H:i') }}</span>
                 </summary>
                 <div data-bulk-content></div>
@@ -22,15 +28,24 @@
 </section>
 
 <template id="bulkProgressTemplate">
-    <div class="p-4 border-t border-gray-200 space-y-3">
-        <p data-bulk-summary class="text-xs text-gray-600" aria-live="polite">Memuat progres antrean...</p>
-        <progress data-bulk-bar class="w-full h-2 accent-emerald-700" max="1" value="0" aria-label="Progres antrean bulk"></progress>
+    <div class="p-4 border-t border-gray-200 space-y-3 bg-gray-50/50">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+            <div class="flex items-center gap-2">
+                <span data-bulk-spinner class="hidden text-emerald-600 animate-spin"><i class="fa-solid fa-circle-notch text-xs"></i></span>
+                <p data-bulk-summary class="text-xs text-gray-700 font-medium" aria-live="polite">Memuat progres antrean...</p>
+            </div>
+            <button type="button" data-bulk-delete class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs text-red-600 hover:text-red-700 hover:bg-red-50 border border-red-200 rounded transition" title="Hapus antrean ini">
+                <i class="fa-regular fa-trash-can text-xs"></i> Hapus Antrean
+            </button>
+        </div>
+
+        <progress data-bulk-bar class="w-full h-2 accent-emerald-700 rounded overflow-hidden" max="1" value="0" aria-label="Progres antrean bulk"></progress>
         <p data-bulk-error class="hidden text-xs text-red-700" role="alert"></p>
-        <div data-bulk-messages class="divide-y divide-gray-200 border border-gray-200 max-h-80 overflow-y-auto"></div>
+        <div data-bulk-messages class="divide-y divide-gray-200 border border-gray-200 max-h-80 overflow-y-auto bg-white rounded-sm"></div>
         <div class="flex items-center justify-between gap-3 text-xs">
-            <button type="button" data-bulk-previous class="px-3 py-2 border border-gray-300 disabled:opacity-40" disabled>Sebelumnya</button>
-            <span data-bulk-page></span>
-            <button type="button" data-bulk-next class="px-3 py-2 border border-gray-300 disabled:opacity-40" disabled>Berikutnya</button>
+            <button type="button" data-bulk-previous class="px-3 py-1.5 bg-white border border-gray-300 rounded disabled:opacity-40" disabled>Sebelumnya</button>
+            <span data-bulk-page class="text-gray-500"></span>
+            <button type="button" data-bulk-next class="px-3 py-1.5 bg-white border border-gray-300 rounded disabled:opacity-40" disabled>Berikutnya</button>
         </div>
         <p class="text-[11px] text-gray-500">“Diterima gateway” adalah respons provider, bukan konfirmasi bahwa pesan sudah dibaca. Pengiriman tetap berjalan saat antrean diminimalkan.</p>
     </div>
@@ -45,21 +60,102 @@
         clearTimeout(state.pollTimer);
         state.request?.abort();
     }
+    function updateBatchBadge(details, data) {
+        const badge = details.querySelector('[data-bulk-badge]');
+        if (!badge) return;
+        if (data.pending > 0) {
+            badge.className = 'inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[11px] font-semibold bg-amber-50 text-amber-700 border border-amber-200';
+            badge.innerHTML = `<span class="inline-block w-2 h-2 rounded-full bg-amber-500 animate-ping"></span> Sedang Diproses (${data.pending} antre)`;
+        } else if (data.failed > 0) {
+            badge.className = 'inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[11px] font-medium bg-red-50 text-red-700 border border-red-200';
+            badge.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-[10px]"></i> Selesai (${data.failed} gagal)`;
+        } else {
+            badge.className = 'inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[11px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200';
+            badge.innerHTML = `<i class="fa-solid fa-check text-[10px]"></i> Berhasil Semua`;
+        }
+    }
+
+    function checkWorkerAlert() {
+        const alertBox = document.getElementById('queueWorkerAlert');
+        if (!alertBox) return;
+        let anyPending = false;
+        states.forEach((state) => {
+            if (state.lastPending && state.lastPending > 0) anyPending = true;
+        });
+        if (anyPending) {
+            alertBox.classList.remove('hidden');
+        } else {
+            alertBox.classList.add('hidden');
+        }
+    }
+
     function initializeBatch(details) {
         const content = details.querySelector('[data-bulk-content]');
         content.append(document.getElementById('bulkProgressTemplate').content.cloneNode(true));
-        const state = { page: 1, lastPage: 1, pollTimer: null, request: null };
+        const state = { page: 1, lastPage: 1, pollTimer: null, request: null, lastPending: 0 };
         states.set(details, state);
+
         details.addEventListener('toggle', () => {
             if (details.open) loadProgress(details, state); else stopPolling(state);
         });
+
         details.querySelector('[data-bulk-previous]').addEventListener('click', () => {
             if (state.page > 1) { state.page--; loadProgress(details, state); }
         });
+
         details.querySelector('[data-bulk-next]').addEventListener('click', () => {
             if (state.page < state.lastPage) { state.page++; loadProgress(details, state); }
         });
+
+        const deleteBtn = details.querySelector('[data-bulk-delete]');
+        if (deleteBtn && details.dataset.bulkDeleteUrl) {
+            deleteBtn.addEventListener('click', async (e) => {
+                e.stopPropagation();
+                if (!confirm('Apakah Anda yakin ingin menghapus/membatalkan antrean bulk ini? Sisa pesan antrean yang belum terkirim akan dibatalkan.')) return;
+                deleteBtn.disabled = true;
+                deleteBtn.textContent = 'Menghapus...';
+                try {
+                    const csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+                    const res = await fetch(details.dataset.bulkDeleteUrl, {
+                        method: 'DELETE',
+                        headers: {
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': csrf
+                        }
+                    });
+                    if (res.ok) {
+                        stopPolling(state);
+                        states.delete(details);
+                        details.remove();
+                        checkWorkerAlert();
+                        if (document.querySelectorAll('details[data-bulk-status-url]').length === 0) {
+                            const empty = document.getElementById('bulkHistoryEmpty');
+                            if (empty) empty.classList.remove('hidden');
+                        }
+                    } else {
+                        alert('Gagal menghapus antrean. Silakan coba lagi.');
+                        deleteBtn.disabled = false;
+                        deleteBtn.innerHTML = '<i class="fa-regular fa-trash-can text-xs"></i> Hapus Antrean';
+                    }
+                } catch (err) {
+                    alert('Terjadi kesalahan jaringan saat menghapus.');
+                    deleteBtn.disabled = false;
+                    deleteBtn.innerHTML = '<i class="fa-regular fa-trash-can text-xs"></i> Hapus Antrean';
+                }
+            });
+        }
+
+        // Muat sekilas untuk status badge di summary
+        fetch(details.dataset.bulkStatusUrl, { headers: { 'Accept': 'application/json' } })
+            .then(res => res.json())
+            .then(data => {
+                state.lastPending = data.pending;
+                updateBatchBadge(details, data);
+                checkWorkerAlert();
+            })
+            .catch(() => {});
     }
+
     history.querySelectorAll('details[data-bulk-status-url]').forEach(initializeBatch);
     const focusedBatchId = {{ \Illuminate\Support\Js::from($focusedBatchId) }};
     const focusedBatch = focusedBatchId ? history.querySelector(`[data-bulk-batch-id="${focusedBatchId}"]`) : null;
@@ -75,6 +171,7 @@
         const timeout = setTimeout(() => controller.abort('timeout'), 20000);
         const find = selector => details.querySelector(selector);
         const statusError = find('[data-bulk-error]');
+        const spinner = find('[data-bulk-spinner]');
         try {
             const url = new URL(details.dataset.bulkStatusUrl, window.location.href);
             url.searchParams.set('page', state.page);
@@ -83,6 +180,16 @@
             const data = await response.json();
             if (controller.signal.aborted) return;
             statusError.classList.add('hidden');
+            state.lastPending = data.pending;
+            updateBatchBadge(details, data);
+            checkWorkerAlert();
+
+            if (data.pending > 0) {
+                if (spinner) spinner.classList.remove('hidden');
+            } else {
+                if (spinner) spinner.classList.add('hidden');
+            }
+
             find('[data-bulk-title]').textContent = `Antrean #${data.id} • ${data.total} pesan • ${data.include_credentials ? 'Undangan + akun Zoom' : 'Undangan meeting'} • Jeda ${data.interval_seconds} detik`;
             find('[data-bulk-summary]').textContent = `${data.accepted} diterima gateway · ${data.failed} gagal/perlu diperiksa · ${data.pending} menunggu/diproses · Total ${data.total}`;
             const bar = find('[data-bulk-bar]');
@@ -97,7 +204,7 @@
                 title.className = 'font-medium text-gray-900';
                 title.textContent = item.topic;
                 const status = document.createElement('p');
-                status.className = ['failed', 'unknown'].includes(item.status) ? 'text-red-700' : 'text-gray-600';
+                status.className = ['failed', 'unknown'].includes(item.status) ? 'text-red-700' : (item.status === 'sent' ? 'text-emerald-700 font-medium' : 'text-gray-600');
                 status.textContent = `${item.recipient} · ${item.status_label}`;
                 row.append(title, status);
                 if (item.error) { const reason = document.createElement('p'); reason.className = 'text-gray-500'; reason.textContent = item.error; row.append(reason); }
@@ -110,6 +217,7 @@
             if (data.pending > 0 && details.open) state.pollTimer = setTimeout(() => loadProgress(details, state), 4000);
         } catch (exception) {
             if (controller.signal.aborted && controller.signal.reason !== 'timeout') return;
+            if (spinner) spinner.classList.add('hidden');
             statusError.textContent = 'Progres belum dapat dimuat. Akan dicoba kembali.';
             statusError.classList.remove('hidden');
             if (details.open) state.pollTimer = setTimeout(() => loadProgress(details, state), 8000);

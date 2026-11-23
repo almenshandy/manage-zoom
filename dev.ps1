@@ -10,7 +10,8 @@ Write-Host "6) php artisan migrate:fresh --seed"
 Write-Host "7) composer install"
 Write-Host "8) npm install"
 Write-Host "9) php artisan optimize:clear"
-Write-Host "10) Keluar"
+Write-Host "10) php artisan queue:work --queue=whatsapp-bulk"
+Write-Host "11) Keluar"
 Write-Host "==========================================" -ForegroundColor Cyan
 
 $choice = Read-Host "Masukkan pilihan Anda [1-9]"
@@ -28,6 +29,7 @@ switch ($choice) {
     "7" { composer install }
     "8" { npm install }
     "9" { php artisan optimize:clear }
-    "10" { Write-Host "Batal." -ForegroundColor Yellow; exit }
+    "10" { php artisan queue:work --queue=whatsapp-bulk }
+    "11" { Write-Host "Batal." -ForegroundColor Yellow; exit }
     default { Write-Host "Pilihan tidak valid!" -ForegroundColor Red }
 }

@@ -13,6 +13,7 @@ use App\Services\WhatsAppService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class BulkWhatsAppController extends Controller
@@ -122,6 +123,40 @@ class BulkWhatsAppController extends Controller
             ])->values(),
             'page' => $messages->currentPage(),
             'last_page' => $messages->lastPage(),
+        ]);
+    }
+
+    public function destroy(Request $request, WhatsAppBulkBatch $batch): JsonResponse
+    {
+        abort_unless($request->user()->is_active, 403);
+        abort_unless($batch->user_id === $request->user()->id || $request->user()->isAdmin(), 403);
+
+        $messageIds = $batch->messages()->pluck('id')->all();
+
+        // Batalkan / update status pesan yang belum selesai
+        $batch->messages()->whereIn('status', ['queued', 'sending'])->update([
+            'status' => 'failed',
+            'error' => 'Antrean dibatalkan / dihapus oleh pengguna.',
+            'completed_at' => now(),
+        ]);
+
+        // Hapus job dari tabel queue jika masih tersimpan
+        if (! empty($messageIds)) {
+            DB::table('jobs')
+                ->where('queue', 'whatsapp-bulk')
+                ->where(function ($q) use ($messageIds) {
+                    foreach ($messageIds as $id) {
+                        $q->orWhere('payload', 'like', '%"messageId";i:'.$id.';%');
+                    }
+                })
+                ->delete();
+        }
+
+        $batch->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Antrean bulk WhatsApp berhasil dihapus.',
         ]);
     }
 }

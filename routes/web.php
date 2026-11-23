@@ -39,6 +39,7 @@ Route::middleware('auth')->group(function () {
     Route::get('bookings/whatsapp-bulk/contacts', [BulkWhatsAppController::class, 'contacts'])->name('bookings.whatsapp-bulk.contacts');
     Route::post('bookings/whatsapp-bulk', [BulkWhatsAppController::class, 'store'])->name('bookings.whatsapp-bulk.store');
     Route::get('bookings/whatsapp-bulk/{batch}', [BulkWhatsAppController::class, 'show'])->name('bookings.whatsapp-bulk.show');
+    Route::delete('bookings/whatsapp-bulk/{batch}', [BulkWhatsAppController::class, 'destroy'])->name('bookings.whatsapp-bulk.destroy');
     Route::resource('bookings', ZoomBookingController::class);
     Route::post('bookings/{booking}/approve', [ZoomBookingController::class, 'approve'])->name('bookings.approve');
     Route::post('bookings/{booking}/reject', [ZoomBookingController::class, 'reject'])->name('bookings.reject');
