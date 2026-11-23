@@ -403,6 +403,7 @@
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'Accept': 'application/json',
                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
             },
             body: JSON.stringify({
@@ -410,7 +411,11 @@
                 token: tokenInput ? tokenInput.value : ''
             })
         })
-        .then(res => res.json())
+        .then(async res => {
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.message || 'Gagal memproses permintaan status.');
+            return data;
+        })
         .then(data => {
             if (data.success) {
                 badge.className = 'inline-flex items-center px-2 py-0.5 rounded-sm text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200';
@@ -462,11 +467,16 @@
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'Accept': 'application/json',
                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
             },
             body: JSON.stringify({ provider, target, message })
         })
-        .then(res => res.json())
+        .then(async res => {
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.message || 'Gagal memproses tes kirim.');
+            return data;
+        })
         .then(data => {
             resBox.classList.remove('hidden');
             if (data.success) {
