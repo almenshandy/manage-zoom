@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\ZoomBooking;
-use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Http\Request;
 
 class BookingReportController extends Controller
 {
@@ -26,8 +26,8 @@ class BookingReportController extends Controller
      */
     public function printAll(Request $request)
     {
-        $startDate = $request->input('start_date', now()->startOfMonth()->toDateString());
-        $endDate = $request->input('end_date', now()->endOfMonth()->toDateString());
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
         $status = $request->input('status');
         $search = $request->input('search');
 
@@ -37,7 +37,7 @@ class BookingReportController extends Controller
             $bookingIds = array_filter(explode(',', $bookingIds));
         }
 
-        $query = ZoomBooking::with(['user', 'account'])
+        $query = ZoomBooking::with(['user', 'account', 'project'])
             ->orderBy('start_date', 'asc')
             ->orderBy('start_time', 'asc');
 
@@ -51,9 +51,13 @@ class BookingReportController extends Controller
             $query->whereIn('id', $bookingIds);
             $isCustomSelection = true;
         } else {
-            // Jika tidak ada yang dicentang, gunakan filter tanggal default / aktif
-            $query->whereDate('start_date', '>=', $startDate)
-                ->whereDate('end_date', '<=', $endDate);
+            // Jika filter tanggal diisi
+            if (! empty($startDate)) {
+                $query->whereDate('start_date', '>=', $startDate);
+            }
+            if (! empty($endDate)) {
+                $query->whereDate('end_date', '<=', $endDate);
+            }
 
             if ($status !== null && $status !== '') {
                 $query->where('status', $status);
@@ -75,7 +79,7 @@ class BookingReportController extends Controller
             ->setPaper('a4', 'landscape');
 
         $fileName = ! empty($bookingIds)
-            ? 'rekap-jadwal-zoom-pilihan-' . now()->format('YmdHis') . '.pdf'
+            ? 'rekap-jadwal-zoom-pilihan-'.now()->format('YmdHis').'.pdf'
             : "rekap-jadwal-zoom-{$startDate}-sd-{$endDate}.pdf";
 
         return $pdf->stream($fileName);

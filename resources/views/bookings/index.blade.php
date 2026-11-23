@@ -25,10 +25,18 @@
                 <option value="2" {{ request('status') === '2' ? 'selected' : '' }}>Ditolak</option>
             </select>
 
+            <div class="flex items-center gap-1.5 text-xs text-gray-500">
+                <input type="date" name="start_date" value="{{ request('start_date') }}" title="Tanggal Mulai"
+                    class="py-1 px-2 text-xs bg-white border border-gray-300 rounded-sm focus:outline-none focus:border-brand-600">
+                <span class="text-gray-400">s/d</span>
+                <input type="date" name="end_date" value="{{ request('end_date') }}" title="Tanggal Selesai"
+                    class="py-1 px-2 text-xs bg-white border border-gray-300 rounded-sm focus:outline-none focus:border-brand-600">
+            </div>
+
             <button type="submit" class="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-800 text-xs font-semibold rounded-sm border border-gray-300 transition">
                 Filter
             </button>
-            @if(request()->hasAny(['search', 'status']))
+            @if(request()->hasAny(['search', 'status', 'start_date', 'end_date']))
                 <a href="{{ route('bookings.index') }}" class="px-2 py-1.5 text-xs text-gray-500 hover:text-gray-800">Reset</a>
             @endif
         </form>
