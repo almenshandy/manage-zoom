@@ -23,7 +23,7 @@
     <div class="mobile-availability-header bg-white p-4 rounded-sm border border-gray-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
             <h3 class="text-xs font-semibold text-gray-900 uppercase tracking-wider">Ketersediaan Akun Zoom (30 Hari Ke Depan)</h3>
-            <p class="text-xs text-gray-500 mt-0.5 md:hidden">Pilih tanggal, periksa jadwal akun, lalu pilih jam peminjaman.</p>
+            <p class="text-xs text-gray-500 mt-0.5 md:hidden">Pilih akun Zoom untuk melihat kalender peminjaman.</p>
             <p class="hidden md:block text-xs text-gray-500 mt-0.5">Pilih slot tanggal (ikon <span class="font-bold text-gray-700">+</span>) pada akun Zoom yang diinginkan untuk membuka form peminjaman.</p>
         </div>
 
@@ -45,41 +45,59 @@
 
     <!-- Timeline Grid Matrix Card -->
     <div class="md:hidden space-y-3">
-        <div class="mobile-date-picker bg-white p-4 rounded-sm border border-gray-200">
-            <label for="mobileBookingDate" class="block text-sm font-medium text-gray-700 mb-2">Tanggal peminjaman</label>
-            <select id="mobileBookingDate" class="w-full px-3 py-2 border border-gray-300 rounded-sm">
-                @foreach($dates as $date)
-                    <option value="{{ $date['date_string'] }}">{{ \Carbon\Carbon::parse($date['date_string'])->locale('id')->isoFormat('dddd, D MMMM Y') }}</option>
-                @endforeach
-            </select>
-            <div class="mobile-account-search">
-                <label for="mobileAccountSearch" class="sr-only">Cari akun Zoom</label>
-                <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
-                <input id="mobileAccountSearch" type="search" placeholder="Cari email akun Zoom..." autocomplete="off">
+        @if($accounts->isNotEmpty())
+            <div class="mobile-date-picker bg-white rounded-sm border">
+                <label for="mobileBookingAccount" class="block mb-2">Akun Zoom</label>
+                <select id="mobileBookingAccount" class="w-full px-3 border" aria-describedby="mobileBookingAccountDetails">
+                    <option value="">Pilih akun Zoom</option>
+                    @foreach($accounts as $account)
+                        <option value="{{ $account->id }}" data-email="{{ $account->email }}"
+                            data-max-date="{{ $account->expired_date?->format('Y-m-d') }}"
+                            data-details="{{ $account->capacity }} peserta · Berlaku s/d {{ $account->expired_date?->format('d/m/Y') }}">
+                            {{ $account->name }} · {{ $account->email }}
+                        </option>
+                    @endforeach
+                </select>
+                <div class="mobile-account-search">
+                    <label for="mobileAccountSearch" class="sr-only">Cari akun Zoom</label>
+                    <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+                    <input id="mobileAccountSearch" type="search" placeholder="Cari nama atau email akun Zoom…" autocomplete="off">
+                </div>
+                <p id="mobileBookingAccountDetails" class="mt-2 text-xs text-gray-600" aria-live="polite"></p>
+                <p id="mobileAccountEmpty" class="hidden mt-2 text-sm text-gray-600" role="status">Tidak ada akun yang sesuai pencarian.</p>
             </div>
-        </div>
-        <div id="mobileAccountSchedules" class="space-y-3">
-            @forelse($accounts as $account)
-                <article class="mobile-record mobile-availability-card account-row bg-white p-4 rounded-sm border border-gray-200 space-y-3" data-mobile-account="{{ $account->id }}">
-                    <div>
-                        <h4 class="font-semibold text-gray-900 break-words">{{ $account->name }}</h4>
-                        <p class="account-email text-sm text-gray-600 break-all">{{ $account->email }}</p>
-                        <p class="text-sm text-gray-500 mt-1">{{ $account->capacity }} peserta &bull; Berlaku s/d {{ $account->expired_date?->format('d/m/Y') ?? '-' }}</p>
+            <section id="mobileBookingCalendar" class="hidden space-y-3" aria-label="Kalender peminjaman">
+                <div class="mobile-date-picker bg-white rounded-sm border">
+                    <div class="flex items-center justify-between gap-2">
+                        <button type="button" id="mobileBookingPreviousMonth" aria-label="Bulan sebelumnya" class="h-11 w-11 rounded-sm border border-gray-200 disabled:opacity-40">
+                            <i class="fa-solid fa-chevron-left" aria-hidden="true"></i>
+                        </button>
+                        <h4 id="mobileBookingMonth" class="text-sm font-semibold" aria-live="polite"></h4>
+                        <button type="button" id="mobileBookingNextMonth" aria-label="Bulan berikutnya" class="h-11 w-11 rounded-sm border border-gray-200 disabled:opacity-40">
+                            <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
+                        </button>
                     </div>
-                    <div data-mobile-schedule class="space-y-2" aria-live="polite"></div>
-                    <p data-mobile-expired class="hidden text-sm text-red-700">Akun sudah kedaluwarsa pada tanggal ini.</p>
-                    <button type="button" class="mobile-slot-action btn-book-slot w-full px-3 py-2 rounded-sm bg-brand-900 text-white font-medium disabled:bg-gray-200 disabled:text-gray-500"
-                        data-account-id="{{ $account->id }}" data-account-email="{{ $account->email }}"
-                        data-date="{{ $dates[0]['date_string'] }}" data-date-display=""
-                        data-max-date="{{ $account->expired_date?->format('Y-m-d') ?? '' }}">
-                        <i class="fa-solid fa-plus mr-1" aria-hidden="true"></i> Pilih Jam Booking
+                    <div class="mt-3 grid grid-cols-7 text-center text-[11px] font-medium text-gray-600" aria-hidden="true">
+                        @foreach(['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'] as $weekday)
+                            <span>{{ $weekday }}</span>
+                        @endforeach
+                    </div>
+                    <div id="mobileBookingDays" class="mt-1 grid grid-cols-7 gap-y-1"></div>
+                    <p class="mt-3 flex items-center gap-2 text-xs text-gray-600">
+                        <span class="h-1.5 w-1.5 rounded-full bg-blue-600" aria-hidden="true"></span> Sudah ada booking
+                    </p>
+                </div>
+                <div class="mobile-date-picker bg-white rounded-sm border">
+                    <h4 id="mobileBookingScheduleDate" class="text-sm font-semibold"></h4>
+                    <div id="mobileBookingSchedule" class="my-3" aria-live="polite"></div>
+                    <button type="button" id="mobileBookingSlot" class="mobile-slot-action btn-book-slot w-full px-3 py-2 font-medium">
+                        <i class="fa-solid fa-plus mr-1" aria-hidden="true"></i> <span>Buat booking</span>
                     </button>
-                </article>
-            @empty
-                <p class="p-4 bg-white rounded-sm border border-gray-200 text-sm text-gray-500">Tidak ada akun Zoom aktif yang tersedia saat ini.</p>
-            @endforelse
-        </div>
-        <p id="mobileAccountEmpty" class="hidden p-4 text-sm text-gray-500">Tidak ada akun yang sesuai pencarian.</p>
+                </div>
+            </section>
+        @else
+            <p class="p-4 bg-white rounded-sm border border-gray-200 text-sm text-gray-500">Tidak ada akun Zoom aktif yang tersedia saat ini.</p>
+        @endif
     </div>
     <div class="hidden md:block bg-white rounded-sm border border-gray-200 overflow-hidden">
         <div class="overflow-x-auto custom-scrollbar">
@@ -371,33 +389,48 @@
 
 @push('scripts')
 <script>
-    const mobileBookingDate = document.getElementById('mobileBookingDate');
-    const mobileScheduleBookings = {{ \Illuminate\Support\Js::from($matrixBookings) }};
-    const mobileBookingUrl = {{ \Illuminate\Support\Js::from(route('bookings.show', '__BOOKING__')) }};
+    const mobileAccount = document.getElementById('mobileBookingAccount');
 
-    function updateMobileSchedules() {
-        const date = mobileBookingDate.value;
-        document.querySelectorAll('[data-mobile-account]').forEach(card => {
-            const button = card.querySelector('.btn-book-slot');
-            const schedule = card.querySelector('[data-mobile-schedule]');
-            const expired = Boolean(button.dataset.maxDate && date > button.dataset.maxDate);
-            button.dataset.date = date;
-            button.dataset.dateDisplay = mobileBookingDate.selectedOptions[0].textContent;
-            button.disabled = expired;
-            card.querySelector('[data-mobile-expired]').classList.toggle('hidden', !expired);
-            schedule.replaceChildren();
-            const bookings = [...(mobileScheduleBookings[card.dataset.mobileAccount]?.[date] || [])]
+    if (mobileAccount) {
+        const accounts = Array.from(mobileAccount.options).slice(1);
+        const mobileSearch = document.getElementById('mobileAccountSearch');
+        const calendar = document.getElementById('mobileBookingCalendar');
+        const monthHeading = document.getElementById('mobileBookingMonth');
+        const previousMonth = document.getElementById('mobileBookingPreviousMonth');
+        const nextMonth = document.getElementById('mobileBookingNextMonth');
+        const days = document.getElementById('mobileBookingDays');
+        const schedule = document.getElementById('mobileBookingSchedule');
+        const scheduleDate = document.getElementById('mobileBookingScheduleDate');
+        const slot = document.getElementById('mobileBookingSlot');
+        const firstDate = {{ \Illuminate\Support\Js::from($dates[0]['date_string']) }};
+        const bookings = {{ \Illuminate\Support\Js::from($mobileBookings) }};
+        const bookingUrl = {{ \Illuminate\Support\Js::from(route('bookings.show', '__BOOKING__')) }};
+        const monthFormat = new Intl.DateTimeFormat('id-ID', { month: 'long', year: 'numeric', timeZone: 'UTC' });
+        const dateFormat = new Intl.DateTimeFormat('id-ID', { dateStyle: 'full', timeZone: 'UTC' });
+        let selectedDate = firstDate;
+        let visibleMonth = new Date(firstDate.slice(0, 7) + '-01');
+
+        function accountBookings(account, date) {
+            return (bookings[account.value] ?? []).filter(booking => booking.start_date <= date && date <= booking.end_date);
+        }
+
+        function renderSchedule(account) {
+            const dayBookings = [...accountBookings(account, selectedDate)]
                 .sort((first, second) => first.start_time.localeCompare(second.start_time));
+            const dateLabel = dateFormat.format(new Date(selectedDate));
+            scheduleDate.textContent = dateLabel;
+            schedule.replaceChildren();
 
-            if (!bookings.length) {
+            if (!dayBookings.length) {
                 const empty = document.createElement('p');
-                empty.className = 'text-sm text-gray-500';
-                empty.textContent = expired ? 'Tidak tersedia untuk booking baru.' : 'Belum ada booking pada tanggal ini.';
-                schedule.appendChild(empty);
+                empty.className = 'text-sm text-gray-600';
+                empty.textContent = 'Belum ada booking pada tanggal ini.';
+                schedule.append(empty);
             }
-            bookings.forEach(booking => {
+
+            dayBookings.forEach(booking => {
                 const link = document.createElement('a');
-                link.href = mobileBookingUrl.replace('__BOOKING__', encodeURIComponent(booking.slug || booking.id));
+                link.href = bookingUrl.replace('__BOOKING__', encodeURIComponent(booking.slug || booking.id));
                 link.className = 'mobile-slot-summary';
                 const time = document.createElement('span');
                 time.className = 'block font-semibold';
@@ -409,12 +442,99 @@
                 status.className = 'block text-xs text-gray-600 mt-1';
                 status.textContent = `${booking.user_name} · ${booking.status_label}`;
                 link.append(time, title, status);
-                schedule.appendChild(link);
+                schedule.append(link);
             });
+
+            slot.dataset.accountId = account.value;
+            slot.dataset.accountEmail = account.dataset.email;
+            slot.dataset.maxDate = account.dataset.maxDate;
+            slot.dataset.date = selectedDate;
+            slot.dataset.dateDisplay = dateLabel;
+            slot.querySelector('span').textContent = dayBookings.length ? 'Booking jam lain' : 'Buat booking';
+        }
+
+        function renderCalendar() {
+            const account = mobileAccount.selectedOptions[0];
+            document.getElementById('mobileBookingAccountDetails').textContent = account.dataset.details ?? '';
+            calendar.classList.toggle('hidden', !account.value);
+            if (!account.value) return;
+
+            const month = visibleMonth.toISOString().slice(0, 7);
+            const lastDate = account.dataset.maxDate;
+            const firstDayOfMonth = firstDate.startsWith(month) ? Number(firstDate.slice(-2)) : 1;
+            const lastDayOfMonth = lastDate.startsWith(month)
+                ? Number(lastDate.slice(-2))
+                : new Date(Date.UTC(visibleMonth.getUTCFullYear(), visibleMonth.getUTCMonth() + 1, 0)).getUTCDate();
+            monthHeading.textContent = monthFormat.format(visibleMonth);
+            previousMonth.disabled = firstDate.startsWith(month);
+            nextMonth.disabled = lastDate.startsWith(month);
+            days.replaceChildren();
+
+            const leadingSpaces = (visibleMonth.getUTCDay() + firstDayOfMonth + 5) % 7;
+            for (let offset = 0; offset < leadingSpaces; offset++) {
+                days.append(document.createElement('span'));
+            }
+
+            for (let day = firstDayOfMonth; day <= lastDayOfMonth; day++) {
+                const date = `${month}-${String(day).padStart(2, '0')}`;
+                const count = accountBookings(account, date).length;
+                const button = document.createElement('button');
+                button.type = 'button';
+                button.dataset.date = date;
+                button.className = 'mobile-booking-day';
+                button.textContent = day;
+                button.setAttribute('aria-pressed', String(date === selectedDate));
+                button.setAttribute('aria-label', dateFormat.format(new Date(date)) + (count ? `, ${count} booking` : ''));
+                if (date === firstDate) button.setAttribute('aria-current', 'date');
+                if (count) button.dataset.hasBookings = 'true';
+                days.append(button);
+            }
+
+            renderSchedule(account);
+        }
+
+        mobileSearch.addEventListener('input', () => {
+            const selectedAccount = mobileAccount.selectedOptions[0];
+            const query = mobileSearch.value.trim().toLowerCase();
+            const matches = accounts.filter(option => option.textContent.toLowerCase().includes(query));
+            const options = selectedAccount.value && !matches.includes(selectedAccount)
+                ? [selectedAccount, ...matches]
+                : matches;
+            mobileAccount.replaceChildren(mobileAccount.options[0], ...options);
+            mobileAccount.value = selectedAccount.value;
+            document.getElementById('mobileAccountEmpty').classList.toggle('hidden', matches.length > 0);
         });
+
+        mobileAccount.addEventListener('change', () => {
+            const account = mobileAccount.selectedOptions[0];
+            if (account.value && selectedDate > account.dataset.maxDate) selectedDate = firstDate;
+            visibleMonth = new Date(selectedDate.slice(0, 7) + '-01');
+            renderCalendar();
+        });
+
+        previousMonth.addEventListener('click', () => {
+            visibleMonth.setUTCMonth(visibleMonth.getUTCMonth() - 1);
+            renderCalendar();
+            if (previousMonth.disabled) nextMonth.focus();
+        });
+
+        nextMonth.addEventListener('click', () => {
+            visibleMonth.setUTCMonth(visibleMonth.getUTCMonth() + 1);
+            renderCalendar();
+            if (nextMonth.disabled) previousMonth.focus();
+        });
+
+        days.addEventListener('click', event => {
+            const button = event.target.closest('button[data-date]');
+            if (!button || button.disabled) return;
+            days.querySelector('[aria-pressed="true"]')?.setAttribute('aria-pressed', 'false');
+            selectedDate = button.dataset.date;
+            button.setAttribute('aria-pressed', 'true');
+            renderSchedule(mobileAccount.selectedOptions[0]);
+        });
+
+        renderCalendar();
     }
-    mobileBookingDate.addEventListener('change', updateMobileSchedules);
-    updateMobileSchedules();
 
     const modal = document.getElementById('bookingModal');
     let bookingModalTrigger;
@@ -444,21 +564,11 @@
     inputStartTime.addEventListener('change', calculateModalDuration);
     inputEndTime.addEventListener('change', calculateModalDuration);
 
-    // Filter Akun
-    function filterBookingAccounts(value) {
-        const query = value.toLowerCase();
-        document.getElementById('searchAccount').value = value;
-        document.getElementById('mobileAccountSearch').value = value;
+    document.getElementById('searchAccount').addEventListener('input', function () {
+        const query = this.value.toLowerCase();
         document.querySelectorAll('.account-row').forEach(row => {
-            const email = row.querySelector('.account-email')?.textContent.toLowerCase() || '';
+            const email = row.querySelector('.account-email').textContent.toLowerCase();
             row.style.display = email.includes(query) ? '' : 'none';
-        });
-        const visible = Array.from(document.querySelectorAll('[data-mobile-account]')).some(card => card.style.display !== 'none');
-        document.getElementById('mobileAccountEmpty').classList.toggle('hidden', visible || !query);
-    }
-    ['searchAccount', 'mobileAccountSearch'].forEach(id => {
-        document.getElementById(id).addEventListener('input', function() {
-            filterBookingAccounts(this.value);
         });
     });
 

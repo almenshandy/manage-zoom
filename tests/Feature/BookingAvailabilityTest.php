@@ -34,6 +34,7 @@ class BookingAvailabilityTest extends TestCase
         $ongoing = $this->createBooking($admin, $account, $startDate, $endDate);
         $sameDay = $this->createBooking($admin, $account, '2026-11-10', '2026-11-10');
         $otherBooking = $this->createBooking($admin, $otherAccount, '2026-11-10', '2026-11-11');
+        $laterBooking = $this->createBooking($admin, $account, '2026-12-31', '2027-01-02');
 
         $response = $this->actingAs($admin)->get(route('bookings.create'));
 
@@ -46,6 +47,11 @@ class BookingAvailabilityTest extends TestCase
         $this->assertSame('2026-12-10', $response->viewData('dates')[30]['date_string']);
         $this->assertSame('2026-11-10', array_key_first($matrix[$account->id]));
         $this->assertSame(min($endDate, '2026-12-10'), array_key_last($matrix[$account->id]));
+        $mobile = $response->viewData('mobileBookings');
+        $this->assertSame([$ongoing->id, $sameDay->id, $laterBooking->id], array_column($mobile[$account->id], 'id'));
+        $this->assertSame('2026-11-10', $mobile[$account->id][0]['start_date']);
+        $this->assertSame('2026-12-31', $mobile[$account->id][2]['start_date']);
+        $this->assertSame('2026-12-31', $mobile[$account->id][2]['end_date']);
     }
 
     public function test_unauthenticated_request_redirects_to_login(): void

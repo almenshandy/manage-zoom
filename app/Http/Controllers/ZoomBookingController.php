@@ -72,19 +72,15 @@ class ZoomBookingController extends Controller
             ->orderBy('expired_date', 'asc')
             ->get();
 
-        // Ambil semua booking aktif yang jatuh pada rentang 30 hari ke depan
-        $bookings = ZoomBooking::with(['user', 'account', 'project'])
-            ->whereNotNull('zoom_account_id')
+        $accountsById = $accounts->keyBy('id');
+        $lastAccountDate = $accounts->last()?->expired_date ?? $today;
+
+        $bookings = ZoomBooking::with(['user', 'project'])
+            ->whereIn('zoom_account_id', $accountsById->keys())
             ->where('status', '!=', ZoomBooking::STATUS_REJECTED)
             ->where('status', '!=', ZoomBooking::STATUS_CANCELLED)
-            ->where(function ($q) use ($today, $endDate) {
-                $q->whereBetween('start_date', [$today->toDateString(), $endDate->toDateString()])
-                    ->orWhereBetween('end_date', [$today->toDateString(), $endDate->toDateString()])
-                    ->orWhere(function ($sub) use ($today, $endDate) {
-                        $sub->where('start_date', '<=', $today->toDateString())
-                            ->where('end_date', '>=', $endDate->toDateString());
-                    });
-            })
+            ->whereDate('start_date', '<=', $lastAccountDate->toDateString())
+            ->whereDate('end_date', '>=', $today->toDateString())
             ->get();
 
         // Siapkan rentang 31 hari (Hari ini s/d H+30)
@@ -104,28 +100,37 @@ class ZoomBookingController extends Controller
 
         // Petakan bookings ke matrix [account_id][date_string][] = booking
         $matrixBookings = [];
-        foreach ($bookings as $b) {
-            $bStart = Carbon::parse($b->start_date);
-            $bEnd = Carbon::parse($b->end_date);
-            // max()/min() dapat mengembalikan objek batas; salin agar iterasi tidak mengubah rentang matriks.
-            $bCursor = $bStart->max($today)->copy();
-            $bLimit = $bEnd->min($endDate)->copy();
+        $mobileBookings = [];
+        foreach ($bookings as $booking) {
+            $bookingStart = Carbon::parse($booking->start_date)->max($today)->copy();
+            $bookingEnd = Carbon::parse($booking->end_date)->min($accountsById[$booking->zoom_account_id]->expired_date);
+            if ($bookingStart->gt($bookingEnd)) {
+                continue;
+            }
 
-            while ($bCursor->lte($bLimit)) {
-                $dateKey = $bCursor->toDateString();
-                $matrixBookings[$b->zoom_account_id][$dateKey][] = [
-                    'id' => $b->id,
-                    'slug' => $b->slug,
-                    'topic' => $b->topic,
-                    'project_name' => $b->project_display_name,
-                    'display_title' => $b->project_display_name ? "{$b->project_display_name} - {$b->topic}" : $b->topic,
-                    'user_name' => $b->user?->name ?? 'User',
-                    'start_time' => substr($b->start_time, 0, 5),
-                    'end_time' => substr($b->end_time, 0, 5),
-                    'status_label' => $b->status_label,
-                    'status' => $b->status,
-                ];
-                $bCursor->addDay();
+            $projectName = $booking->project_display_name;
+            $schedule = [
+                'id' => $booking->id,
+                'slug' => $booking->slug,
+                'topic' => $booking->topic,
+                'project_name' => $projectName,
+                'display_title' => $projectName ? "{$projectName} - {$booking->topic}" : $booking->topic,
+                'user_name' => $booking->user?->name ?? 'User',
+                'start_time' => substr($booking->start_time, 0, 5),
+                'end_time' => substr($booking->end_time, 0, 5),
+                'status_label' => $booking->status_label,
+                'status' => $booking->status,
+            ];
+
+            $mobileBookings[$booking->zoom_account_id][] = $schedule + [
+                'start_date' => $bookingStart->toDateString(),
+                'end_date' => $bookingEnd->toDateString(),
+            ];
+
+            $matrixEnd = $bookingEnd->min($endDate);
+            while ($bookingStart->lte($matrixEnd)) {
+                $matrixBookings[$booking->zoom_account_id][$bookingStart->toDateString()][] = $schedule;
+                $bookingStart->addDay();
             }
         }
 
@@ -137,7 +142,7 @@ class ZoomBookingController extends Controller
         // Ambil daftar master proyek aktif untuk dropdown booking
         $projects = Project::where('status', 'active')->orderBy('name')->get();
 
-        return view('bookings.create', compact('accounts', 'dates', 'matrixBookings', 'users', 'projects'));
+        return view('bookings.create', compact('accounts', 'dates', 'matrixBookings', 'mobileBookings', 'users', 'projects'));
     }
 
     public function store(StoreBookingRequest $request)
