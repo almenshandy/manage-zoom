@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,6 +14,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
+
 <body class="login-page antialiased" style="--login-illustration: url('{{ asset('login-meeting-illustration.svg') }}')">
     <main class="login-shell">
         <section class="login-visual" aria-labelledby="loginIntroTitle">
@@ -26,59 +28,60 @@
                 <p>Ajukan peminjaman, pantau ketersediaan akun, dan siapkan meeting dalam satu sistem.</p>
             </div>
             <div class="login-illustration" aria-hidden="true"></div>
-            <p class="login-visual-footer">Penjadwalan <span aria-hidden="true">/</span> Peminjaman akun <span aria-hidden="true">/</span> Persetujuan meeting</p>
+            <p class="login-visual-footer">Penjadwalan <span aria-hidden="true">/</span> Peminjaman akun <span
+                    aria-hidden="true">/</span> Persetujuan meeting</p>
         </section>
 
         <section class="login-form-panel" aria-labelledby="loginTitle">
             <div class="login-form">
-            <div class="login-mobile-brand login-brand">
-                <img src="{{ asset('icon.svg') }}" alt="" width="32" height="32">
-                <span>ManageZoom</span>
-            </div>
-            <header class="login-form-heading">
-                <p class="login-eyebrow">Selamat datang kembali</p>
-                <h1 id="loginTitle">Masuk ke akun Anda</h1>
-                <p>Gunakan akun yang terdaftar untuk melanjutkan.</p>
-            </header>
-            @if ($errors->any())
-                <div class="login-error" role="alert">
-                    <i class="fa-solid fa-circle-exclamation" aria-hidden="true"></i>
-                    <span>{{ $errors->first() }}</span>
+                <div class="login-mobile-brand login-brand">
+                    <img src="{{ asset('icon.svg') }}" alt="" width="32" height="32">
+                    <span>ManageZoom</span>
                 </div>
-            @endif
-
-            <form method="POST" action="{{ route('login.post') }}" class="login-fields">
-                @csrf
-                <div class="login-field">
-                    <label for="loginIdentity">Username atau Email</label>
-                    <input type="text" name="login" id="loginIdentity" value="{{ old('login') }}" required autofocus autocomplete="username"
-                        placeholder="admin atau staf@institusi.ac.id">
-                </div>
-
-                <div class="login-field">
-                    <label for="loginPassword">Password</label>
-                    <div class="login-password-field">
-                        <input type="password" name="password" id="loginPassword" required autocomplete="current-password"
-                            placeholder="••••••••">
-                        <button type="button" onclick="togglePasswordVisibility()" class="login-password-toggle"
-                            aria-label="Tampilkan password" aria-controls="loginPassword" aria-pressed="false"
-                            title="Tampilkan / Sembunyikan Password">
-                            <i class="fa-regular fa-eye" id="passwordEyeIcon" aria-hidden="true"></i>
-                        </button>
+                <header class="login-form-heading">
+                    <p class="login-eyebrow">Selamat datang kembali</p>
+                    <h1 id="loginTitle">Masuk ke akun Anda</h1>
+                    <p>Gunakan akun yang terdaftar untuk melanjutkan.</p>
+                </header>
+                @if ($errors->any())
+                    <div class="login-error" role="alert">
+                        <i class="fa-solid fa-circle-exclamation" aria-hidden="true"></i>
+                        <span>{{ $errors->first() }}</span>
                     </div>
-                </div>
+                @endif
 
-                <label class="login-remember">
-                    <input type="checkbox" name="remember" @checked(old('remember'))>
-                    <span>Ingat saya</span>
-                </label>
+                <form method="POST" action="{{ route('login.post') }}" class="login-fields">
+                    @csrf
+                    <div class="login-field">
+                        <label for="loginIdentity">Username atau Email</label>
+                        <input type="text" name="login" id="loginIdentity" value="{{ old('login') }}" required autofocus
+                            autocomplete="username" placeholder="admin atau staf@institusi.ac.id">
+                    </div>
 
-                <button type="submit" class="login-submit">
-                    Masuk ke Sistem <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
-                </button>
-            </form>
+                    <div class="login-field">
+                        <label for="loginPassword">Password</label>
+                        <div class="login-password-field">
+                            <input type="password" name="password" id="loginPassword" required
+                                autocomplete="current-password" placeholder="••••••••">
+                            <button type="button" onclick="togglePasswordVisibility()" class="login-password-toggle"
+                                aria-label="Tampilkan password" aria-controls="loginPassword" aria-pressed="false"
+                                title="Tampilkan / Sembunyikan Password">
+                                <i class="fa-regular fa-eye" id="passwordEyeIcon" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                    </div>
 
-            <p class="login-default-hint">Default login: <span>admin / password</span></p>
+                    <label class="login-remember">
+                        <input type="checkbox" name="remember" @checked(old('remember'))>
+                        <span>Ingat saya</span>
+                    </label>
+
+                    <button type="submit" class="login-submit">
+                        Masuk ke Sistem <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+                    </button>
+                </form>
+
+                {{-- <p class="login-default-hint">Default login: <span>admin / password</span></p> --}}
             </div>
         </section>
     </main>
@@ -105,4 +108,5 @@
         }
     </script>
 </body>
+
 </html>
