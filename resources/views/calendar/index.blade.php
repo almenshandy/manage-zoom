@@ -205,7 +205,7 @@
                 const startTime = event.startStr.slice(11, 16);
                 const endTime = event.endStr.slice(11, 16);
 
-                link.href = event.url;
+                link.href = event.extendedProps.detailUrl;
                 row.querySelector('[data-title]').textContent = event.title.startsWith(accountPrefix)
                     ? event.title.slice(accountPrefix.length)
                     : event.title;
@@ -259,6 +259,9 @@
             moreLinkContent: info => `+${info.num}`,
             height: 'auto',
             events: '{{ route("calendar.events") }}',
+            eventDataTransform: function ({ url, extendedProps, ...event }) {
+                return { ...event, extendedProps: { ...extendedProps, detailUrl: url } };
+            },
             loading: function (loading) {
                 loadingEvents = loading;
                 if (loading) eventsFailed = false;
@@ -273,6 +276,14 @@
                 if (!info.jsEvent.target.closest('.calendar-date-trigger')) {
                     openDay(info.dateStr.slice(0, 10));
                 }
+            },
+            eventClick: function ({ event, jsEvent, view }) {
+                jsEvent.preventDefault();
+                const dateCell = document.elementsFromPoint(jsEvent.clientX, jsEvent.clientY)
+                    .find(element => element.matches('.fc-daygrid-day[data-date], .fc-timegrid-col[data-date]'));
+                const eventStart = event.startStr.slice(0, 10);
+                const viewStart = calendar.formatIso(view.activeStart, true);
+                openDay(dateCell?.dataset.date ?? (eventStart < viewStart ? viewStart : eventStart));
             },
             dayCellDidMount: function (info) {
                 makeDateTrigger(info.el.querySelector('.fc-daygrid-day-number'), calendar.formatIso(info.date, true));
