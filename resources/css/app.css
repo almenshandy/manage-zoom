@@ -264,6 +264,35 @@
     .mobile-filter-form > a { grid-column: 1 / -1; justify-self: end; font-size: 13px; padding: 0 4px; }
     .mobile-filter-form input, .mobile-filter-form select, .mobile-filter-form > button { height: 46px; border-radius: var(--mobile-corner-radius); border-color: var(--color-gray-200); background-color: #fff; }
     .mobile-filter-form > button { padding-inline: 18px; font-size: 13px; }
+
+    #bookingList[data-mobile-panel=""] > .mobile-list-toolbar,
+    #bookingList[data-mobile-panel]:not([data-mobile-panel="filters"]) #bookingFilters,
+    #bookingList[data-mobile-panel]:not([data-mobile-panel="actions"]) :is(#bookingActions, #bookingSelection) {
+        display: none;
+    }
+    #bookingList .mobile-list-toolbar {
+        padding: 12px;
+        border: 1px solid var(--color-gray-200);
+        border-radius: var(--mobile-corner-radius);
+        background: #fff;
+    }
+    #bookingFilters select,
+    #bookingFilters .booking-filter-dates { grid-column: 1 / -1; min-width: 0; }
+    #bookingFilters .booking-filter-dates {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    }
+    #bookingFilters .booking-filter-dates input { width: 100%; min-width: 0; }
+    #bookingFilters > a { grid-column: auto; align-self: center; }
+    #bookingActions > :is(.mobile-primary-action, .mobile-utility-action) {
+        flex: 1;
+        width: auto;
+        min-width: 0;
+        min-height: 44px;
+        gap: 6px;
+        padding-inline: 6px;
+        font-size: 12px;
+    }
     .mobile-data-container { background: transparent; border: 0; border-radius: 0; overflow: visible; }
     .mobile-record-list { display: flex; flex-direction: column; gap: 0; border: 1px solid var(--color-gray-300); background: #fff; }
     .mobile-record { min-width: 0; padding: 16px; border: 0; border-radius: 0; background: #fff; box-shadow: none; overflow-wrap: anywhere; }

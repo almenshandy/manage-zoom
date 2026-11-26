@@ -2,22 +2,37 @@
 
 @php
     $header = 'Daftar Peminjaman & Booking Zoom';
+    $hasActiveFilters = request()->anyFilled(['search', 'status', 'start_date', 'end_date']);
 @endphp
 
 @section('content')
-<div class="space-y-4">
+<div id="bookingList" class="space-y-4">
+    <div id="bookingMobileControls" class="md:hidden" hidden>
+        <div class="flex gap-2">
+            <button type="button" id="toggleBookingFilters" aria-expanded="false" aria-controls="bookingFilters"
+                class="inline-flex min-h-11 items-center gap-2 rounded-sm border border-gray-300 bg-white px-3 text-xs font-semibold text-gray-700">
+                <i class="fa-solid fa-sliders" aria-hidden="true"></i>
+                {{ $hasActiveFilters ? 'Filter aktif' : 'Filter' }}
+            </button>
+            <button type="button" id="toggleBookingActions" aria-expanded="false" aria-controls="bookingActions bookingSelection"
+                class="inline-flex min-h-11 items-center gap-2 rounded-sm border border-gray-300 bg-white px-3 text-xs font-semibold text-gray-700">
+                <i class="fa-solid fa-ellipsis" aria-hidden="true"></i>
+                <span id="bookingMobileActionLabel" aria-live="polite">Aksi</span>
+            </button>
+        </div>
+    </div>
     <!-- Filter & Action Header (Flat Minimalist) -->
     <div class="mobile-list-toolbar bg-white p-4 rounded-sm border border-gray-200 flex flex-col md:flex-row md:items-center justify-between gap-3">
-        <form method="GET" action="{{ route('bookings.index') }}" class="mobile-filter-form flex flex-wrap items-center gap-2 flex-1">
+        <form id="bookingFilters" method="GET" action="{{ route('bookings.index') }}" class="mobile-filter-form flex flex-wrap items-center gap-2 flex-1">
             <div class="relative flex-1 min-w-[220px]">
                 <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
                     <i class="fa-solid fa-magnifying-glass text-xs"></i>
                 </span>
-                <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari topik atau agenda..."
+                <input type="text" name="search" aria-label="Cari topik atau agenda" value="{{ request('search') }}" placeholder="Cari topik atau agenda..."
                     class="w-full pl-8 pr-3 py-1.5 text-xs bg-white border border-gray-300 rounded-sm focus:outline-none focus:border-brand-600">
             </div>
 
-            <select name="status" onchange="this.form.submit()" class="py-1.5 px-3 text-xs bg-white border border-gray-300 rounded-sm focus:outline-none focus:border-brand-600">
+            <select name="status" aria-label="Status booking" onchange="if (window.matchMedia('(min-width: 768px)').matches) this.form.submit()" class="py-1.5 px-3 text-xs bg-white border border-gray-300 rounded-sm focus:outline-none focus:border-brand-600">
                 <option value="">Semua Status</option>
                 <option value="0" {{ request('status') === '0' ? 'selected' : '' }}>Menunggu Persetujuan</option>
                 <option value="1" {{ request('status') === '1' ? 'selected' : '' }}>Disetujui (ACC)</option>
@@ -25,34 +40,36 @@
                 <option value="2" {{ request('status') === '2' ? 'selected' : '' }}>Ditolak</option>
             </select>
 
-            <div class="flex items-center gap-1.5 text-xs text-gray-500">
-                <input type="date" name="start_date" value="{{ request('start_date') }}" title="Tanggal Mulai"
+            <div class="booking-filter-dates flex items-center gap-1.5 text-xs text-gray-500">
+                <input type="date" name="start_date" value="{{ request('start_date') }}" aria-label="Tanggal mulai"
                     class="py-1 px-2 text-xs bg-white border border-gray-300 rounded-sm focus:outline-none focus:border-brand-600">
                 <span class="text-gray-400">s/d</span>
-                <input type="date" name="end_date" value="{{ request('end_date') }}" title="Tanggal Selesai"
+                <input type="date" name="end_date" value="{{ request('end_date') }}" aria-label="Tanggal selesai"
                     class="py-1 px-2 text-xs bg-white border border-gray-300 rounded-sm focus:outline-none focus:border-brand-600">
             </div>
 
             <button type="submit" class="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-800 text-xs font-semibold rounded-sm border border-gray-300 transition">
                 Filter
             </button>
-            @if(request()->hasAny(['search', 'status', 'start_date', 'end_date']))
+            @if($hasActiveFilters)
                 <a href="{{ route('bookings.index') }}" class="px-2 py-1.5 text-xs text-gray-500 hover:text-gray-800">Reset</a>
             @endif
         </form>
 
-        <div class="mobile-toolbar flex items-center gap-2 shrink-0">
+        <div id="bookingActions" class="mobile-toolbar flex items-center gap-2 shrink-0">
             <button type="button" id="openBulkWhatsApp" class="mobile-primary-action inline-flex items-center justify-center bg-emerald-700 text-white w-8 h-8 rounded-sm border border-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed transition" aria-label="Kirim Bulk WhatsApp" title="Kirim Bulk WhatsApp" disabled>
                 <i class="fa-brands fa-whatsapp text-sm" aria-hidden="true"></i>
+                <span class="md:hidden">Kirim WhatsApp</span>
             </button>
             <a href="{{ route('bookings.print-all', request()->query()) }}" id="btnPrintPdf" target="_blank" class="mobile-utility-action inline-flex items-center justify-center bg-white hover:bg-gray-50 text-gray-700 w-8 h-8 rounded-sm border border-gray-300 transition" aria-label="Cetak Rekap PDF" title="Cetak Rekap PDF">
                 <i class="fa-solid fa-print text-gray-600 text-sm"></i>
+                <span class="md:hidden">Cetak rekap PDF</span>
             </a>
         </div>
     </div>
 
     <!-- Booking Table Card (Clean & Bordered) -->
-    <div class="flex flex-wrap items-center gap-3 text-xs text-gray-600">
+    <div id="bookingSelection" class="flex flex-wrap items-center gap-3 text-xs text-gray-600">
         <label class="inline-flex items-center gap-2 cursor-pointer py-1.5"><input type="checkbox" id="bulkSelectAll" aria-label="Pilih semua meeting yang dapat dikirim pada halaman ini"> Pilih semua di halaman ini</label>
         <span id="bulkSelectedCount" class="font-semibold text-gray-900" aria-live="polite">0 meeting dipilih</span>
         <span>Hanya booking Disetujui / Link Aktif.</span>
@@ -194,6 +211,24 @@
 @push('scripts')
 <script>
     (() => {
+        const list = document.getElementById('bookingList');
+        const filterToggle = document.getElementById('toggleBookingFilters');
+        const actionToggle = document.getElementById('toggleBookingActions');
+        const actionLabel = document.getElementById('bookingMobileActionLabel');
+        let openPanel = '';
+
+        function togglePanel(panel) {
+            openPanel = openPanel === panel ? '' : panel;
+            list.dataset.mobilePanel = openPanel;
+            filterToggle.setAttribute('aria-expanded', String(openPanel === 'filters'));
+            actionToggle.setAttribute('aria-expanded', String(openPanel === 'actions'));
+        }
+
+        list.dataset.mobilePanel = openPanel;
+        filterToggle.addEventListener('click', () => togglePanel('filters'));
+        actionToggle.addEventListener('click', () => togglePanel('actions'));
+        document.getElementById('bookingMobileControls').hidden = false;
+
         const checkboxes = Array.from(document.querySelectorAll('.bulk-booking-checkbox'));
         const eligibleIds = [...new Set(checkboxes.filter(input => !input.disabled).map(input => input.value))];
         const selected = new Set();
@@ -207,6 +242,7 @@
             button.disabled = selected.size === 0;
             button.title = selected.size > 0 ? `Kirim Bulk WhatsApp (${selected.size} dipilih)` : 'Pilih meeting untuk kirim bulk WhatsApp';
             document.getElementById('bulkSelectedCount').textContent = `${selected.size} meeting dipilih`;
+            actionLabel.textContent = selected.size ? `Aksi (${selected.size})` : 'Aksi';
             selectAll.checked = eligibleIds.length > 0 && selected.size === eligibleIds.length;
             selectAll.indeterminate = selected.size > 0 && selected.size < eligibleIds.length;
             selectAll.disabled = !eligibleIds.length;
