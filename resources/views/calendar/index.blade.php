@@ -195,11 +195,21 @@
         }
 
         function openDay(date) {
-            selectedDate = date;
-            dialogTitle.textContent = dayFormat.format(new Date(date));
+            selectedDate = date.slice(0, 10);
+            dialogTitle.textContent = dayFormat.format(new Date(selectedDate));
             if (!dialog.open) dialog.showModal();
             renderDay();
         }
+
+        calendarEl.addEventListener('click', event => {
+            const moreLink = event.target.closest('.fc-daygrid-more-link');
+            const date = moreLink?.closest('.fc-daygrid-day[data-date]')?.dataset.date;
+            if (!date) return;
+
+            event.preventDefault();
+            event.stopPropagation();
+            openDay(date);
+        }, { capture: true });
 
         function makeDateTrigger(element, date) {
             if (!element) return;
@@ -268,9 +278,6 @@
                 if (info.view.type !== 'dayGridMonth') {
                     makeDateTrigger(info.el.querySelector('.fc-col-header-cell-cushion'), calendar.formatIso(info.date, true));
                 }
-            },
-            moreLinkClick: function (info) {
-                openDay(calendar.formatIso(info.date, true));
             },
             eventTimeFormat: {
                 hour: '2-digit',
