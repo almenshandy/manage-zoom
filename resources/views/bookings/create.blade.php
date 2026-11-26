@@ -5,7 +5,7 @@
 @endphp
 
 @section('content')
-<div class="space-y-4">
+<div id="bookingAvailability" class="space-y-4">
     <!-- Top Action Bar (Flat Minimalis) -->
     <div class="flex flex-wrap items-center justify-between gap-3">
         <a href="{{ route('bookings.index') }}" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 text-xs font-medium rounded-sm transition">
@@ -51,7 +51,7 @@
                 <select id="mobileBookingAccount" class="w-full px-3 border" aria-describedby="mobileBookingAccountDetails">
                     <option value="">Pilih akun Zoom</option>
                     @foreach($accounts as $account)
-                        <option value="{{ $account->id }}" data-email="{{ $account->email }}"
+                        <option value="{{ $account->id }}" data-email="{{ $account->email }}" data-name="{{ $account->name }}"
                             data-max-date="{{ $account->expired_date?->format('Y-m-d') }}"
                             data-details="{{ $account->capacity }} peserta · Berlaku s/d {{ $account->expired_date?->format('d/m/Y') }}">
                             {{ $account->name }} · {{ $account->email }}
@@ -169,14 +169,16 @@
                                     <td class="border-r border-gray-200 p-1 text-center align-middle" style="min-width: 58px;">
                                         <div class="space-y-1">
                                             @foreach($dayBookings as $b)
-                                                <a href="{{ route('bookings.show', $b['slug'] ?? $b['id']) }}" 
+                                                <button type="button" aria-haspopup="dialog"
+                                                   data-booking-summary="{{ $b['id'] }}" data-account-id="{{ $acc->id }}"
+                                                   data-account-name="{{ $acc->name }}" data-date="{{ $d['date_string'] }}"
                                                    class="block w-full py-1 px-1.5 rounded-sm bg-blue-50 border border-blue-200 text-blue-900 hover:bg-blue-100 transition text-[10px] text-left leading-tight"
                                                    title="{{ $b['display_title'] ?? $b['topic'] }} ({{ $b['user_name'] }}) - {{ $b['start_time'] }} s/d {{ $b['end_time'] }} WIB">
                                                     <span class="font-semibold block truncate">{{ $b['start_time'] }}-{{ $b['end_time'] }}</span>
                                                     <span class="text-[9px] text-blue-700 block truncate font-medium">
                                                         {{ !empty($b['project_name']) ? '[' . $b['project_name'] . ']' : $b['user_name'] }}
                                                     </span>
-                                                </a>
+                                                </button>
                                             @endforeach
                                             <button type="button" 
                                                 class="btn-book-slot w-full py-0.5 rounded-sm border border-dashed border-gray-300 text-gray-400 hover:text-gray-700 hover:border-gray-400 text-[9px] transition"
@@ -387,8 +389,60 @@
     </div>
 </div>
 
+<dialog id="existingBookingDialog" class="schedule-dialog" aria-labelledby="existingBookingTitle">
+    <div class="schedule-dialog-panel rounded-sm border border-gray-200 bg-white text-gray-900 shadow-xl">
+        <div class="flex items-center justify-between gap-3 border-b border-gray-200 px-4 py-2">
+            <h3 id="existingBookingTitle" class="text-sm font-semibold">Ringkasan booking</h3>
+            <form method="dialog">
+                <button type="submit" autofocus aria-label="Tutup ringkasan booking" class="h-11 w-11 rounded-sm border border-gray-200 text-gray-600 hover:bg-gray-50">
+                    <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+                </button>
+            </form>
+        </div>
+        <div class="min-h-0 overflow-y-auto overscroll-contain p-4">
+            <p data-summary-topic class="mb-4 break-words text-base font-semibold"></p>
+            <dl class="grid grid-cols-2 gap-3 text-sm">
+                <div><dt class="text-xs text-gray-600">Tanggal</dt><dd data-summary-date></dd></div>
+                <div><dt class="text-xs text-gray-600">Jam</dt><dd data-summary-time></dd></div>
+                <div><dt class="text-xs text-gray-600">Akun Zoom</dt><dd data-summary-account class="break-words"></dd></div>
+                <div><dt class="text-xs text-gray-600">Status</dt><dd data-summary-status></dd></div>
+            </dl>
+            <a data-summary-link class="mt-4 inline-flex min-h-11 items-center rounded-sm bg-brand-900 px-3 text-sm font-medium text-white hover:bg-brand-950">Lihat detail booking</a>
+        </div>
+    </div>
+</dialog>
+
 @push('scripts')
 <script>
+    const availabilityBookings = {{ \Illuminate\Support\Js::from($mobileBookings) }};
+    const bookingDetailUrl = {{ \Illuminate\Support\Js::from(route('bookings.show', '__BOOKING__')) }};
+    const bookingDateFormat = new Intl.DateTimeFormat('id-ID', { dateStyle: 'full', timeZone: 'UTC' });
+    const existingBookingDialog = document.getElementById('existingBookingDialog');
+
+    document.getElementById('bookingAvailability').addEventListener('click', event => {
+        const trigger = event.target.closest('button[data-booking-summary]');
+        if (!trigger) return;
+
+        const booking = availabilityBookings[trigger.dataset.accountId]
+            ?.find(item => String(item.id) === trigger.dataset.bookingSummary);
+        if (!booking) return;
+
+        existingBookingDialog.querySelector('[data-summary-topic]').textContent = booking.display_title;
+        existingBookingDialog.querySelector('[data-summary-date]').textContent = bookingDateFormat.format(new Date(trigger.dataset.date));
+        existingBookingDialog.querySelector('[data-summary-time]').textContent = `${booking.start_time}–${booking.end_time} WIB`;
+        existingBookingDialog.querySelector('[data-summary-account]').textContent = trigger.dataset.accountName;
+        existingBookingDialog.querySelector('[data-summary-status]').textContent = booking.status_label;
+        existingBookingDialog.querySelector('[data-summary-link]').href = bookingDetailUrl.replace(
+            '__BOOKING__', encodeURIComponent(booking.slug || booking.id)
+        );
+        trigger.focus({ preventScroll: true });
+        existingBookingDialog.showModal();
+    });
+
+    existingBookingDialog.addEventListener('click', event => {
+        if (event.target === existingBookingDialog) existingBookingDialog.close();
+    });
+
     const mobileAccount = document.getElementById('mobileBookingAccount');
 
     if (mobileAccount) {
@@ -403,21 +457,18 @@
         const scheduleDate = document.getElementById('mobileBookingScheduleDate');
         const slot = document.getElementById('mobileBookingSlot');
         const firstDate = {{ \Illuminate\Support\Js::from($dates[0]['date_string']) }};
-        const bookings = {{ \Illuminate\Support\Js::from($mobileBookings) }};
-        const bookingUrl = {{ \Illuminate\Support\Js::from(route('bookings.show', '__BOOKING__')) }};
         const monthFormat = new Intl.DateTimeFormat('id-ID', { month: 'long', year: 'numeric', timeZone: 'UTC' });
-        const dateFormat = new Intl.DateTimeFormat('id-ID', { dateStyle: 'full', timeZone: 'UTC' });
         let selectedDate = firstDate;
         let visibleMonth = new Date(firstDate.slice(0, 7) + '-01');
 
         function accountBookings(account, date) {
-            return (bookings[account.value] ?? []).filter(booking => booking.start_date <= date && date <= booking.end_date);
+            return (availabilityBookings[account.value] ?? []).filter(booking => booking.start_date <= date && date <= booking.end_date);
         }
 
         function renderSchedule(account) {
             const dayBookings = [...accountBookings(account, selectedDate)]
                 .sort((first, second) => first.start_time.localeCompare(second.start_time));
-            const dateLabel = dateFormat.format(new Date(selectedDate));
+            const dateLabel = bookingDateFormat.format(new Date(selectedDate));
             scheduleDate.textContent = dateLabel;
             schedule.replaceChildren();
 
@@ -429,9 +480,14 @@
             }
 
             dayBookings.forEach(booking => {
-                const link = document.createElement('a');
-                link.href = bookingUrl.replace('__BOOKING__', encodeURIComponent(booking.slug || booking.id));
-                link.className = 'mobile-slot-summary';
+                const button = document.createElement('button');
+                button.type = 'button';
+                button.className = 'mobile-slot-summary w-full text-left';
+                button.setAttribute('aria-haspopup', 'dialog');
+                button.dataset.bookingSummary = booking.id;
+                button.dataset.accountId = account.value;
+                button.dataset.accountName = account.dataset.name;
+                button.dataset.date = selectedDate;
                 const time = document.createElement('span');
                 time.className = 'block font-semibold';
                 time.textContent = `${booking.start_time} - ${booking.end_time} WIB`;
@@ -441,8 +497,8 @@
                 const status = document.createElement('span');
                 status.className = 'block text-xs text-gray-600 mt-1';
                 status.textContent = `${booking.user_name} · ${booking.status_label}`;
-                link.append(time, title, status);
-                schedule.append(link);
+                button.append(time, title, status);
+                schedule.append(button);
             });
 
             slot.dataset.accountId = account.value;
@@ -484,7 +540,7 @@
                 button.className = 'mobile-booking-day';
                 button.textContent = day;
                 button.setAttribute('aria-pressed', String(date === selectedDate));
-                button.setAttribute('aria-label', dateFormat.format(new Date(date)) + (count ? `, ${count} booking` : ''));
+                button.setAttribute('aria-label', bookingDateFormat.format(new Date(date)) + (count ? `, ${count} booking` : ''));
                 if (date === firstDate) button.setAttribute('aria-current', 'date');
                 if (count) button.dataset.hasBookings = 'true';
                 days.append(button);

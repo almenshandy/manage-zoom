@@ -41,30 +41,6 @@
     }
     .fc .calendar-date-trigger:hover,
     .fc .calendar-date-trigger:focus-visible { text-decoration: underline; }
-    #calendarDayDialog {
-        position: fixed;
-        inset: 0;
-        width: 100%;
-        height: 100%;
-        max-width: none;
-        max-height: none;
-        margin: 0;
-        padding: max(1rem, env(safe-area-inset-top)) max(1rem, env(safe-area-inset-right))
-            max(1rem, env(safe-area-inset-bottom)) max(1rem, env(safe-area-inset-left));
-        overflow: hidden;
-        background: transparent;
-    }
-    #calendarDayDialog[open] { display: grid; place-items: center; }
-    #calendarDayDialog::backdrop { background: rgb(17 24 39 / 55%); }
-    .calendar-day-panel {
-        display: grid;
-        grid-template-rows: auto minmax(0, 1fr);
-        width: min(100%, 32rem);
-        max-height: 100%;
-        min-height: 0;
-        overflow: hidden;
-    }
-
     @media (max-width: 767px) {
         .fc .fc-toolbar {
             display: grid;
@@ -122,8 +98,8 @@
     </div>
 </div>
 
-<dialog id="calendarDayDialog" aria-labelledby="calendarDayTitle">
-    <div class="calendar-day-panel rounded-sm border border-gray-200 bg-white text-gray-900 shadow-xl">
+<dialog id="calendarDayDialog" class="schedule-dialog" aria-labelledby="calendarDayTitle">
+    <div class="schedule-dialog-panel rounded-sm border border-gray-200 bg-white text-gray-900 shadow-xl">
         <div class="flex items-center justify-between gap-3 border-b border-gray-200 px-4 py-2">
             <h3 id="calendarDayTitle" class="text-sm font-semibold"></h3>
             <form method="dialog">
