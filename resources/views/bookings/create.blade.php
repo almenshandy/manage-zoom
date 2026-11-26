@@ -51,7 +51,7 @@
                 <select id="mobileBookingAccount" class="w-full px-3 border" aria-describedby="mobileBookingAccountDetails">
                     <option value="">Pilih akun Zoom</option>
                     @foreach($accounts as $account)
-                        <option value="{{ $account->id }}" data-email="{{ $account->email }}" data-name="{{ $account->name }}"
+                        <option value="{{ $account->id }}" data-email="{{ $account->email }}"
                             data-max-date="{{ $account->expired_date?->format('Y-m-d') }}"
                             data-details="{{ $account->capacity }} peserta · Berlaku s/d {{ $account->expired_date?->format('d/m/Y') }}">
                             {{ $account->name }} · {{ $account->email }}
@@ -171,7 +171,7 @@
                                             @foreach($dayBookings as $b)
                                                 <button type="button" aria-haspopup="dialog"
                                                    data-booking-summary="{{ $b['id'] }}" data-account-id="{{ $acc->id }}"
-                                                   data-account-name="{{ $acc->name }}" data-date="{{ $d['date_string'] }}"
+                                                   data-date="{{ $d['date_string'] }}"
                                                    class="block w-full py-1 px-1.5 rounded-sm bg-blue-50 border border-blue-200 text-blue-900 hover:bg-blue-100 transition text-[10px] text-left leading-tight"
                                                    title="{{ $b['display_title'] ?? $b['topic'] }} ({{ $b['user_name'] }}) - {{ $b['start_time'] }} s/d {{ $b['end_time'] }} WIB">
                                                     <span class="font-semibold block truncate">{{ $b['start_time'] }}-{{ $b['end_time'] }}</span>
@@ -400,13 +400,11 @@
             </form>
         </div>
         <div class="min-h-0 overflow-y-auto overscroll-contain p-4">
-            <p data-summary-topic class="mb-4 break-words text-base font-semibold"></p>
-            <dl class="grid grid-cols-2 gap-3 text-sm">
-                <div><dt class="text-xs text-gray-600">Tanggal</dt><dd data-summary-date></dd></div>
-                <div><dt class="text-xs text-gray-600">Jam</dt><dd data-summary-time></dd></div>
-                <div><dt class="text-xs text-gray-600">Akun Zoom</dt><dd data-summary-account class="break-words"></dd></div>
-                <div><dt class="text-xs text-gray-600">Status</dt><dd data-summary-status></dd></div>
-            </dl>
+            <div class="space-y-1 break-words">
+                <p data-summary-booker class="text-sm text-gray-700"></p>
+                <p data-summary-topic class="text-base font-semibold"></p>
+                <p data-summary-schedule class="text-sm text-gray-700"></p>
+            </div>
             <a data-summary-link class="mt-4 inline-flex min-h-11 items-center rounded-sm bg-brand-900 px-3 text-sm font-medium text-white hover:bg-brand-950">Lihat detail booking</a>
         </div>
     </div>
@@ -427,11 +425,11 @@
             ?.find(item => String(item.id) === trigger.dataset.bookingSummary);
         if (!booking) return;
 
-        existingBookingDialog.querySelector('[data-summary-topic]').textContent = booking.display_title;
-        existingBookingDialog.querySelector('[data-summary-date]').textContent = bookingDateFormat.format(new Date(trigger.dataset.date));
-        existingBookingDialog.querySelector('[data-summary-time]').textContent = `${booking.start_time}–${booking.end_time} WIB`;
-        existingBookingDialog.querySelector('[data-summary-account]').textContent = trigger.dataset.accountName;
-        existingBookingDialog.querySelector('[data-summary-status]').textContent = booking.status_label;
+        const date = bookingDateFormat.format(new Date(trigger.dataset.date));
+        const department = booking.department_name === '-' ? 'Departemen belum diisi' : booking.department_name;
+        existingBookingDialog.querySelector('[data-summary-booker]').textContent = `${booking.user_name} · ${department}`;
+        existingBookingDialog.querySelector('[data-summary-topic]').textContent = booking.topic;
+        existingBookingDialog.querySelector('[data-summary-schedule]').textContent = `${date} · ${booking.start_time}–${booking.end_time} WIB`;
         existingBookingDialog.querySelector('[data-summary-link]').href = bookingDetailUrl.replace(
             '__BOOKING__', encodeURIComponent(booking.slug || booking.id)
         );
@@ -486,7 +484,6 @@
                 button.setAttribute('aria-haspopup', 'dialog');
                 button.dataset.bookingSummary = booking.id;
                 button.dataset.accountId = account.value;
-                button.dataset.accountName = account.dataset.name;
                 button.dataset.date = selectedDate;
                 const time = document.createElement('span');
                 time.className = 'block font-semibold';

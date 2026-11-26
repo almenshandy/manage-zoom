@@ -75,7 +75,7 @@ class ZoomBookingController extends Controller
         $accountsById = $accounts->keyBy('id');
         $lastAccountDate = $accounts->last()?->expired_date ?? $today;
 
-        $bookings = ZoomBooking::with(['user', 'project'])
+        $bookings = ZoomBooking::with(['user.departmentRel', 'project'])
             ->whereIn('zoom_account_id', $accountsById->keys())
             ->where('status', '!=', ZoomBooking::STATUS_REJECTED)
             ->where('status', '!=', ZoomBooking::STATUS_CANCELLED)
@@ -116,6 +116,7 @@ class ZoomBookingController extends Controller
                 'project_name' => $projectName,
                 'display_title' => $projectName ? "{$projectName} - {$booking->topic}" : $booking->topic,
                 'user_name' => $booking->user?->name ?? 'User',
+                'department_name' => $booking->user?->department_name ?? '-',
                 'start_time' => substr($booking->start_time, 0, 5),
                 'end_time' => substr($booking->end_time, 0, 5),
                 'status_label' => $booking->status_label,
