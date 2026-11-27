@@ -213,14 +213,15 @@
         const labels = @json($chartLabels);
         const dataValues = @json($chartData);
 
-        new Chart(ctx, {
+        const themeColor = (property) => getComputedStyle(document.documentElement).getPropertyValue(property).trim();
+        const chart = new Chart(ctx, {
             type: 'bar',
             data: {
                 labels: labels,
                 datasets: [{
                     label: 'Jumlah Meeting Diajukan',
                     data: dataValues,
-                    backgroundColor: getComputedStyle(document.documentElement).getPropertyValue('--color-brand-700').trim(),
+                    backgroundColor: themeColor('--color-brand-700'),
                     hoverBackgroundColor: 'rgba(29, 78, 216, 1)', // Tailwind blue-700
                     borderRadius: 4,
                     borderSkipped: false,
@@ -236,7 +237,7 @@
                         display: false
                     },
                     tooltip: {
-                        backgroundColor: getComputedStyle(document.documentElement).getPropertyValue('--color-brand-950').trim(),
+                        backgroundColor: themeColor('--app-action'),
                         titleFont: { size: 12, family: 'Inter' },
                         bodyFont: { size: 11, family: 'Inter' },
                         padding: 10,
@@ -254,17 +255,17 @@
                         ticks: {
                             precision: 0,
                             font: { size: 10, family: 'Inter' },
-                            color: '#6b7280'
+                            color: themeColor('--color-gray-500')
                         },
                         grid: {
-                            color: '#f3f4f6',
+                            color: themeColor('--color-gray-200'),
                             drawBorder: false
                         }
                     },
                     x: {
                         ticks: {
                             font: { size: 10, family: 'Inter' },
-                            color: '#374151',
+                            color: themeColor('--color-gray-700'),
                             maxRotation: 30,
                             minRotation: 0,
                             callback: function (val, index) {
@@ -278,6 +279,14 @@
                     }
                 }
             }
+        });
+        document.addEventListener('managezoom:themechange', () => {
+            chart.data.datasets[0].backgroundColor = themeColor('--color-brand-700');
+            chart.options.plugins.tooltip.backgroundColor = themeColor('--app-action');
+            chart.options.scales.y.ticks.color = themeColor('--color-gray-500');
+            chart.options.scales.y.grid.color = themeColor('--color-gray-200');
+            chart.options.scales.x.ticks.color = themeColor('--color-gray-700');
+            chart.update('none');
         });
     });
 </script>

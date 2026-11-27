@@ -8,6 +8,7 @@
     <!-- Favicon & Custom App Icon -->
     <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
     <link rel="shortcut icon" href="{{ asset('favicon.svg') }}">
+    <x-theme-bootstrap />
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -39,7 +40,12 @@
                     <span>ManageZoom</span>
                 </div>
                 <header class="login-form-heading">
-                    <p class="login-eyebrow">Selamat datang kembali</p>
+                    <div class="flex items-center justify-between gap-2">
+                        <p class="login-eyebrow">Selamat datang kembali</p>
+                        <div class="flex shrink-0 items-center gap-2">
+                            <x-theme-controls />
+                        </div>
+                    </div>
                     <h1 id="loginTitle">Masuk ke akun Anda</h1>
                     <p>Gunakan akun yang terdaftar untuk melanjutkan.</p>
                 </header>

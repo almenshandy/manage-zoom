@@ -9,22 +9,7 @@
     <!-- Favicon & Custom App Icon -->
     <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
     <link rel="shortcut icon" href="{{ asset('favicon.svg') }}">
-    <script>
-        (() => {
-            let preference;
-            try {
-                preference = localStorage.getItem('managezoom_theme');
-            } catch {
-                // The system theme is available without browser storage.
-            }
-
-            const root = document.documentElement;
-            root.dataset.themePreference = ['light', 'dark'].includes(preference) ? preference : 'system';
-            root.dataset.theme = root.dataset.themePreference === 'system'
-                ? (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
-                : root.dataset.themePreference;
-        })();
-    </script>
+    <x-theme-bootstrap />
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -194,7 +179,7 @@
                         <i class="fa-solid fa-bars-staggered text-xs"></i>
                     </button>
 
-                    <a href="{{ route('dashboard') }}" class="mobile-app-brand md:hidden"><img src="{{ asset('icon.svg') }}" alt="" width="28" height="28"> ManageZoom</a>
+                    <a href="{{ route('dashboard') }}" class="mobile-app-brand md:hidden"><img src="{{ asset('icon.svg') }}" alt="" width="28" height="28"> <span class="max-[360px]:sr-only">ManageZoom</span></a>
                     <h2 class="hidden md:block min-w-0 text-sm md:text-base font-semibold text-gray-900 leading-tight break-words">{{ $header ?? 'Dashboard' }}</h2>
                 </div>
                 <div class="flex items-center gap-3 shrink-0">
@@ -205,24 +190,8 @@
                         class="{{ request()->routeIs('bookings.index') ? 'inline-flex' : 'hidden md:inline-flex' }} items-center gap-1.5 bg-brand-900 hover:bg-brand-950 text-white text-xs font-medium px-3 py-1.5 rounded-sm transition">
                         <i class="fa-solid fa-plus text-[10px]"></i> <span>Booking<span class="hidden sm:inline"> Baru</span></span>
                     </a>
-                    <button type="button" id="themeToggle" role="switch" aria-label="Mode gelap" aria-checked="false"
-                        class="flex w-11 h-11 md:w-8 md:h-8 items-center justify-center rounded-sm border border-gray-300 text-gray-700 hover:bg-gray-100">
-                        <i class="fa-solid fa-moon" aria-hidden="true" data-theme-icon="light"></i>
-                        <i class="fa-solid fa-sun" aria-hidden="true" data-theme-icon="dark"></i>
-                    </button>
-                    <details class="relative">
-                        <summary class="flex w-11 h-11 md:w-8 md:h-8 list-none items-center justify-center rounded-sm border border-gray-300 text-gray-700 hover:bg-gray-100" aria-label="Pengaturan tampilan" title="Pengaturan tampilan">
-                            <i class="fa-solid fa-gear" aria-hidden="true"></i>
-                        </summary>
-                        <div class="absolute right-0 top-full z-40 mt-2 w-44 border border-gray-300 bg-white p-3 shadow-sm">
-                            <label for="themePreference" class="block text-xs font-medium mb-2">Tema tampilan</label>
-                            <select id="themePreference" class="w-full px-2">
-                                <option value="system">Ikuti Sistem</option>
-                                <option value="light">Terang</option>
-                                <option value="dark">Gelap</option>
-                            </select>
-                        </div>
-                    </details>
+                    <x-theme-controls />
+                    <span class="mobile-user-avatar hidden! sm:flex! md:hidden!" role="img" aria-label="Masuk sebagai {{ auth()->user()?->name ?? 'Pengguna' }}">{{ strtoupper(substr(auth()->user()?->name ?? 'U', 0, 1)) }}</span>
                 </div>
             </header>
 

@@ -7,10 +7,17 @@
 @push('styles')
 <style>
     .fc { font-size: 0.8rem; }
+    [data-theme='dark'] .fc {
+        --fc-page-bg-color: var(--app-surface);
+        --fc-neutral-bg-color: var(--color-gray-100);
+        --fc-border-color: var(--color-gray-200);
+        --fc-list-event-hover-bg-color: var(--color-gray-100);
+        --fc-today-bg-color: var(--color-brand-50);
+    }
     .fc-theme-standard td, .fc-theme-standard th { border-color: var(--color-gray-200); }
     .fc-toolbar-title { font-size: 1rem !important; font-weight: 600; color: var(--color-gray-900); }
     .fc-button-primary {
-        background-color: #ffffff !important;
+        background-color: var(--app-surface) !important;
         border-color: var(--color-gray-300) !important;
         color: var(--color-gray-700) !important;
         border-radius: var(--radius-sm) !important;
@@ -22,8 +29,8 @@
     }
     .fc-button-primary:hover { background-color: var(--color-brand-50) !important; }
     .fc-button-primary.fc-button-active {
-        background-color: var(--color-brand-900) !important;
-        border-color: var(--color-brand-900) !important;
+        background-color: var(--app-action) !important;
+        border-color: var(--app-action) !important;
         color: #ffffff !important;
     }
     .fc-event {
