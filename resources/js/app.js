@@ -1,3 +1,35 @@
+const themeToggle = document.getElementById('themeToggle');
+
+if (themeToggle) {
+    const root = document.documentElement;
+    const themePreference = document.getElementById('themePreference');
+    const systemTheme = window.matchMedia('(prefers-color-scheme: dark)');
+
+    function applyTheme(preference) {
+        const dark = preference === 'dark' || (preference === 'system' && systemTheme.matches);
+        root.dataset.themePreference = preference;
+        root.dataset.theme = dark ? 'dark' : 'light';
+        themeToggle.setAttribute('aria-checked', String(dark));
+        themeToggle.title = dark ? 'Beralih ke mode terang' : 'Beralih ke mode gelap';
+        themePreference.value = preference;
+        document.dispatchEvent(new Event('managezoom:themechange'));
+    }
+
+    function saveTheme(preference) {
+        try {
+            localStorage.setItem('managezoom_theme', preference);
+        } catch {
+            // The preference lasts for this page when storage is unavailable.
+        }
+        applyTheme(preference);
+    }
+
+    themeToggle.addEventListener('click', () => saveTheme(root.dataset.theme === 'dark' ? 'light' : 'dark'));
+    themePreference.addEventListener('change', () => saveTheme(themePreference.value));
+    systemTheme.addEventListener('change', () => applyTheme(root.dataset.themePreference));
+    applyTheme(root.dataset.themePreference);
+}
+
 const sidebar = document.getElementById('mainSidebar');
 
 if (sidebar) {

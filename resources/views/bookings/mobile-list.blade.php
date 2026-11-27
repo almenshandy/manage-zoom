@@ -1,9 +1,12 @@
 <div class="mobile-record-list md:hidden">
     @forelse($bookings as $item)
-        <x-mobile-record :title="$item->topic" :href="route('bookings.show', $item)" :badge="$item->status_label" :badge-class="$item->status_badge">
-            <x-slot:selection><label class="inline-flex items-center min-h-11"><input type="checkbox" class="bulk-booking-checkbox" value="{{ $item->id }}" aria-label="Pilih meeting {{ $item->topic }}" @disabled(!$item->isEligibleForBulkWhatsApp())></label></x-slot:selection>
+        <x-mobile-record class="mobile-booking-record" :title="$item->topic" :href="route('bookings.show', $item)" :badge="$item->status_label" :badge-class="$item->status_badge">
+            <x-slot:selection><label class="flex min-h-11 w-full items-center justify-center"><input type="checkbox" class="bulk-booking-checkbox" value="{{ $item->id }}" aria-label="Pilih meeting {{ $item->topic }}" @disabled(!$item->isEligibleForBulkWhatsApp())></label></x-slot:selection>
             @if($item->project_display_name)
-                <p class="mobile-record-caption"><i class="fa-solid fa-briefcase" aria-hidden="true"></i> {{ $item->project_display_name }}</p>
+                <p class="mobile-record-caption mobile-schedule-row">
+                    <span class="mobile-schedule-icon"><i class="fa-solid fa-briefcase" aria-hidden="true"></i></span>
+                    <span>{{ $item->project_display_name }}</span>
+                </p>
             @endif
             <div class="mobile-schedule-row">
                 <span class="mobile-schedule-icon"><i class="fa-regular fa-calendar" aria-hidden="true"></i></span>
@@ -12,7 +15,10 @@
                     <p class="mobile-record-caption">{{ substr($item->start_time ?? '', 0, 5) ?: '-' }} – {{ substr($item->end_time ?? '', 0, 5) ?: '-' }} WIB</p>
                 </div>
             </div>
-            <p class="mobile-record-caption"><i class="fa-regular fa-user" aria-hidden="true"></i> {{ $item->user?->name ?? '-' }}</p>
+            <p class="mobile-record-caption mobile-schedule-row">
+                <span class="mobile-schedule-icon"><i class="fa-regular fa-user" aria-hidden="true"></i></span>
+                <span>{{ $item->user?->name ?? '-' }}</span>
+            </p>
             <details class="mobile-record-disclosure">
                 <summary>Informasi & tindakan lainnya <i class="fa-solid fa-chevron-down" aria-hidden="true"></i></summary>
                 <div class="mobile-disclosure-content">

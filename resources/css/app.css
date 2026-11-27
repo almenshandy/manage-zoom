@@ -309,6 +309,9 @@
     .mobile-schedule-row > div { min-width: 0; }
     .mobile-schedule-icon { display: flex; flex: 0 0 20px; align-items: center; justify-content: center; color: var(--color-gray-500); font-size: 14px; }
     .mobile-schedule-date { color: var(--color-gray-700); font-size: 13px; line-height: 1.5; font-weight: 600; }
+    .mobile-booking-record { --booking-icon-column: 20px; --booking-icon-gap: 10px; }
+    .mobile-booking-record :is(.mobile-record-selection, .mobile-schedule-icon) { flex: 0 0 var(--booking-icon-column); }
+    .mobile-booking-record :is(.mobile-record-header, .mobile-schedule-row) { gap: var(--booking-icon-gap); }
     .mobile-field-label, .mobile-record-facts dt { display: block; color: var(--color-gray-500); font-size: 12px; line-height: 1.5; }
     .mobile-record-facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
     .mobile-record-facts dd { margin-top: 3px; color: var(--color-gray-700); font-size: 13px; line-height: 1.5; font-weight: 500; }
@@ -447,3 +450,65 @@
 @media (prefers-reduced-motion: reduce) {
     #mainSidebar { transition: none; }
 }
+
+:root {
+    --app-surface: #fff;
+    --app-action: var(--color-brand-900);
+    --app-action-hover: var(--color-brand-950);
+}
+
+:root[data-theme='dark'] {
+    color-scheme: dark;
+    --app-surface: #242428;
+    --app-action: #345476;
+    --app-action-hover: #41658d;
+    --color-gray-50: #18181b;
+    --color-gray-100: #2c2c31;
+    --color-gray-200: #414149;
+    --color-gray-300: #777783;
+    --color-gray-400: #a5a5af;
+    --color-gray-500: #b4b4be;
+    --color-gray-600: #c5c5ce;
+    --color-gray-700: #d4d4dc;
+    --color-gray-800: #e4e4e9;
+    --color-gray-900: #f4f4f5;
+    --color-gray-950: #fafafa;
+    --color-brand-50: #242e3b;
+    --color-brand-100: #303e51;
+    --color-brand-200: #536b87;
+    --color-brand-600: #9cbce0;
+    --color-brand-700: #82a8d2;
+    --color-brand-800: #b1cbe8;
+    --color-brand-900: #c2d8f2;
+    --color-brand-950: #e0edfc;
+    --color-red-50: #36252a;
+    --color-red-100: #432b32;
+    --color-rose-50: #36252e;
+    --color-rose-100: #432b38;
+    --color-emerald-50: #20342c;
+    --color-emerald-100: #284238;
+    --color-blue-50: #233147;
+    --color-blue-100: #293b55;
+    --color-amber-50: #382f20;
+    --color-amber-100: #423724;
+    --color-indigo-50: #2b2c46;
+}
+
+:root[data-theme='dark'] .app-page { color-scheme: dark; }
+:root[data-theme='dark'] .bg-white { background-color: var(--app-surface); }
+:root[data-theme='dark'] .hover\\:bg-white:hover { background-color: var(--app-surface); }
+:root[data-theme='dark'] .bg-brand-900 { background-color: var(--app-action); }
+:root[data-theme='dark'] .hover\\:bg-brand-950:hover { background-color: var(--app-action-hover); }
+:root[data-theme='dark'] .peer:checked ~ .peer-checked\\:bg-gray-900 { background-color: var(--app-action); }
+:root[data-theme='dark'] .bg-gray-900\\/50 { background-color: rgb(0 0 0 / 50%); }
+:root[data-theme='dark'] .bg-gray-900\\/60 { background-color: rgb(0 0 0 / 60%); }
+
+:root[data-theme='dark'] :is(.text-red-500, .text-red-600, .text-red-700, .text-red-800, .text-red-900, .hover\\:text-red-700:hover, .mobile-secondary-actions .mobile-danger-action) { color: #ffabb3; }
+:root[data-theme='dark'] :is(.text-rose-500, .text-rose-600, .text-rose-700, .text-rose-800, .text-rose-900, .hover\\:text-rose-700:hover) { color: #fbb0c5; }
+:root[data-theme='dark'] :is(.text-emerald-500, .text-emerald-600, .text-emerald-700, .text-emerald-800, .text-emerald-900) { color: #92dcbb; }
+:root[data-theme='dark'] :is(.text-blue-500, .text-blue-600, .text-blue-700, .text-blue-800, .text-blue-900, .hover\\:text-blue-800:hover) { color: #a9ceff; }
+:root[data-theme='dark'] :is(.text-amber-500, .text-amber-600, .text-amber-700, .text-amber-800, .text-amber-900) { color: #f6cd90; }
+:root[data-theme='dark'] .text-indigo-700 { color: #c0c4ff; }
+
+:root:not([data-theme='dark']) [data-theme-icon='dark'],
+:root[data-theme='dark'] [data-theme-icon='light'] { display: none; }
